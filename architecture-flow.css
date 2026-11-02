@@ -67,7 +67,11 @@
 .credits-logo{position:relative;display:block;width:160px;aspect-ratio:31/18;overflow:hidden}
 .credits-logo img{position:absolute;left:-66.129%;top:-103.333%;width:241.29%;max-width:none;height:auto;filter:brightness(0) invert(1)}
 :root[data-tone="light"] .credits-logo img{filter:none}
-.credits-attribution{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 30px;max-width:32ch}
+.credits-attribution{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 12px;max-width:34ch}
+.credits-contribution{margin:0 0 30px;font-size:12px;line-height:1.6}
+.credits-contribution strong{display:block;font-weight:500;margin-bottom:4px}
+.credits-contribution ul{list-style:none;margin:0;padding:0;color:var(--muted)}
+.credits-contribution li::before{content:'— ';opacity:.5}
 .inline-project > .project-credits{padding:36px clamp(24px,4vw,56px)}
 .arch-entry > .project-credits{position:absolute;top:120px;left:calc(100% + 36px);width:208px;padding:0;border:0;font-size:14px}
 .arch-entry > .project-credits dl{display:flex;flex-direction:column;gap:28px}

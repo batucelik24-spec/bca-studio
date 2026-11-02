@@ -5,7 +5,7 @@
 <link rel="alternate" hreflang="tr" href="https://bcastud.io/?lang=tr">
 <link rel="alternate" hreflang="en" href="https://bcastud.io/?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://bcastud.io/">
-<script src="i18n.js?v=4"></script>
+<script src="i18n.js?v=5"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BCA Studio">
 <meta property="og:title" content="BCA Studio — Batuhan Çelik Architecture &amp; Studio">
@@ -719,7 +719,7 @@ html{overflow-wrap:break-word}
 .evidence-method{margin-top:32px;padding:22px 0;border-block:1px solid var(--line)}.evidence-method summary{cursor:pointer;min-height:28px}.evidence-method p{color:var(--muted);max-width:85ch;line-height:1.7;font-size:15px}
 @media(max-width:760px){.arch-evidence{padding-block:40px}.evidence-result,.evidence-figures{grid-template-columns:1fr;gap:24px}.evidence-result{padding:24px}.evidence-figures .evidence-media{height:260px}.evidence-metrics{gap:14px}.evidence-metrics dt{font-size:12px}.evidence-metrics dd{font-size:32px}}
 </style>
-<link rel="stylesheet" href="architecture-flow.css?v=20261102-glass">
+<link rel="stylesheet" href="architecture-flow.css?v=20261102-credit">
 
 </head>
 <body>
@@ -1152,10 +1152,17 @@ const PROJECT_CREDITS = {
   ABR:{groups:[['Buluş Sahibi',['Dr. Alper Çelik']],['Araştırma',['Ankara Üniversitesi']]]},
   PCE:{groups:[['Kurucu',['Batuhan Çelik']],['Ürün Tasarımı ve Geliştirme',['Batuhan Çelik']]]}
 };
+/* Batuhan's own part in a project developed at another office: role and responsibilities from the project facts */
+function contribution(p){
+  const fact=k=>((p.facts||[]).find(f=>f[0]===k)||['',''])[1];
+  const role=fact('Rol'), work=fact('Sorumluluklar');
+  if(!role&&!work) return '<div class="credits-contribution"></div>';
+  return '<div class="credits-contribution">'+(role?'<strong>'+escapeAttr(role)+'</strong>':'')+(work?'<ul>'+work.split(/,\s*|\s+ve\s+/).filter(Boolean).map(x=>{x=x.trim();return '<li>'+escapeAttr(x.charAt(0).toLocaleUpperCase('tr')+x.slice(1))+'</li>';}).join('')+'</ul>':'')+'</div>';
+}
 function renderProjectCredits(p){
   const credits=$('px-credits'),data=PROJECT_CREDITS[p.code]||{groups:[['Tasarım',['Batuhan Çelik']]]};
   credits.hidden=false;credits.classList.remove('is-entering','is-leaving');
-  credits.innerHTML=(data.studio?'<a class="credits-brand" href="'+data.url+'" target="_blank" rel="noopener" aria-label="Bahadır Kul Architects — resmî sitesi"><span class="credits-logo"><img src="img/credits/bka-official-logo.png" width="748" height="574" alt="Bahadır Kul Architects logosu"></span><span>'+data.studio+'</span></a><p class="credits-attribution">Bu proje Bahadır Kul Architects’e aittir.</p>':'')+
+  credits.innerHTML=(data.studio?'<a class="credits-brand" href="'+data.url+'" target="_blank" rel="noopener" aria-label="Bahadır Kul Architects — resmî sitesi"><span class="credits-logo"><img src="img/credits/bka-official-logo.png" width="748" height="574" alt="Bahadır Kul Architects logosu"></span><span>'+data.studio+'</span></a><p class="credits-attribution">Bu proje Bahadır Kul Architects bünyesinde geliştirilmiştir. Batuhan Çelik’in projedeki katkısı:</p>'+contribution(p):'')+
     '<dl>'+data.groups.map(([role,names])=>'<div class="credits-group"><dt>'+escapeAttr(role)+'</dt>'+names.map(name=>'<dd>'+escapeAttr(name)+'</dd>').join('')+'</div>').join('')+'</dl>';
   placeProjectCredits();
 }
