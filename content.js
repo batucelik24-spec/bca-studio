@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-02T11:52:22.682Z",
+ "updated": "2026-11-02T12:07:44.023Z",
  "projects": {
   "PCE": {
    "facts": [
@@ -56,6 +56,63 @@ window.BCA_CONTENT = {
    "i": "EBT",
    "img": "img/uploads/ekip-emirkan-burak-topcu-ebt-mvz6pn7f.jpg",
    "b": ""
+  }
+ ],
+ "welcome": [
+  {
+   "src": "img/p/hall-sunset.jpg",
+   "t": "Tashkent Opera House",
+   "v": "Taşkent · 2026"
+  },
+  {
+   "src": "img/uploads/welcome-7-mvz7jpfs.jpg",
+   "t": "Al-Jazira Stadium",
+   "v": "Abu Dabi · 2026"
+  },
+  {
+   "src": "img/covers/wa-extended.jpg",
+   "t": "WA Tower",
+   "v": "Kobe · 2025"
+  },
+  {
+   "src": "img/covers/tas-extended.jpg",
+   "t": "Yangi Tashkent Stadium",
+   "v": "Taşkent · 2026"
+  },
+  {
+   "src": "img/covers/alt-extended.jpg",
+   "t": "Altuni Tower",
+   "v": "Kahramanmaraş · 2024"
+  },
+  {
+   "src": "img/pf/stc-street.jpg",
+   "t": "Science and Technology Center",
+   "v": "Samsun · 2023"
+  },
+  {
+   "src": "img/entry/interior.jpg",
+   "t": "Overflowing Spectrums",
+   "v": "İç mekân"
+  },
+  {
+   "src": "img/entry/facade-split.jpg",
+   "t": "Dynamic Facade",
+   "v": "Gece ve gündüz"
+  },
+  {
+   "src": "img/uploads/welcome-2-mvz7kkjv.jpg",
+   "t": "Torii Gate",
+   "v": ""
+  },
+  {
+   "src": "img/uploads/welcome-scene-9-mvz7q8qd.jpg",
+   "t": "",
+   "v": ""
+  },
+  {
+   "src": "img/portfolio/cbr-0549.webp",
+   "t": "Coastal Bar",
+   "v": "2024"
   }
  ]
 };
