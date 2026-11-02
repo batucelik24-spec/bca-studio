@@ -57,6 +57,11 @@ textarea{min-height:96px;resize:vertical}
 .gallery figcaption{display:flex;justify-content:center;gap:2px;padding:4px}
 .gallery figcaption .icon{width:26px;height:26px;font-size:12px}
 .pending{outline:2px dashed var(--accent);outline-offset:-2px}
+.focus{position:relative;border-radius:10px;overflow:hidden;cursor:crosshair;background:#E8E8ED;line-height:0;margin-bottom:8px}
+.focus img{width:100%;height:auto;display:block;max-height:340px;object-fit:contain}
+.focus .dot{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px var(--accent),0 2px 8px rgba(0,0,0,.4);pointer-events:none}
+.focus .frame{position:absolute;border:1.5px solid rgba(255,255,255,.95);box-shadow:0 0 0 9999px rgba(0,0,0,.35);pointer-events:none}
+.focus-meta{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:8px;line-height:1.4}
 .toggle{display:flex;align-items:center;gap:10px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .person{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px}
@@ -173,7 +178,7 @@ function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
   (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',thumb:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
-  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || [])};
+  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || []), focus: clone(content.focus || {})};
 }
 
 /* only what differs from the built-in content is written to content.js */
@@ -193,19 +198,20 @@ function diff(){
   if(added.length) out.added = added;
   if(!same(state.team, BASE.team)) out.team = clone(state.team);
   if(!same(state.welcome, BASE.welcome || [])) out.welcome = clone(state.welcome);
+  if(Object.keys(state.focus || {}).length) out.focus = clone(state.focus);
   const texts = {}; Object.entries(state.texts).forEach(([k,v])=>{ if(v !== BASE.texts[k]) texts[k] = v; });
   if(Object.keys(texts).length) out.texts = texts;
   return out;
 }
-const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null});
+const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null, focus:o.focus||{}});
 /* the draft as the preview sees it: images not yet published are shown from memory */
-const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
+const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)":/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl)+':' : m).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
 
 function init(published){
   publishedJSON = norm(published);
   state = compose(published);
   const saved = store.get('bca-editor-state');
-  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || [])}; } }catch(e){} }
+  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || []), focus:s.focus || {}}; } }catch(e){} }
   ready = true;
   view = {type:'project', id:(state.projects.find(p=>!p.studio) || state.projects[0]).code};
   $('#newtab').hidden = false; $('#publish').hidden = false;
@@ -221,7 +227,7 @@ function touch(save=true){
   status(dirty ? 'Yayınlanmamış değişiklikler var' + (Object.keys(uploads).length ? ' · '+Object.keys(uploads).length+' yeni görsel' : '') : 'Site ile aynı', dirty ? '' : 'ok');
   renderPicker();
   clearTimeout(pushTimer); pushTimer = setTimeout(()=>pushPreview(), 120);
-  const wj = JSON.stringify(state.welcome);
+  const wj = JSON.stringify([state.welcome, state.welcome.map(w=>(state.focus||{})[w.src])]);
   if(lastWelcome !== null && wj !== lastWelcome){ clearTimeout(welcomeTimer); welcomeTimer = setTimeout(reloadWithDraft, 700); }
   lastWelcome = wj;
 }
@@ -382,16 +388,37 @@ function renderProject(main, p){
 function coverControl(p){
   const box = el('div',{class:'cover'});
   const draw = ()=>box.replaceChildren(
-    el('div',{class:'thumb'+(uploads[p.img]?' pending':''),style:p.img?'background-image:url("'+src(p.img)+'")':''}),
+    p.img ? focusWidget(p.img, 16/9) : el('div',{class:'thumb'}),
     el('div',{class:'ctl'},
       el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.img = await addUpload(f, p.code+'-kapak'); touch(); draw(); }},'Yeni görsel yükle'),
       p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const n = parseInt(prompt('Galeriden kaçıncı görsel kapak olsun? (1-'+p.gallery.length+')'),10); if(n>=1&&n<=p.gallery.length){ p.img = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null));
   draw(); return box;
 }
+function focusOf(path){ const f = (state.focus||{})[path] || (BASE.focus||{})[path]; return f ? f.slice() : [50,50]; }
+function focusWidget(path, ratio, onchange){
+  const wrap = el('div',{}), box = el('div',{class:'focus',title:'Kadrajın merkezini seçmek için tıkla'}), img = el('img',{src:src(path),alt:''}), dot = el('div',{class:'dot'}), frame = el('div',{class:'frame'});
+  box.append(img, frame, dot);
+  const meta = el('div',{class:'focus-meta'});
+  const place = ()=>{
+    const [x,y] = focusOf(path); dot.style.left = x+'%'; dot.style.top = y+'%';
+    const w = img.naturalWidth, h = img.naturalHeight;
+    if(w && h && ratio){ const ir = w/h; let fw = 1, fh = 1; if(ir > ratio) fw = ratio/ir; else fh = ir/ratio;
+      const fx = Math.min(Math.max(x/100 - fw/2, 0), 1-fw), fy = Math.min(Math.max(y/100 - fh/2, 0), 1-fh);
+      Object.assign(frame.style, {left:fx*100+'%', top:fy*100+'%', width:fw*100+'%', height:fh*100+'%', display:''}); }
+    else frame.style.display = 'none';
+    const custom = !!(state.focus||{})[path];
+    meta.replaceChildren(el('span',{}, custom ? 'Kadraj merkezi: %'+Math.round(x)+' · %'+Math.round(y) : 'Kadraj merkezde. Görselin üzerine tıklayarak değiştir.'),
+      custom ? el('button',{class:'btn small',type:'button',onclick:()=>{ delete state.focus[path]; touch(); place(); onchange && onchange(); }},'Ortala') : null);
+  };
+  img.addEventListener('load', place);
+  box.addEventListener('click', e=>{ const r = img.getBoundingClientRect(); const x = Math.round(Math.min(Math.max((e.clientX-r.left)/r.width,0),1)*100), y = Math.round(Math.min(Math.max((e.clientY-r.top)/r.height,0),1)*100);
+    state.focus = state.focus || {}; state.focus[path] = [x,y]; touch(); place(); onchange && onchange(); });
+  wrap.append(box, meta); place(); return wrap;
+}
 function thumbControl(p){
   const box = el('div',{class:'cover'});
   const draw = ()=>box.replaceChildren(...[
-    el('div',{class:'thumb'+(uploads[p.thumb]?' pending':''),style:'aspect-ratio:4/3;max-width:280px;background-image:url("'+src(p.thumb||p.img)+'")'+(p.thumb?'':';opacity:.55')}),
+    (p.thumb||p.img) ? focusWidget(p.thumb||p.img, 4/3) : el('div',{class:'thumb'}),
     el('div',{class:'ctl'},
       el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.thumb = await addUpload(f, p.code+'-kart'); touch(); draw(); }},'Yeni görsel yükle'),
       p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const n = parseInt(prompt('Galeriden kaçıncı görsel kart görseli olsun? (1-'+p.gallery.length+')'),10); if(n>=1&&n<=p.gallery.length){ p.thumb = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null,
@@ -400,14 +427,16 @@ function thumbControl(p){
   draw(); return box;
 }
 function galleryControl(p){
-  const wrap = el('div',{class:'list'});
+  const wrap = el('div',{class:'list'}); let open = null;
   const draw = ()=>wrap.replaceChildren(
     p.gallery.length ? el('div',{class:'gallery'}, p.gallery.map((g,i)=>el('figure',{class:uploads[g]?'pending':''},
       el('div',{class:'img',style:'background-image:url("'+src(g)+'")',title:(i+1)+' · '+g}),
       el('figcaption',{},
         el('button',{class:'icon',type:'button','aria-label':'Sola',onclick:()=>{ if(move(p.gallery,i,-1)){touch();draw();} }},'←'),
         el('button',{class:'icon',type:'button','aria-label':'Sağa',onclick:()=>{ if(move(p.gallery,i,1)){touch();draw();} }},'→'),
+        el('button',{class:'icon',type:'button','aria-label':'Kadraj',title:'Kadraj',onclick:()=>{ open = open===g ? null : g; draw(); }},'⌖'),
         el('button',{class:'icon',type:'button','aria-label':'Kaldır',onclick:()=>{ p.gallery.splice(i,1);touch();draw(); }},'×'))))) : el('p',{class:'empty'},'Galeride görsel yok.'),
+    open && p.gallery.includes(open) ? el('div',{}, el('div',{class:'hint',style:'margin:4px 0 6px'},'Kare ızgarada görünen kısım:'), focusWidget(open, 1)) : null,
     el('div',{}, el('button',{class:'btn small',type:'button',onclick:async()=>{ const files = await pickImages(true); for(const f of files) p.gallery.push(await addUpload(f, p.code)); touch(); draw(); }},'Görsel ekle')));
   draw(); return wrap;
 }
@@ -442,7 +471,7 @@ function renderWelcome(main){
     el('h2',{},'Welcome görselleri'),
     el('p',{class:'sub'},'Açılış ekranında sırayla değişen görseller. Sağ üstteki başlık ve alt satır her görselle birlikte değişir. Değişiklikten sonra önizleme bir an yenilenir.'),
     ...state.welcome.map((w,i)=>el('div',{class:'card field','data-target':'w|'+i},
-      el('div',{class:'cover'}, el('div',{class:'thumb'+(uploads[w.src]?' pending':''),style:'background-image:url("'+src(w.src)+'")'})),
+      el('div',{class:'cover'}, focusWidget(w.src, 16/9)),
       el('div',{class:'list'},
         input(w.t, v=>w.t=v, {placeholder:'Başlık (ör. proje adı)','aria-label':'Başlık'}),
         input(w.v, v=>w.v=v, {placeholder:'Alt satır (ör. Taşkent · 2026)','aria-label':'Alt satır'}),

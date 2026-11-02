@@ -1092,6 +1092,8 @@ const FOCUS = {
 };
 /* renders whose subject is wide and low: they fill the cover instead of standing whole */
 const WIDE_ONLY = ['img/covers/tas-extended.jpg'];
+SITE.base.focus = JSON.parse(JSON.stringify(FOCUS));
+Object.assign(FOCUS, CONTENT.focus || {});
 const fp = src => { const f = FOCUS[src]; return f ? f[0]+'% '+f[1]+'%' : '50% 50%'; };
 const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media};
 Object.entries(window.BCAPortfolio?.projects || {}).forEach(([code, entry])=>{
@@ -1759,6 +1761,7 @@ SITE.refresh = function(content){
   SITE.base.projects.forEach(b=>{ const p = PROJECTS.find(q=>q.code===b.code); if(!p) return; EDITABLE.forEach(k=>{ if(k in b) p[k] = JSON.parse(JSON.stringify(b[k])); else delete p[k]; }); });
   (content.added || []).forEach(n=>{ if(n && n.code && !PROJECTS.some(p=>p.code===n.code)) PROJECTS.push(Object.assign({facts:[], desc:[], gallery:[], cats:[], year:'—', kind:'', line:'', img:''}, JSON.parse(JSON.stringify(n)), {added:true})); });
   Object.entries(content.projects || {}).forEach(([code, o])=>{ const p = PROJECTS.find(q=>q.code===code); if(p) EDITABLE.forEach(k=>{ if(o[k] !== undefined) p[k] = JSON.parse(JSON.stringify(o[k])); }); });
+  Object.keys(FOCUS).forEach(k=>delete FOCUS[k]); Object.assign(FOCUS, SITE.base.focus, content.focus || {});
   renderStudioGrids(); renderBand();
   const view = DOC.dataset.view;
   if(view === 'project' || archOpenCode) renderProject(projIdx);
