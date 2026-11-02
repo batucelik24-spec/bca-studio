@@ -2041,7 +2041,7 @@ function syncPage(){
   put(stage, '--sfg', `rgb(${mixc(COL.fgA,COL.fgS,k)})`);
   put(stageLogo, 'color', gone ? '' : '#1D1D1F');
   put(sideA, 'opacity', (1 - 0.6*prog).toFixed(2));
-  put(stage, '--shade', gone ? (1 - smooth(0.45, 0.9, prog)).toFixed(2) : '0');
+  put(stage, '--shade', gone ? (1 - smooth(0.22, 0.55, prog)).toFixed(2) : '0');
   put(sideS, 'opacity', (0.4 + 0.6*prog).toFixed(2));
 }
 let stageVisible = true;
