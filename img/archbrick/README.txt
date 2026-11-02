@@ -1,0 +1,1 @@
+Cover created with built-in ImageGen. Prompt: preserve ONE central oval arch ring crossed by vertical and horizontal ribs, six rectangular cells on upper/lower perimeter rows; single fired terracotta block on white studio cyclorama. Reference: https://archbrick.com.tr/assets/img/masonry-portfolio/prototip3.png
