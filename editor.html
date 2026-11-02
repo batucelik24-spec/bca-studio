@@ -10,79 +10,78 @@
 <style>
 :root{--bg:#F5F5F7;--panel:#FFFFFF;--fg:#1D1D1F;--muted:#6E6E73;--line:rgba(0,0,0,.1);--accent:#0066CC;--danger:#C4314B;--ok:#1E8E3E;--f:'Jost','Futura','Avenir Next',system-ui,sans-serif;color-scheme:light}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 var(--f)}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f)}
+body{display:flex;flex-direction:column;overflow:hidden}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;padding:14px 24px;background:rgba(245,245,247,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.bar h1{margin:0;font-weight:400;font-size:18px;letter-spacing:.02em}
+.bar{flex:none;display:flex;align-items:center;gap:14px;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar h1{margin:0;font-weight:400;font-size:17px;letter-spacing:.02em;white-space:nowrap}
 .bar h1 b{font-weight:500}
-.bar .status{font-size:13px;color:var(--muted);margin-right:auto}
+.bar .status{font-size:13px;color:var(--muted);margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar .status.err{color:var(--danger)}.bar .status.ok{color:var(--ok)}
-.btn{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 16px;font-size:14px;transition:background .2s}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 15px;font-size:14px;white-space:nowrap;transition:background .2s}
 .btn:hover{background:#ECECEF}
 .btn.primary{background:var(--fg);color:#fff;border-color:var(--fg)}
 .btn.primary:hover{background:#000}
-.btn.primary[disabled]{opacity:.4;cursor:default}
+.btn.primary[disabled]{opacity:.35;cursor:default}
 .btn.small{padding:4px 12px;font-size:13px}
 .btn.danger{color:var(--danger)}
-.layout{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:calc(100vh - 62px)}
-nav{border-right:1px solid var(--line);padding:24px 16px;position:sticky;top:62px;height:calc(100vh - 62px);overflow:auto}
-nav h2{font-size:11px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin:24px 8px 8px}
-nav h2:first-child{margin-top:0}
-nav button.item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:8px;font-size:15px}
-nav button.item:hover{background:rgba(0,0,0,.05)}
-nav button.item[aria-current="true"]{background:var(--panel);box-shadow:0 0 0 1px var(--line)}
-nav .tag{margin-left:auto;font-size:11px;color:var(--muted)}
-nav .dirty{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-main{padding:40px clamp(20px,5vw,72px) 120px;max-width:980px}
-main h2{font-weight:300;font-size:34px;letter-spacing:-.01em;margin:0 0 6px}
-main .sub{color:var(--muted);margin:0 0 32px}
-.field{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:16px 0;border-top:1px solid var(--line)}
-.field>label,.field>.lbl{font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-top:10px}
-.field .hint{font-size:13px;color:var(--muted);margin-top:6px}
-input[type=text],input[type=password],textarea{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(360px,440px) minmax(0,1fr)}
+.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--bg)}
+.picker{flex:none;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.picker select{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel)}
+.form{flex:1;min-height:0;overflow:auto;padding:22px 18px 80px}
+.form h2{font-weight:300;font-size:28px;letter-spacing:-.01em;margin:0 0 2px}
+.form .sub{color:var(--muted);margin:0 0 18px;font-size:14px}
+.field{padding:14px 12px;margin:0 -12px;border-radius:12px;transition:background .2s}
+.field.active{background:rgba(0,102,204,.07)}
+.field>.lbl{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field>.lbl .locate{margin-left:auto;border:0;background:none;color:var(--accent);font-size:12px;letter-spacing:.04em;text-transform:none;padding:0}
+.field .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+input[type=text],input[type=password],textarea{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 11px;outline:none}
 input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,102,204,.15)}
-textarea{min-height:110px;resize:vertical}
-.list{display:flex;flex-direction:column;gap:10px}
-.row{display:flex;gap:8px;align-items:flex-start}
-.row>*:not(.ctl){flex:1}
-.ctl{display:flex;gap:4px;flex:none}
-.icon{border:1px solid var(--line);background:var(--panel);border-radius:8px;width:34px;height:34px;display:grid;place-items:center;font-size:15px;line-height:1}
+textarea{min-height:96px;resize:vertical}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:6px;align-items:flex-start}
+.row>*:not(.ctl){flex:1;min-width:0}
+.ctl{display:flex;gap:4px;flex:none;flex-wrap:wrap}
+.icon{border:1px solid var(--line);background:var(--panel);border-radius:8px;width:30px;height:30px;display:grid;place-items:center;font-size:14px;line-height:1}
 .icon:hover{background:#ECECEF}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 14px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 12px;font-size:13.5px}
 .chip[aria-pressed="true"]{background:var(--fg);color:#fff;border-color:var(--fg)}
-.cover{display:flex;gap:16px;align-items:flex-start}
-.cover .thumb{width:220px;aspect-ratio:4/3;border-radius:10px;background:#E8E8ED center/cover no-repeat;flex:none;border:1px solid var(--line)}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.cover .thumb{width:100%;aspect-ratio:16/9;border-radius:10px;background:#E8E8ED center/cover no-repeat;border:1px solid var(--line);margin-bottom:8px}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .gallery figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .gallery .img{aspect-ratio:4/3;background:#E8E8ED center/cover no-repeat}
-.gallery figcaption{display:flex;justify-content:space-between;align-items:center;padding:6px}
-.gallery figcaption .ctl .icon{width:28px;height:28px;font-size:13px}
+.gallery figcaption{display:flex;justify-content:center;gap:2px;padding:4px}
+.gallery figcaption .icon{width:26px;height:26px;font-size:12px}
 .pending{outline:2px dashed var(--accent);outline-offset:-2px}
-.toggle{display:flex;align-items:center;gap:10px;padding-top:8px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
-.card h3{margin:0 0 12px;font-weight:400;font-size:20px}
-.person{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px}
-.person .ph{width:96px;height:120px;border-radius:10px;background:#E8E8ED center/cover no-repeat;display:grid;place-items:center;color:var(--muted);font-size:22px}
-.person .grid2{display:grid;grid-template-columns:1fr 1fr 90px;gap:8px;margin-bottom:8px}
-.note{background:#FFF8E1;border:1px solid #F3E2A9;border-radius:12px;padding:14px 16px;font-size:14px;margin-bottom:24px}
-.note.info{background:#EEF5FF;border-color:#CFE0F7}
-.gate{max-width:560px;margin:10vh auto;padding:0 24px}
-.gate h2{font-weight:300;font-size:40px;margin:0 0 12px}
-.gate ol{padding-left:20px;color:var(--muted)}
-.gate ol li{margin-bottom:6px}
-.gate a{color:var(--accent)}
-.foot{display:flex;gap:10px;margin-top:28px}
-.empty{color:var(--muted);font-size:14px}
-@media (max-width:820px){
-  .layout{grid-template-columns:1fr}
-  nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
-  .field{grid-template-columns:1fr;gap:6px}
-  .field>label,.field>.lbl{padding-top:0}
-  .cover{flex-direction:column}
-  .person{grid-template-columns:1fr}
-  .person .grid2{grid-template-columns:1fr}
+.toggle{display:flex;align-items:center;gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.person{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px}
+.person .ph{width:72px;height:90px;border-radius:10px;background:#E8E8ED center/cover no-repeat;display:grid;place-items:center;color:var(--muted);font-size:18px}
+.person .grid2{display:grid;grid-template-columns:1fr 1fr 60px;gap:6px;margin-bottom:6px}
+.note{background:#EEF5FF;border:1px solid #CFE0F7;border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
+.note ol{margin:6px 0 0;padding-left:18px}
+.empty{color:var(--muted);font-size:13.5px}
+.foot{margin-top:20px}
+/* preview */
+.pv{display:flex;flex-direction:column;min-width:0;min-height:0}
+.pvbar{flex:none;display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+.pvbar .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.pvbar .seg button{border:0;background:none;padding:5px 12px;font-size:13px}
+.pvbar .seg button[aria-pressed="true"]{background:var(--fg);color:#fff}
+.pvbar .sp{flex:1}
+.pvbar .pick[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stage{flex:1;min-height:0;display:flex;justify-content:center;background:#E5E5EA;padding:0}
+.stage.mobile{padding:18px 0}
+.stage iframe{border:0;width:100%;height:100%;background:#fff}
+.stage.mobile iframe{width:390px;height:100%;border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);pointer-events:none}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+  .side{border-right:0;border-bottom:1px solid var(--line)}
   .bar{flex-wrap:wrap}
 }
 </style>
@@ -91,11 +90,31 @@ textarea{min-height:110px;resize:vertical}
 <div class="bar">
   <h1><b>BCA Studio</b> · Editör</h1>
   <span class="status" id="status">Yükleniyor…</span>
-  <button class="btn" id="preview" type="button" hidden>Taslağı önizle</button>
+  <button class="btn" id="newtab" type="button" hidden>Yeni sekmede önizle</button>
   <button class="btn primary" id="publish" type="button" hidden disabled>Yayınla</button>
 </div>
-<div id="app"></div>
-<iframe id="site" src="index.html?editor" title="Site verisi" aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;left:-9999px"></iframe>
+<div class="layout">
+  <aside class="side">
+    <div class="picker"><select id="picker" aria-label="Düzenlenecek bölüm"></select><button class="btn small" id="add" type="button">＋ Proje</button></div>
+    <div class="form" id="main"><p class="empty">Site yükleniyor…</p></div>
+  </aside>
+  <section class="pv" aria-label="Canlı önizleme">
+    <div class="pvbar">
+      <div class="seg" role="group" aria-label="Sayfa">
+        <button type="button" data-go="home">Ana sayfa</button>
+        <button type="button" data-go="architecture">Architecture</button>
+        <button type="button" data-go="studio">Studio</button>
+      </div>
+      <span class="sp"></span>
+      <button class="btn small pick" id="pick" type="button" aria-pressed="false" title="Önizlemede bir yere tıklayınca o alanın düzenleyicisi açılır">Tıklayarak seç</button>
+      <div class="seg" role="group" aria-label="Ekran">
+        <button type="button" data-dev="desktop" aria-pressed="true">Masaüstü</button>
+        <button type="button" data-dev="mobile" aria-pressed="false">Mobil</button>
+      </div>
+    </div>
+    <div class="stage" id="stage"><iframe id="frame" src="index.html?editor" title="Sitenin canlı önizlemesi"></iframe></div>
+  </section>
+</div>
 
 <script>
 (function(){
@@ -120,28 +139,32 @@ const TEXT_LABELS = {
   'studio.services':'Studio · Hizmetler',
   'studio.mail':'Studio · İletişim satırı'
 };
+/* where each project field appears on the project page */
+const PROJECT_SPOT = {name:'#pd-title', kind:'#px-kind', year:'#px-hud', badge:'#px-hud', cats:'#px-hud', line:'#px-lead', facts:'#px-facts', desc:'#px-info-text', img:'.px-hero', gallery:'#px-tiles'};
+const SPOT_FIELD = [['#pd-title','name'],['#px-kind','kind'],['#px-hud','year'],['#px-lead','line'],['#px-facts','facts'],['#px-info-text','desc'],['#px-concept','desc'],['#px-detail','desc'],['#px-tiles','gallery'],['.px-hero','img']];
+
 const $ = s => document.querySelector(s);
 const el = (tag, attrs={}, ...kids) => { const e = document.createElement(tag); for(const [k,v] of Object.entries(attrs)){ if(k==='class') e.className=v; else if(k.startsWith('on')) e.addEventListener(k.slice(2), v); else if(k.startsWith('aria-') && typeof v==='boolean') e.setAttribute(k, String(v)); else if(v!==false && v!=null) e.setAttribute(k, v===true?'':v); } kids.flat().forEach(c=>{ if(c!=null && c!==false) e.append(c.nodeType?c:document.createTextNode(c)); }); return e; };
 const clone = o => JSON.parse(JSON.stringify(o));
 const same = (a,b) => JSON.stringify(a)===JSON.stringify(b);
 const store = {get(k){try{return localStorage.getItem(k);}catch(e){return null;}}, set(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}, del(k){try{localStorage.removeItem(k);}catch(e){}}};
-
-let BASE, CATS, state, view = {type:'project', id:null}, uploads = {}; // uploads: path -> {dataUrl, base64}
 const status = (t, cls='') => { const s = $('#status'); s.textContent = t; s.className = 'status '+cls; };
 
-/* ---------- loading: the hidden site frame exposes built-in content and the published edits ---------- */
-const frame = $('#site');
+let BASE, CATS, state, view = {type:'project', id:null}, uploads = {}, publishedJSON = '', ready = false;
+const frame = $('#frame');
+const site = () => { try{ const w = frame.contentWindow; return w && w.BCA_SITE && w.BCA_SITE.refresh ? w : null; }catch(e){ return null; } };
+
+/* ---------- loading: the preview frame also supplies the built-in content and the published edits ---------- */
 frame.addEventListener('load', ()=>{
   let tries = 0;
   const wait = setInterval(()=>{
-    const w = frame.contentWindow, site = w && w.BCA_SITE;
-    if(site && site.base && site.base.projects.length){
+    const w = site();
+    if(w && w.BCA_SITE.base.projects.length){
       clearInterval(wait);
-      BASE = clone(site.base); CATS = site.cats || [];
-      const published = clone(w.BCA_CONTENT || {});
-      frame.remove();
-      init(published);
-    } else if(++tries > 150){ clearInterval(wait); status('Site verisi okunamadı. Sayfayı yenileyin.', 'err'); }
+      prepareFrame(w);
+      if(!ready){ BASE = clone(w.BCA_SITE.base); CATS = w.BCA_SITE.cats || []; init(clone(w.BCA_PUBLISHED || w.BCA_CONTENT || {})); }
+      pushPreview(true);
+    } else if(++tries > 200){ clearInterval(wait); if(!ready) status('Site önizlemesi açılamadı. Sayfayı yenileyin.', 'err'); }
   }, 100);
 });
 
@@ -149,18 +172,15 @@ function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
   (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
-  return {
-    projects,
-    team: content.team ? clone(content.team) : clone(BASE.team),
-    texts: Object.assign(clone(BASE.texts), content.texts || {})
-  };
+  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {})};
 }
 
 /* only what differs from the built-in content is written to content.js */
 function diff(){
   const out = {version:1, updated:new Date().toISOString()}, projects = {}, added = [];
   const baseOrder = BASE.projects.map(p=>p.code), order = state.projects.filter(p=>!p.added).map(p=>p.code);
-  const reordered = !same(baseOrder, order) || state.projects.some((p,i)=>p.added && i < state.projects.length-1 && !state.projects.slice(i+1).every(q=>q.added));
+  const firstAdded = state.projects.findIndex(p=>p.added);
+  const reordered = !same(baseOrder, order) || (firstAdded >= 0 && state.projects.slice(firstAdded).some(p=>!p.added));
   state.projects.forEach(p=>{
     if(p.added){ const a = clone(p); delete a.added; added.push(a); return; }
     const b = BASE.projects.find(x=>x.code===p.code), o = {};
@@ -175,33 +195,93 @@ function diff(){
   if(Object.keys(texts).length) out.texts = texts;
   return out;
 }
-
-let publishedJSON = '';
 const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}});
+/* the draft as the preview sees it: images not yet published are shown from memory */
+const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
+
 function init(published){
   publishedJSON = norm(published);
-  const saved = store.get('bca-editor-state');
   state = compose(published);
+  const saved = store.get('bca-editor-state');
   if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts}; } }catch(e){} }
-  view = {type:'project', id:state.projects[0].code};
-  $('#preview').hidden = false; $('#publish').hidden = false;
+  ready = true;
+  view = {type:'project', id:(state.projects.find(p=>!p.studio) || state.projects[0]).code};
+  $('#newtab').hidden = false; $('#publish').hidden = false;
   render(); touch(false);
 }
 
 function changed(){ return norm(diff()) !== publishedJSON || Object.keys(uploads).length > 0; }
+let pushTimer = 0;
 function touch(save=true){
   if(save) store.set('bca-editor-state', JSON.stringify(Object.assign({basePublished:publishedJSON}, state)));
   const dirty = changed();
   $('#publish').disabled = !dirty;
   status(dirty ? 'Yayınlanmamış değişiklikler var' + (Object.keys(uploads).length ? ' · '+Object.keys(uploads).length+' yeni görsel' : '') : 'Site ile aynı', dirty ? '' : 'ok');
-  renderNav();
+  renderPicker();
+  clearTimeout(pushTimer); pushTimer = setTimeout(()=>pushPreview(), 120);
 }
+function pushPreview(){
+  const w = site(); if(!w || !ready) return;
+  try{ w.BCA_SITE.refresh(withImages(diff())); }catch(e){ console.warn('Önizleme güncellenemedi', e); }
+  if(lastTarget) setTimeout(()=>highlight(lastTarget, false), 60);
+}
+
+/* ---------- preview: go to where a field lives, outline it, pick by clicking ---------- */
+let lastTarget = null;
+function locate(target){
+  const [kind, a, b] = target.split('|');
+  if(kind==='p'){ const p = state.projects.find(q=>q.code===a); if(!p) return null;
+    if(b==='hidden' || b==='order') return {hash:'architecture', sel:'#arch-trigger-'+p.code};
+    return {hash:(p.studio?'s-':'p-')+p.code, sel:PROJECT_SPOT[b] || '#pd-title'}; }
+  if(kind==='team') return {hash:'team', sel:'[data-person="'+a+'"]'};
+  if(kind==='t') return {hash: a.startsWith('home') ? (a==='home.team.lead' ? 'team' : 'about') : a.startsWith('arch') ? 'architecture' : 'studio', sel:'[data-edit="'+a+'"]'};
+  return null;
+}
+function highlight(target, navigate=true){
+  const w = site(); if(!w) return; lastTarget = target;
+  const spot = locate(target); if(!spot) return;
+  const doc = w.document, current = w.location.hash.slice(1);
+  doc.querySelectorAll('.bca-hl').forEach(x=>x.classList.remove('bca-hl'));
+  const show = ()=>{ const node = doc.querySelector(spot.sel); if(!node) return; node.classList.add('bca-hl'); if(navigate) node.scrollIntoView({block:'center', behavior:'smooth'}); };
+  const sameView = current===spot.hash || ((spot.hash==='about'||spot.hash==='team') && (current===''||current==='home'||current==='about'||current==='team'));
+  if(navigate && !sameView){ w.location.hash = spot.hash; setTimeout(show, 700); } else show();
+}
+function prepareFrame(w){
+  const doc = w.document;
+  if(!doc.getElementById('bca-editor-style')) doc.head.append(Object.assign(doc.createElement('style'), {id:'bca-editor-style', textContent:
+    '.bca-hl{outline:2px solid #0066CC!important;outline-offset:6px!important;border-radius:4px;transition:outline-color .3s}'+
+    'html.bca-pick [data-edit],html.bca-pick [data-person],html.bca-pick #pd-title,html.bca-pick #px-lead,html.bca-pick #px-facts,html.bca-pick #px-info-text,html.bca-pick #px-tiles,html.bca-pick #px-kind,html.bca-pick #px-hud,html.bca-pick .arch-trigger{cursor:pointer!important}'+
+    '.bca-hov{outline:2px dashed #0066CC!important;outline-offset:4px!important}'}));
+  doc.documentElement.classList.toggle('bca-pick', picking);
+  if(doc._bcaWired) return; doc._bcaWired = true;
+  const find = target => {
+    let n;
+    if((n = target.closest('[data-edit]'))) return {node:n, go:()=>select('texts', null, 't|'+n.dataset.edit)};
+    if((n = target.closest('[data-person]'))) return {node:n, go:()=>select('team', null, 'team|'+n.dataset.person)};
+    if((n = target.closest('.arch-trigger'))){ const code = n.id.replace('arch-trigger-',''); return {node:n, go:()=>select('project', code, 'p|'+code+'|name')}; }
+    for(const [sel, f] of SPOT_FIELD){ if((n = target.closest(sel))){ const m = w.location.hash.match(/^#[ps]-(.+)$/); if(m) return {node:n, go:()=>select('project', m[1], 'p|'+m[1]+'|'+f)}; } }
+    return null;
+  };
+  let hov = null;
+  doc.addEventListener('mouseover', e=>{ if(!picking) return; const f = find(e.target); if(hov && (!f || f.node!==hov)) hov.classList.remove('bca-hov'); hov = f ? f.node : null; if(hov) hov.classList.add('bca-hov'); }, true);
+  doc.addEventListener('click', e=>{ if(!picking) return; const f = find(e.target); if(!f) return; e.preventDefault(); e.stopPropagation(); f.go(); }, true);
+}
+let picking = false;
+$('#pick').addEventListener('click', ()=>{ picking = !picking; $('#pick').setAttribute('aria-pressed', picking); const w = site(); if(w){ w.document.documentElement.classList.toggle('bca-pick', picking); if(!picking) w.document.querySelectorAll('.bca-hov').forEach(x=>x.classList.remove('bca-hov')); } status(picking ? 'Önizlemede düzenlemek istediğin yere tıkla' : (changed() ? 'Yayınlanmamış değişiklikler var' : 'Site ile aynı')); });
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click', ()=>{ const w = site(); if(w){ w.location.hash = b.dataset.go; if(b.dataset.go==='home') w.scrollTo(0,0); } }));
+document.querySelectorAll('[data-dev]').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('[data-dev]').forEach(x=>x.setAttribute('aria-pressed', x===b)); $('#stage').classList.toggle('mobile', b.dataset.dev==='mobile'); }));
+
+/* opens a section in the form and focuses the field that matches the preview spot */
+function select(type, id, target){
+  view = {type, id}; render();
+  const node = target && $('#main').querySelector('[data-target="'+target+'"]');
+  if(node){ node.scrollIntoView({block:'center'}); const input = node.querySelector('input,textarea'); if(input) input.focus({preventScroll:true}); activate(node); highlight(target, true); }
+}
+function activate(node){ $('#main').querySelectorAll('.field.active,.card.active').forEach(x=>x.classList.remove('active')); if(node) node.classList.add('active'); }
 
 /* ---------- images: resized in the browser, committed with the next publish ---------- */
 function slug(s){ return String(s||'gorsel').toLowerCase().replace(/[çÇ]/g,'c').replace(/[ğĞ]/g,'g').replace(/[ıİ]/g,'i').replace(/[öÖ]/g,'o').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'gorsel'; }
-function pickImages(multiple){
-  return new Promise(res=>{ const i = el('input',{type:'file',accept:'image/*'}); if(multiple) i.multiple = true; i.onchange = ()=>res([...i.files]); i.click(); });
-}
+function pickImages(multiple){ return new Promise(res=>{ const i = el('input',{type:'file',accept:'image/*'}); if(multiple) i.multiple = true; i.onchange = ()=>res([...i.files]); i.click(); }); }
 async function addUpload(file, prefix){
   const bmp = await createImageBitmap(file); const max = 2400, k = Math.min(1, max/Math.max(bmp.width, bmp.height));
   const c = document.createElement('canvas'); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
@@ -214,73 +294,71 @@ async function addUpload(file, prefix){
 }
 const src = p => uploads[p] ? uploads[p].dataUrl : p;
 
-/* ---------- navigation ---------- */
-function renderNav(){
-  const nav = $('nav'); if(!nav) return;
-  const d = diff(), dirtyP = code => (d.projects && d.projects[code]) || (d.added && d.added.some(a=>a.code===code));
-  nav.replaceChildren(
-    el('h2',{},'Mimarlık projeleri'),
-    ...state.projects.filter(p=>!p.studio).map(navItem),
-    el('button',{class:'item',type:'button',onclick:()=>newProject(false)},'＋ Yeni proje'),
-    el('h2',{},'Studio projeleri'),
-    ...state.projects.filter(p=>p.studio).map(navItem),
-    el('button',{class:'item',type:'button',onclick:()=>newProject(true)},'＋ Yeni Studio projesi'),
-    el('h2',{},'Site'),
-    el('button',{class:'item',type:'button','aria-current':view.type==='team','onclick':()=>go('team')},'Ekip', d.team ? el('span',{class:'dirty'}) : null),
-    el('button',{class:'item',type:'button','aria-current':view.type==='texts','onclick':()=>go('texts')},'Sayfa metinleri', d.texts ? el('span',{class:'dirty'}) : null),
-    el('button',{class:'item',type:'button','aria-current':view.type==='settings','onclick':()=>go('settings')},'Bağlantı ayarı', token() ? null : el('span',{class:'tag'},'gerekli'))
-  );
-  function navItem(p){
-    return el('button',{class:'item',type:'button','aria-current':view.type==='project'&&view.id===p.code, onclick:()=>go('project',p.code)},
-      p.name || p.code, dirtyP(p.code) ? el('span',{class:'dirty'}) : null, p.hidden ? el('span',{class:'tag'},'gizli') : null);
-  }
+/* ---------- section picker ---------- */
+function renderPicker(){
+  const sel = $('#picker'); if(!state) return;
+  const d = diff(), dot = on => on ? ' •' : '';
+  const isDirty = code => (d.projects && d.projects[code]) || (d.added && d.added.some(a=>a.code===code));
+  const opt = (value, label) => { const o = el('option',{value}, label); if(value === key()) o.selected = true; return o; };
+  sel.replaceChildren(
+    el('optgroup',{label:'Mimarlık projeleri'}, state.projects.filter(p=>!p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
+    el('optgroup',{label:'Studio projeleri'}, state.projects.filter(p=>p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
+    el('optgroup',{label:'Site'}, opt('team:', 'Ekip'+dot(d.team)), opt('texts:', 'Sayfa metinleri'+dot(d.texts)), opt('settings:', 'Bağlantı ayarı'+(token()?'':' (gerekli)'))));
 }
-function go(type, id){ view = {type, id}; render(); scrollTo(0,0); }
+const key = () => view.type+':'+(view.id||'');
+$('#picker').addEventListener('change', e=>{ const [type, id] = e.target.value.split(':'); go(type, id||null); });
+$('#add').addEventListener('click', ()=>{ const studio = confirm('Studio projesi mi? (Tamam = Studio, İptal = Mimarlık)'); newProject(studio); });
+function go(type, id){
+  view = {type, id}; render(); $('#main').scrollTop = 0;
+  if(type==='project') highlight('p|'+id+'|name'); else if(type==='team') highlight('team|0'); else if(type==='texts') highlight('t|home.statement');
+}
 
 function render(){
-  const app = $('#app');
-  app.replaceChildren(el('div',{class:'layout'}, el('nav'), el('main',{id:'main'})));
-  renderNav();
-  const main = $('#main');
+  renderPicker();
+  const main = $('#main'); main.replaceChildren();
   if(view.type==='project') renderProject(main, state.projects.find(p=>p.code===view.id) || state.projects[0]);
   else if(view.type==='team') renderTeam(main);
   else if(view.type==='texts') renderTexts(main);
   else renderSettings(main);
 }
+$('#main').addEventListener('focusin', e=>{ const f = e.target.closest('[data-target]'); if(f){ activate(f); highlight(f.dataset.target); } });
 
 /* ---------- form helpers ---------- */
-function field(label, control, hint){ return el('div',{class:'field'}, el('div',{class:'lbl'},label), el('div',{}, control, hint ? el('div',{class:'hint'},hint) : null)); }
+function field(label, control, hint, target){
+  return el('div',{class:'field','data-target':target||null},
+    el('div',{class:'lbl'}, label, target ? el('button',{type:'button',class:'locate',title:'Önizlemede göster',onclick:e=>{ activate(e.target.closest('.field')); highlight(target); }},'Önizlemede göster') : null),
+    control, hint ? el('div',{class:'hint'},hint) : null);
+}
 function input(value, set, attrs={}){ return el('input',Object.assign({type:'text',value:value||'',oninput:e=>{set(e.target.value);touch();}},attrs)); }
 function area(value, set, attrs={}){ const t = el('textarea',Object.assign({oninput:e=>{set(e.target.value);touch();}},attrs)); t.value = value||''; return t; }
 function move(arr, i, d){ const j = i+d; if(j<0||j>=arr.length) return false; [arr[i],arr[j]]=[arr[j],arr[i]]; return true; }
-function ctl(arr, i, rerender){
+function ctl(arr, i, redraw){
   return el('div',{class:'ctl'},
-    el('button',{class:'icon',type:'button',title:'Yukarı','aria-label':'Yukarı taşı',onclick:()=>{ if(move(arr,i,-1)){touch();rerender();} }},'↑'),
-    el('button',{class:'icon',type:'button',title:'Aşağı','aria-label':'Aşağı taşı',onclick:()=>{ if(move(arr,i,1)){touch();rerender();} }},'↓'),
-    el('button',{class:'icon',type:'button',title:'Sil','aria-label':'Sil',onclick:()=>{ arr.splice(i,1);touch();rerender(); }},'×'));
+    el('button',{class:'icon',type:'button','aria-label':'Yukarı taşı',onclick:()=>{ if(move(arr,i,-1)){touch();redraw();} }},'↑'),
+    el('button',{class:'icon',type:'button','aria-label':'Aşağı taşı',onclick:()=>{ if(move(arr,i,1)){touch();redraw();} }},'↓'),
+    el('button',{class:'icon',type:'button','aria-label':'Sil',onclick:()=>{ arr.splice(i,1);touch();redraw(); }},'×'));
 }
 
 /* ---------- project ---------- */
 function renderProject(main, p){
-  const again = ()=>render();
-  const list = state.projects, idx = list.indexOf(p);
+  const list = state.projects, idx = list.indexOf(p), t = k => 'p|'+p.code+'|'+k;
   main.append(
     el('h2',{},p.name || 'Yeni proje'),
-    el('p',{class:'sub'},(p.studio?'Studio':'Architecture')+' · kod '+p.code+(p.added?' · yeni eklendi':'')),
-    field('Proje adı', input(p.name, v=>{p.name=v; const h=main.querySelector('h2'); if(h) h.textContent=v||'Yeni proje';})),
-    field('Tür', input(p.kind, v=>p.kind=v), 'Kartlarda ve kapakta küçük harflerle görünür. Örnek: Kültür · Opera'),
-    field('Yıl', input(p.year, v=>p.year=v)),
-    field('Kısa tanım', area(p.line, v=>p.line=v, {style:'min-height:70px'}), 'Listede ve proje sayfasının başında görünen tek cümle.'),
-    p.studio ? null : field('Kategoriler', el('div',{class:'chips'}, CATS.map(c=>el('button',{type:'button',class:'chip','aria-pressed':p.cats.includes(c),onclick:e=>{ p.cats = p.cats.includes(c) ? p.cats.filter(x=>x!==c) : p.cats.concat(c); e.target.setAttribute('aria-pressed',p.cats.includes(c)); touch(); }},c)))),
-    field('Öne çıkan etiket', input(p.badge, v=>p.badge=v), 'İsteğe bağlı. Örnek: 1. Ödül'),
-    field('Kapak görseli', coverControl(p)),
-    field('Galeri', galleryControl(p), 'Sıra, proje sayfasındaki görsel sırasıdır. Kesikli çerçeveli görseller henüz yayınlanmadı.'),
-    field('Künye', factsControl(p), 'Konum, rol, ofis, proje sahibi gibi satırlar.'),
-    field('Metin paragrafları', descControl(p), 'Proje sayfasındaki bilgi, konsept ve detay bölümleri bu paragraflardan oluşur.'),
-    field('Görünürlük', el('label',{class:'toggle'}, el('input',{type:'checkbox',checked:p.hidden,onchange:e=>{p.hidden=e.target.checked;touch();}}), 'Bu projeyi sitede gizle')),
-    field('Sıralama', el('div',{class:'ctl'},
-      el('button',{class:'btn small',type:'button',onclick:()=>{ if(move(list,idx,-1)){ list.forEach((q,i)=>q.order=i); touch(); again(); } }},'Listede yukarı'),
-      el('button',{class:'btn small',type:'button',onclick:()=>{ if(move(list,idx,1)){ list.forEach((q,i)=>q.order=i); touch(); again(); } }},'Listede aşağı'))),
+    el('p',{class:'sub'},(p.studio?'Studio':'Architecture')+' · kod '+p.code+(p.added?' · yeni':'')),
+    field('Proje adı', input(p.name, v=>{p.name=v; main.querySelector('h2').textContent=v||'Yeni proje';}), null, t('name')),
+    field('Tür', input(p.kind, v=>p.kind=v), 'Örnek: Kültür · Opera', t('kind')),
+    field('Yıl', input(p.year, v=>p.year=v), null, t('year')),
+    field('Kısa tanım', area(p.line, v=>p.line=v, {style:'min-height:64px'}), 'Projenin başında görünen tek cümle.', t('line')),
+    p.studio ? null : field('Kategoriler', el('div',{class:'chips'}, CATS.map(c=>el('button',{type:'button',class:'chip','aria-pressed':p.cats.includes(c),onclick:e=>{ p.cats = p.cats.includes(c) ? p.cats.filter(x=>x!==c) : p.cats.concat(c); e.target.setAttribute('aria-pressed',p.cats.includes(c)); touch(); }},c))), null, t('cats')),
+    field('Öne çıkan etiket', input(p.badge, v=>p.badge=v), 'İsteğe bağlı. Örnek: 1. Ödül', t('badge')),
+    field('Kapak görseli', coverControl(p), null, t('img')),
+    field('Galeri', galleryControl(p), 'Kesikli çerçeveli görseller henüz yayınlanmadı.', t('gallery')),
+    field('Künye', factsControl(p), 'Konum, rol, ofis, proje sahibi gibi satırlar.', t('facts')),
+    field('Metin paragrafları', descControl(p), 'Proje bilgisi, konsept ve detay bölümleri bu paragraflardan oluşur.', t('desc')),
+    field('Görünürlük', el('label',{class:'toggle'}, el('input',{type:'checkbox',checked:p.hidden,onchange:e=>{p.hidden=e.target.checked;touch();}}), 'Bu projeyi sitede gizle'), null, t('hidden')),
+    field('Listedeki sıra', el('div',{class:'ctl'},
+      el('button',{class:'btn small',type:'button',onclick:()=>{ if(move(list,idx,-1)){ list.forEach((q,i)=>q.order=i); touch(); render(); highlight(t('order')); } }},'Yukarı'),
+      el('button',{class:'btn small',type:'button',onclick:()=>{ if(move(list,idx,1)){ list.forEach((q,i)=>q.order=i); touch(); render(); highlight(t('order')); } }},'Aşağı')), null, t('order')),
     p.added ? el('div',{class:'foot'}, el('button',{class:'btn danger',type:'button',onclick:()=>{ if(confirm(p.name+' projesi silinsin mi?')){ list.splice(idx,1); touch(); go('project', list[0].code); } }},'Projeyi sil')) : null
   );
 }
@@ -288,30 +366,27 @@ function coverControl(p){
   const box = el('div',{class:'cover'});
   const draw = ()=>box.replaceChildren(
     el('div',{class:'thumb'+(uploads[p.img]?' pending':''),style:p.img?'background-image:url("'+src(p.img)+'")':''}),
-    el('div',{class:'list',style:'flex:1'},
-      input(p.img, v=>{p.img=v;draw();}, {'aria-label':'Kapak görseli yolu'}),
-      el('div',{class:'ctl'},
-        el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.img = await addUpload(f, p.code+'-kapak'); touch(); draw(); }},'Yeni görsel yükle'),
-        p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const pick = prompt('Galeriden kaçıncı görsel kapak olsun? (1-'+p.gallery.length+')'); const n = parseInt(pick,10); if(n>=1&&n<=p.gallery.length){ p.img = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null)));
+    el('div',{class:'ctl'},
+      el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.img = await addUpload(f, p.code+'-kapak'); touch(); draw(); }},'Yeni görsel yükle'),
+      p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const n = parseInt(prompt('Galeriden kaçıncı görsel kapak olsun? (1-'+p.gallery.length+')'),10); if(n>=1&&n<=p.gallery.length){ p.img = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null));
   draw(); return box;
 }
 function galleryControl(p){
   const wrap = el('div',{class:'list'});
   const draw = ()=>wrap.replaceChildren(
     p.gallery.length ? el('div',{class:'gallery'}, p.gallery.map((g,i)=>el('figure',{class:uploads[g]?'pending':''},
-      el('div',{class:'img',style:'background-image:url("'+src(g)+'")',title:g}),
-      el('figcaption',{}, el('span',{class:'empty'},String(i+1).padStart(2,'0')), el('div',{class:'ctl'},
+      el('div',{class:'img',style:'background-image:url("'+src(g)+'")',title:(i+1)+' · '+g}),
+      el('figcaption',{},
         el('button',{class:'icon',type:'button','aria-label':'Sola',onclick:()=>{ if(move(p.gallery,i,-1)){touch();draw();} }},'←'),
         el('button',{class:'icon',type:'button','aria-label':'Sağa',onclick:()=>{ if(move(p.gallery,i,1)){touch();draw();} }},'→'),
-        el('button',{class:'icon',type:'button','aria-label':'Kaldır',onclick:()=>{ p.gallery.splice(i,1);touch();draw(); }},'×')))))) : el('p',{class:'empty'},'Galeride görsel yok.'),
-    el('div',{class:'ctl'}, el('button',{class:'btn small',type:'button',onclick:async()=>{ const files = await pickImages(true); for(const f of files) p.gallery.push(await addUpload(f, p.code)); touch(); draw(); }},'Görsel ekle')));
+        el('button',{class:'icon',type:'button','aria-label':'Kaldır',onclick:()=>{ p.gallery.splice(i,1);touch();draw(); }},'×'))))) : el('p',{class:'empty'},'Galeride görsel yok.'),
+    el('div',{}, el('button',{class:'btn small',type:'button',onclick:async()=>{ const files = await pickImages(true); for(const f of files) p.gallery.push(await addUpload(f, p.code)); touch(); draw(); }},'Görsel ekle')));
   draw(); return wrap;
 }
 function factsControl(p){
   const wrap = el('div',{class:'list'});
   const draw = ()=>wrap.replaceChildren(
-    ...p.facts.map((f,i)=>el('div',{class:'row'},
-      input(f[0], v=>f[0]=v, {style:'flex:.6','aria-label':'Başlık'}), input(f[1], v=>f[1]=v, {'aria-label':'Değer'}), ctl(p.facts,i,draw))),
+    ...p.facts.map((f,i)=>el('div',{class:'row'}, input(f[0], v=>f[0]=v, {style:'flex:.7','aria-label':'Başlık'}), input(f[1], v=>f[1]=v, {'aria-label':'Değer'}), ctl(p.facts,i,draw))),
     el('div',{}, el('button',{class:'btn small',type:'button',onclick:()=>{ p.facts.push(['','']); touch(); draw(); }},'Satır ekle')));
   draw(); return wrap;
 }
@@ -323,27 +398,28 @@ function descControl(p){
   draw(); return wrap;
 }
 function newProject(studio){
-  const name = prompt(studio ? 'Yeni Studio projesinin adı:' : 'Yeni projenin adı:'); if(!name) return;
+  const name = prompt(studio ? 'Yeni Studio projesinin adı:' : 'Yeni mimarlık projesinin adı:'); if(!name) return;
   let code = slug(name).replace(/-/g,'').slice(0,3).toUpperCase() || 'NEW', n = 2; const base = code;
   while(state.projects.some(p=>p.code===code)) code = base + n++;
-  const p = {code, studio, added:true, name, kind:'', line:'', year:String(new Date().getFullYear()), cats:[], facts:[['Yıl',String(new Date().getFullYear())],['Konum','']], desc:[''], img:'', gallery:[], badge:'', hidden:false, order:state.projects.length};
-  state.projects.push(p); touch(); go('project', code);
+  const year = String(new Date().getFullYear());
+  state.projects.push({code, studio, added:true, name, kind:'', line:'', year, cats:[], facts:[['Yıl',year],['Konum','']], desc:[''], img:'', gallery:[], badge:'', hidden:false, order:state.projects.length});
+  touch(); go('project', code);
 }
 
 /* ---------- team ---------- */
 function renderTeam(main){
   const draw = ()=>{ main.replaceChildren(
     el('h2',{},'Ekip'), el('p',{class:'sub'},'Ana sayfadaki Team bölümü. Kart sırası buradaki sıradır.'),
-    ...state.team.map((t,i)=>el('div',{class:'card'}, el('div',{class:'person'},
+    ...state.team.map((m,i)=>el('div',{class:'card field','data-target':'team|'+i}, el('div',{class:'person'},
       el('div',{},
-        el('div',{class:'ph'+(uploads[t.img]?' pending':''),style:t.img?'background-image:url("'+src(t.img)+'")':''}, t.img ? '' : (t.i||'—')),
-        el('div',{style:'margin-top:8px'}, el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; t.img = await addUpload(f, 'ekip-'+t.n); touch(); draw(); }},'Fotoğraf'))),
+        el('div',{class:'ph'+(uploads[m.img]?' pending':''),style:m.img?'background-image:url("'+src(m.img)+'")':''}, m.img ? '' : (m.i||'—')),
+        el('div',{style:'margin-top:6px'}, el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; m.img = await addUpload(f, 'ekip-'+m.n); touch(); draw(); }},'Fotoğraf'))),
       el('div',{},
-        el('div',{class:'grid2'}, input(t.n, v=>t.n=v, {placeholder:'Ad Soyad','aria-label':'Ad'}), input(t.r, v=>t.r=v, {placeholder:'Rol','aria-label':'Rol'}), input(t.i, v=>t.i=v, {placeholder:'Baş harf','aria-label':'Baş harfler'})),
-        area(t.b, v=>t.b=v, {placeholder:'Kısa biyografi','aria-label':'Biyografi'}),
-        el('div',{style:'margin-top:8px;display:flex;gap:8px'}, ctl(state.team,i,draw), t.img ? el('button',{class:'btn small',type:'button',onclick:()=>{ t.img=''; touch(); draw(); }},'Fotoğrafı kaldır') : null))))),
+        el('div',{class:'grid2'}, input(m.n, v=>m.n=v, {placeholder:'Ad Soyad','aria-label':'Ad'}), input(m.r, v=>m.r=v, {placeholder:'Rol','aria-label':'Rol'}), input(m.i, v=>m.i=v, {placeholder:'BÇ','aria-label':'Baş harfler'})),
+        area(m.b, v=>m.b=v, {placeholder:'Kısa biyografi','aria-label':'Biyografi',style:'min-height:80px'}),
+        el('div',{style:'margin-top:6px;display:flex;gap:6px;flex-wrap:wrap'}, ctl(state.team,i,draw), m.img ? el('button',{class:'btn small',type:'button',onclick:()=>{ m.img=''; touch(); draw(); }},'Fotoğrafı kaldır') : null))))),
     el('button',{class:'btn',type:'button',onclick:()=>{ state.team.push({n:'',r:'',i:'',img:'',b:''}); touch(); draw(); }},'Ekip üyesi ekle'),
-    el('p',{class:'hint',style:'color:var(--muted);font-size:13px;margin-top:16px'},'Batuhan Çelik kartındaki ayrıntılı özgeçmiş, isim aynı kaldığı sürece korunur.'));
+    el('p',{class:'hint',style:'color:var(--muted);font-size:12.5px;margin-top:14px'},'Batuhan Çelik kartındaki ayrıntılı özgeçmiş, isim aynı kaldığı sürece korunur.'));
   };
   draw();
 }
@@ -351,24 +427,25 @@ function renderTeam(main){
 /* ---------- page texts ---------- */
 function renderTexts(main){
   main.append(el('h2',{},'Sayfa metinleri'),
-    el('p',{class:'sub'},'Kalın yazı için <b>…</b>, italik için <em>…</em>, satır başı için <br> kullanabilirsin.'),
-    ...Object.keys(state.texts).map(k=>field(TEXT_LABELS[k] || k, area(state.texts[k], v=>state.texts[k]=v, {style:'min-height:'+(state.texts[k].length>220?'200px':'80px')}),
-      state.texts[k] !== BASE.texts[k] ? el('button',{class:'btn small',type:'button',style:'margin-top:6px',onclick:()=>{ state.texts[k] = BASE.texts[k]; touch(); render(); }},'Orijinale döndür') : null)));
+    el('p',{class:'sub'},'Kalın için <b>…</b>, italik için <em>…</em>, satır başı için <br> kullanabilirsin.'),
+    ...Object.keys(state.texts).map(k=>field(TEXT_LABELS[k] || k, area(state.texts[k], v=>state.texts[k]=v, {style:'min-height:'+(state.texts[k].length>220?'180px':'70px')}),
+      state.texts[k] !== BASE.texts[k] ? el('button',{class:'btn small',type:'button',style:'margin-top:6px',onclick:()=>{ state.texts[k] = BASE.texts[k]; touch(); render(); }},'Orijinale döndür') : null, 't|'+k)));
 }
 
 /* ---------- settings: the GitHub key lives only in this browser ---------- */
 const token = () => store.get('bca-editor-token') || '';
 function renderSettings(main){
+  const i = el('input',{type:'password',value:token(),autocomplete:'off',placeholder:'github_pat_…'});
   main.append(el('h2',{},'Bağlantı ayarı'),
-    el('p',{class:'sub'},'Yayınla düğmesinin siteyi güncelleyebilmesi için GitHub erişim anahtarı gerekiyor. Anahtar yalnızca bu tarayıcıda saklanır; siteye ya da depoya yazılmaz.'),
-    el('div',{class:'note info'}, el('b',{},'Anahtar nasıl alınır'), el('ol',{style:'margin:8px 0 0;padding-left:20px'},
-      el('li',{},'github.com → sağ üstte profil → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.'),
-      el('li',{},'Repository access: "Only select repositories" → bca-studio.'),
-      el('li',{},'Permissions → Repository permissions → Contents: "Read and write".'),
+    el('p',{class:'sub'},'Yayınla düğmesinin siteyi güncelleyebilmesi için GitHub erişim anahtarı gerekiyor. Anahtar yalnızca bu tarayıcıda saklanır.'),
+    el('div',{class:'note'}, el('b',{},'Anahtar nasıl alınır'), el('ol',{},
+      el('li',{},'github.com → profil → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.'),
+      el('li',{},'Repository access: Only select repositories → bca-studio.'),
+      el('li',{},'Repository permissions → Contents: Read and write.'),
       el('li',{},'Oluşan anahtarı aşağıya yapıştır ve kaydet.'))),
-    field('GitHub anahtarı', (()=>{ const i = el('input',{type:'password',value:token(),autocomplete:'off',placeholder:'github_pat_…'}); return el('div',{class:'list'}, i, el('div',{class:'ctl'},
-      el('button',{class:'btn small',type:'button',onclick:async()=>{ store.set('bca-editor-token', i.value.trim()); const ok = await checkToken(); status(ok ? 'Anahtar çalışıyor' : 'Anahtar depoya yazamıyor', ok ? 'ok' : 'err'); renderNav(); }},'Kaydet ve dene'),
-      el('button',{class:'btn small',type:'button',onclick:()=>{ store.del('bca-editor-token'); i.value=''; renderNav(); status('Anahtar silindi'); }},'Anahtarı sil'))); })()),
+    field('GitHub anahtarı', el('div',{class:'list'}, i, el('div',{class:'ctl'},
+      el('button',{class:'btn small',type:'button',onclick:async()=>{ store.set('bca-editor-token', i.value.trim()); const ok = await checkToken(); status(ok ? 'Anahtar çalışıyor' : 'Anahtar depoya yazamıyor', ok ? 'ok' : 'err'); renderPicker(); }},'Kaydet ve dene'),
+      el('button',{class:'btn small',type:'button',onclick:()=>{ store.del('bca-editor-token'); i.value=''; renderPicker(); status('Anahtar silindi'); }},'Anahtarı sil')))),
     field('Taslak', el('div',{class:'ctl'}, el('button',{class:'btn small danger',type:'button',onclick:()=>{ if(confirm('Yayınlanmamış tüm değişiklikler silinsin mi?')){ store.del('bca-editor-state'); uploads = {}; location.reload(); } }},'Taslağı sıfırla')), 'Yayınlanmamış değişiklikleri siler, sitenin yayındaki haline döner.'));
 }
 
@@ -381,15 +458,12 @@ async function gh(path, opts={}){
 async function checkToken(){ try{ const r = await gh(''); return !!(r.permissions && r.permissions.push); }catch(e){ return false; } }
 function contentFile(d){ return '/* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */\nwindow.BCA_CONTENT = '+JSON.stringify(d, null, 1)+';\n'; }
 const b64 = s => btoa(unescape(encodeURIComponent(s)));
-
 async function publish(){
   if(!token()){ go('settings'); status('Önce bağlantı ayarını yap', 'err'); return; }
   const btn = $('#publish'); btn.disabled = true;
   try{
     status('Yayınlanıyor…');
-    const ref = await gh('/git/ref/heads/'+REPO.branch), head = await gh('/git/commits/'+ref.object.sha);
-    const tree = [];
-    const paths = Object.keys(uploads);
+    const ref = await gh('/git/ref/heads/'+REPO.branch), head = await gh('/git/commits/'+ref.object.sha), tree = [], paths = Object.keys(uploads);
     for(let i=0;i<paths.length;i++){
       status('Görseller yükleniyor '+(i+1)+'/'+paths.length+'…');
       const blob = await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:uploads[paths[i]].base64,encoding:'base64'})});
@@ -410,10 +484,9 @@ async function publish(){
   }
 }
 $('#publish').addEventListener('click', publish);
-
-$('#preview').addEventListener('click', ()=>{
-  const d = diff(), json = JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? '"'+uploads[p].dataUrl+'"' : m);
-  if(!store.set('bca-editor-draft', json) && !store.set('bca-editor-draft', JSON.stringify(d))){ alert('Taslak bu tarayıcıya kaydedilemedi.'); return; }
+$('#newtab').addEventListener('click', ()=>{
+  const d = diff();
+  if(!store.set('bca-editor-draft', JSON.stringify(withImages(d))) && !store.set('bca-editor-draft', JSON.stringify(d))){ alert('Taslak bu tarayıcıya kaydedilemedi.'); return; }
   open('index.html?draft', '_blank');
 });
 addEventListener('beforeunload', e=>{ if(Object.keys(uploads).length){ e.preventDefault(); e.returnValue=''; } });

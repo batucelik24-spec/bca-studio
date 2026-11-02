@@ -927,6 +927,7 @@ html{overflow-wrap:break-word}
 <script src="studio-forms.js?v=20261102-sync"></script>
 <script src="content.js?v=1"></script>
 <script>/* editor preview: ?draft shows the unpublished draft from this browser only */
+window.BCA_PUBLISHED = window.BCA_CONTENT;
 try{ if(/[?&]draft\b/.test(location.search)){ const d = localStorage.getItem('bca-editor-draft'); if(d) window.BCA_CONTENT = JSON.parse(d); } }catch(e){}</script>
 <script>
 (function(){
@@ -1120,9 +1121,10 @@ if(Array.isArray(CONTENT.team) && CONTENT.team.length){
   const before = TEAM.slice();
   TEAM.splice(0, TEAM.length, ...CONTENT.team.map(t=>{ const old = before.find(o=>o.n===t.n); return Object.assign({}, t, old && old.profile ? {profile:old.profile} : {}); }));
 }
-$('people').innerHTML = TEAM.map((t,index)=>
+function renderPeople(){ $('people').innerHTML = TEAM.map((t,index)=>
   '<button type="button" class="person" data-person="'+index+'" aria-haspopup="dialog" aria-controls="team-profile" aria-label="Profili aç: '+escapeAttr(t.n)+'"><div class="portrait'+(t.img?' photo':'')+'">'+(t.img?'<img src="'+t.img+'" alt="'+t.n+'">':'<span class="ini">'+t.i+'</span>')+'</div>'+
-  '<strong>'+t.n+'</strong><span class="role">'+t.r+'</span></button>').join('');
+  '<strong>'+t.n+'</strong><span class="role">'+t.r+'</span></button>').join(''); }
+renderPeople();
 const teamProfile=$('team-profile');let teamOpener=null,teamOverflow='',teamCloseTimer=0;
 function closeTeamProfile(immediate=false){
   if(!teamProfile.open)return;
@@ -1325,11 +1327,14 @@ addEventListener('resize',()=>{
 });
 
 /* ---------- studio page grids ---------- */
+function renderStudioGrids(){
 $('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].concat(PROJECTS.map((p,i)=>p.added && p.studio ? {p:i} : null).filter(Boolean)).filter(k=>k.p>=0 && !PROJECTS[k.p].hidden).map(k=>cardHTML(k,'s')).join('');
 $('grid-x').innerHTML = [{p:P('DYF'), m:'Cephe · Veri'}, {p:P('WA'), m:'Yapay zekâ destekli cephe'}].map(k=>cardHTML(k,'s')).join('');
 reveal($('grid-x'));
 if(!PROJECTS[P('ABR')]?.hidden) $('grid-research').innerHTML=cardHTML({p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},'s');
 if(P('PCE')>=0 && !PROJECTS[P('PCE')].hidden) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
+}
+renderStudioGrids();
 
 /* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
 const DG = 'img/dg/';
@@ -1695,6 +1700,24 @@ function route(){
   else if(h === 'home') scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
 }
 addEventListener('hashchange', route); route();
+
+/* editor preview: lays a draft over the built-in content and redraws the visible page in place */
+SITE.refresh = function(content){
+  content = content || {};
+  Object.entries(SITE.base.texts).forEach(([key, html])=>{ const el = document.querySelector('[data-edit="'+key+'"]'); if(el){ const v = content.texts && content.texts[key]; el.innerHTML = typeof v === 'string' ? v : html; } });
+  const team = Array.isArray(content.team) && content.team.length ? content.team : SITE.base.team;
+  const before = TEAM.slice();
+  TEAM.splice(0, TEAM.length, ...team.map(t=>{ const old = before.find(o=>o.n===t.n); return Object.assign({}, t, old && old.profile ? {profile:old.profile} : {}); }));
+  renderPeople();
+  for(let k = PROJECTS.length-1; k >= 0; k--) if(PROJECTS[k].added) PROJECTS.splice(k, 1);
+  SITE.base.projects.forEach(b=>{ const p = PROJECTS.find(q=>q.code===b.code); if(!p) return; EDITABLE.forEach(k=>{ if(k in b) p[k] = JSON.parse(JSON.stringify(b[k])); else delete p[k]; }); });
+  (content.added || []).forEach(n=>{ if(n && n.code && !PROJECTS.some(p=>p.code===n.code)) PROJECTS.push(Object.assign({facts:[], desc:[], gallery:[], cats:[], year:'—', kind:'', line:'', img:''}, JSON.parse(JSON.stringify(n)), {added:true})); });
+  Object.entries(content.projects || {}).forEach(([code, o])=>{ const p = PROJECTS.find(q=>q.code===code); if(p) EDITABLE.forEach(k=>{ if(o[k] !== undefined) p[k] = JSON.parse(JSON.stringify(o[k])); }); });
+  renderStudioGrids();
+  const view = DOC.dataset.view;
+  if(view === 'project' || archOpenCode) renderProject(projIdx);
+  else if(view === 'architecture') renderArch();
+};
 
 /* links between pages pass through a particle transition in the Studio language:
    points stream in from outside the screen as the destination colour floods in,
