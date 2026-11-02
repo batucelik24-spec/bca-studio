@@ -123,6 +123,7 @@ const REPO = {owner:'batucelik24-spec', repo:'bca-studio', branch:'main'};
 const TEXT_LABELS = {
   'home.statement':'Ana sayfa · Hakkımızda başlığı',
   'home.about':'Ana sayfa · Hakkımızda paragrafları',
+  'home.band.title':'Ana sayfa · Proje bandı başlığı',
   'home.team.lead':'Ana sayfa · Ekip giriş metni',
   'arch.lead':'Architecture · Üst açıklama',
   'arch.cta.title':'Architecture · İletişim başlığı',
@@ -172,7 +173,7 @@ function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
   (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
-  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {})};
+  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || [])};
 }
 
 /* only what differs from the built-in content is written to content.js */
@@ -191,11 +192,12 @@ function diff(){
   if(Object.keys(projects).length) out.projects = projects;
   if(added.length) out.added = added;
   if(!same(state.team, BASE.team)) out.team = clone(state.team);
+  if(!same(state.welcome, BASE.welcome || [])) out.welcome = clone(state.welcome);
   const texts = {}; Object.entries(state.texts).forEach(([k,v])=>{ if(v !== BASE.texts[k]) texts[k] = v; });
   if(Object.keys(texts).length) out.texts = texts;
   return out;
 }
-const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}});
+const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null});
 /* the draft as the preview sees it: images not yet published are shown from memory */
 const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
 
@@ -203,7 +205,7 @@ function init(published){
   publishedJSON = norm(published);
   state = compose(published);
   const saved = store.get('bca-editor-state');
-  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts}; } }catch(e){} }
+  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || [])}; } }catch(e){} }
   ready = true;
   view = {type:'project', id:(state.projects.find(p=>!p.studio) || state.projects[0]).code};
   $('#newtab').hidden = false; $('#publish').hidden = false;
@@ -219,6 +221,15 @@ function touch(save=true){
   status(dirty ? 'Yayınlanmamış değişiklikler var' + (Object.keys(uploads).length ? ' · '+Object.keys(uploads).length+' yeni görsel' : '') : 'Site ile aynı', dirty ? '' : 'ok');
   renderPicker();
   clearTimeout(pushTimer); pushTimer = setTimeout(()=>pushPreview(), 120);
+  const wj = JSON.stringify(state.welcome);
+  if(lastWelcome !== null && wj !== lastWelcome){ clearTimeout(welcomeTimer); welcomeTimer = setTimeout(reloadWithDraft, 700); }
+  lastWelcome = wj;
+}
+let lastWelcome = null, welcomeTimer = 0;
+function reloadWithDraft(){
+  const d = diff();
+  if(!store.set('bca-editor-draft', JSON.stringify(withImages(d)))) store.set('bca-editor-draft', JSON.stringify(d));
+  frame.src = 'index.html?editor&draft&r='+Date.now()+'#home';
 }
 function pushPreview(){
   const w = site(); if(!w || !ready) return;
@@ -234,7 +245,8 @@ function locate(target){
     if(b==='hidden' || b==='order') return {hash:'architecture', sel:'#arch-trigger-'+p.code};
     return {hash:(p.studio?'s-':'p-')+p.code, sel:PROJECT_SPOT[b] || '#pd-title'}; }
   if(kind==='team') return {hash:'team', sel:'[data-person="'+a+'"]'};
-  if(kind==='t') return {hash: a.startsWith('home') ? (a==='home.team.lead' ? 'team' : 'about') : a.startsWith('arch') ? 'architecture' : 'studio', sel:'[data-edit="'+a+'"]'};
+  if(kind==='w') return {hash:'home', sel:'#stage'};
+  if(kind==='t') return {hash: a.startsWith('home') ? (a==='home.team.lead' ? 'team' : a==='home.band.title' ? 'band' : 'about') : a.startsWith('arch') ? 'architecture' : 'studio', sel:'[data-edit="'+a+'"]'};
   return null;
 }
 function highlight(target, navigate=true){
@@ -243,8 +255,9 @@ function highlight(target, navigate=true){
   const doc = w.document, current = w.location.hash.slice(1);
   doc.querySelectorAll('.bca-hl').forEach(x=>x.classList.remove('bca-hl'));
   const show = ()=>{ const node = doc.querySelector(spot.sel); if(!node) return; node.classList.add('bca-hl'); if(navigate) node.scrollIntoView({block:'center', behavior:'smooth'}); };
-  const sameView = current===spot.hash || ((spot.hash==='about'||spot.hash==='team') && (current===''||current==='home'||current==='about'||current==='team'));
-  if(navigate && !sameView){ w.location.hash = spot.hash; setTimeout(show, 700); } else show();
+  const homeish = h => ['','home','about','team','band'].includes(h);
+  const sameView = current===spot.hash || (homeish(spot.hash) && homeish(current));
+  if(navigate && !sameView){ w.location.hash = spot.hash; setTimeout(show, 700); } else if(spot.hash==='home' && navigate){ w.scrollTo({top:0,behavior:'smooth'}); show(); } else show();
 }
 function prepareFrame(w){
   const doc = w.document;
@@ -303,20 +316,21 @@ function renderPicker(){
   sel.replaceChildren(
     el('optgroup',{label:'Mimarlık projeleri'}, state.projects.filter(p=>!p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
     el('optgroup',{label:'Studio projeleri'}, state.projects.filter(p=>p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
-    el('optgroup',{label:'Site'}, opt('team:', 'Ekip'+dot(d.team)), opt('texts:', 'Sayfa metinleri'+dot(d.texts)), opt('settings:', 'Bağlantı ayarı'+(token()?'':' (gerekli)'))));
+    el('optgroup',{label:'Site'}, opt('welcome:', 'Welcome görselleri'+dot(d.welcome)), opt('team:', 'Ekip'+dot(d.team)), opt('texts:', 'Sayfa metinleri'+dot(d.texts)), opt('settings:', 'Bağlantı ayarı'+(token()?'':' (gerekli)'))));
 }
 const key = () => view.type+':'+(view.id||'');
 $('#picker').addEventListener('change', e=>{ const [type, id] = e.target.value.split(':'); go(type, id||null); });
 $('#add').addEventListener('click', ()=>{ const studio = confirm('Studio projesi mi? (Tamam = Studio, İptal = Mimarlık)'); newProject(studio); });
 function go(type, id){
   view = {type, id}; render(); $('#main').scrollTop = 0;
-  if(type==='project') highlight('p|'+id+'|name'); else if(type==='team') highlight('team|0'); else if(type==='texts') highlight('t|home.statement');
+  if(type==='project') highlight('p|'+id+'|name'); else if(type==='welcome') highlight('w|0'); else if(type==='team') highlight('team|0'); else if(type==='texts') highlight('t|home.statement');
 }
 
 function render(){
   renderPicker();
   const main = $('#main'); main.replaceChildren();
   if(view.type==='project') renderProject(main, state.projects.find(p=>p.code===view.id) || state.projects[0]);
+  else if(view.type==='welcome') renderWelcome(main);
   else if(view.type==='team') renderTeam(main);
   else if(view.type==='texts') renderTexts(main);
   else renderSettings(main);
@@ -404,6 +418,30 @@ function newProject(studio){
   const year = String(new Date().getFullYear());
   state.projects.push({code, studio, added:true, name, kind:'', line:'', year, cats:[], facts:[['Yıl',year],['Konum','']], desc:[''], img:'', gallery:[], badge:'', hidden:false, order:state.projects.length});
   touch(); go('project', code);
+}
+
+/* ---------- welcome stage images ---------- */
+function renderWelcome(main){
+  let library = false;
+  const known = [...new Set(state.projects.flatMap(p=>[p.img].concat(p.gallery||[])).filter(x=>x && !/\.(svg)$/.test(x)))];
+  const draw = ()=>{ main.replaceChildren(
+    el('h2',{},'Welcome görselleri'),
+    el('p',{class:'sub'},'Açılış ekranında sırayla değişen görseller. Sağ üstteki başlık ve alt satır her görselle birlikte değişir. Değişiklikten sonra önizleme bir an yenilenir.'),
+    ...state.welcome.map((w,i)=>el('div',{class:'card field','data-target':'w|'+i},
+      el('div',{class:'cover'}, el('div',{class:'thumb'+(uploads[w.src]?' pending':''),style:'background-image:url("'+src(w.src)+'")'})),
+      el('div',{class:'list'},
+        input(w.t, v=>w.t=v, {placeholder:'Başlık (ör. proje adı)','aria-label':'Başlık'}),
+        input(w.v, v=>w.v=v, {placeholder:'Alt satır (ör. Taşkent · 2026)','aria-label':'Alt satır'}),
+        el('div',{style:'display:flex;gap:6px;flex-wrap:wrap'}, ctl(state.welcome,i,draw),
+          el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; w.src = await addUpload(f, 'welcome'); touch(); draw(); }},'Görseli değiştir'))))),
+    el('div',{class:'ctl',style:'margin-bottom:12px'},
+      el('button',{class:'btn',type:'button',onclick:async()=>{ const files = await pickImages(true); for(const f of files) state.welcome.push({src: await addUpload(f, 'welcome'), t:'', v:''}); touch(); draw(); }},'Bilgisayardan görsel ekle'),
+      el('button',{class:'btn',type:'button',onclick:()=>{ library = !library; draw(); }}, library ? 'Proje görsellerini kapat' : 'Proje görsellerinden ekle')),
+    library ? el('div',{class:'gallery'}, known.map(path=>el('figure',{},
+      el('button',{type:'button',class:'img',style:'width:100%;border:0;cursor:pointer;background-image:url("'+src(path)+'")',title:path,onclick:()=>{ const p = state.projects.find(q=>q.img===path || (q.gallery||[]).includes(path)); state.welcome.push({src:path, t:p ? p.name : '', v:p ? [ (p.facts.find(f=>f[0]==='Konum')||['',''])[1].split(',')[0], p.year].filter(Boolean).join(' · ') : ''}); touch(); draw(); }})))) : null,
+    state.welcome.length < 2 ? el('p',{class:'empty'},'En az iki görsel olunca geçiş efekti çalışır.') : null);
+  };
+  draw();
 }
 
 /* ---------- team ---------- */

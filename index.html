@@ -1,5 +1,15 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>BCA Studio Prototip</title>
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>BCA Studio — Batuhan Çelik Architecture &amp; Studio</title>
+<meta name="description" content="BCA Studio: Batuhan Çelik Architecture ve Studio. Kamusal yapılar, stadyumlar, yarışma projeleri ile uygulama, yazılım ve yapay zekâ Ar-Ge çalışmaları.">
+<link rel="canonical" href="https://bcastud.io/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BCA Studio">
+<meta property="og:title" content="BCA Studio — Batuhan Çelik Architecture &amp; Studio">
+<meta property="og:description" content="Mimarlık projeleri ve deneysel tasarım, yazılım ve yapay zekâ Ar-Ge çalışmaları.">
+<meta property="og:url" content="https://bcastud.io/">
+<meta property="og:image" content="https://bcastud.io/img/p/hall-sunset.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"BCA Studio","alternateName":["Batuhan Çelik Architecture","bcastud.io"],"url":"https://bcastud.io/","email":"info@bcastud.io","founder":{"@type":"Person","name":"Batuhan Çelik","jobTitle":"Mimar"},"sameAs":["https://www.instagram.com/bca.studio/"]}</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap">
@@ -60,6 +70,25 @@ a{color:inherit;text-decoration:none}
 .stat b{display:block;font-weight:300;font-size:clamp(44px,5vw,64px);line-height:1;letter-spacing:-.02em}
 .stat span{display:block;margin-top:10px;color:var(--muted);font-size:15px}
 .team{padding-block:120px 140px;background:var(--bg2)}
+a.sel,footer a{color:inherit;text-decoration:none}a.sel:hover,footer a:hover{text-decoration:underline;text-underline-offset:3px}
+/* project band: an endless right-to-left strip of the work, between About and Team */
+.band{padding-block:24px 120px;overflow:hidden}
+.band-head{display:flex;justify-content:space-between;align-items:baseline;gap:24px;margin-bottom:32px}
+.band-head h2{margin:12px 0 0;font-weight:300;font-size:clamp(28px,3.2vw,44px);letter-spacing:-.02em;line-height:1.05}
+.band-head a{color:var(--muted);font-size:14px;text-decoration:none;white-space:nowrap}
+.band-head a:hover{color:var(--fg)}
+.band-viewport{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.band-track{display:flex;gap:20px;width:max-content;animation:band-run var(--band-dur,60s) linear infinite}
+.band-viewport:hover .band-track,.band-viewport:focus-within .band-track{animation-play-state:paused}
+@keyframes band-run{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 10px))}}
+.band-card{flex:none;width:clamp(240px,26vw,380px);text-decoration:none;color:inherit}
+.band-card .bimg{aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--card)}
+.band-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.band-card:hover img{transform:scale(1.04)}
+.band-card .bmeta{display:flex;flex-direction:column;gap:4px;padding-top:14px}
+.band-card .bmeta span{font-size:11px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.band-card .bmeta strong{font-weight:400;font-size:18px}
+@media (prefers-reduced-motion:reduce){.band-track{animation:none}.band-viewport{overflow-x:auto;-webkit-mask-image:none;mask-image:none}}
 .team h2,.page-head h1{margin:12px 0 0;font-weight:300;font-size:clamp(44px,6vw,80px);letter-spacing:-.025em;line-height:1}
 .team-lead{margin:18px 0 56px;color:var(--muted);max-width:52ch}
 .people{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:20px}
@@ -671,6 +700,8 @@ html{overflow-wrap:break-word}
 </style>
 <link rel="stylesheet" href="architecture-flow.css?v=20261102-detail-rhythm">
 
+</head>
+<body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="liquid" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence id="liq-t" type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="2" seed="4"/><feDisplacementMap id="liq-d" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>
   <symbol id="bca-logo" viewBox="0 0 773 972"><g transform="translate(0,972) scale(0.1,-0.1)" fill="currentColor">
@@ -716,6 +747,10 @@ html{overflow-wrap:break-word}
     </div>
   </section>
 
+  <section class="band" id="band" aria-label="Projeler">
+    <div class="wrap band-head"><div><span class="track" style="color:var(--muted)">Projeler</span><h2 data-edit="home.band.title">Seçili işler</h2></div><a href="#architecture">Tümünü gör ›</a></div>
+    <div class="band-viewport"><div class="band-track" id="band-track"></div></div>
+  </section>
   <section class="team" id="team">
     <div class="wrap">
       <span class="track" style="color:var(--muted)">Ekip</span>
@@ -743,7 +778,7 @@ html{overflow-wrap:break-word}
       <span class="track muted">Ödüller ve yarışmalar</span>
       <div class="aw-row"><span>2024</span><strong>DASK Depreme Dayanıklı Yapı Tasarımı Yarışması</strong><span>Finalist · Altuni Hotel</span></div>
     </section>
-    <section class="cta-band"><h2 data-edit="arch.cta.title">Bir proje mi düşünüyorsunuz?</h2><p data-edit="arch.cta.text">Yazın, birlikte konuşalım. <span class="sel">batucelik2001@gmail.com</span></p></section>
+    <section class="cta-band"><h2 data-edit="arch.cta.title">Bir proje mi düşünüyorsunuz?</h2><p data-edit="arch.cta.text">Yazın, birlikte konuşalım. <a class="sel" href="mailto:info@bcastud.io">info@bcastud.io</a></p></section>
   </div>
 </main>
 
@@ -882,12 +917,12 @@ html{overflow-wrap:break-word}
         <div><strong>Yazılım ve araçlar</strong><p>Tasarım süreçlerini hızlandıran özel araçlar ve eklentiler.</p></div>
         <div><strong>Yapay zekâ Ar-Ge</strong><p>Görüntü, veri ve üretken modeller üzerine deneysel çalışmalar.</p></div>
       </div>
-      <p class="mail" data-edit="studio.mail">İletişim: <span class="sel">batucelik2001@gmail.com</span></p>
+      <p class="mail" data-edit="studio.mail">İletişim: <a class="sel" href="mailto:info@bcastud.io">info@bcastud.io</a></p>
     </section>
   </div>
 </main>
 
-<footer><div class="wrap"><span>© 2026 BCA Studio · Batuhan Çelik Architecture</span><span>batucelik2001@gmail.com · Instagram @bca.studio</span></div></footer>
+<footer><div class="wrap"><span>© 2026 BCA Studio · Batuhan Çelik Architecture</span><span><a href="mailto:info@bcastud.io">info@bcastud.io</a> · Instagram @bca.studio</span></div></footer>
 
 <dialog id="team-profile" class="team-profile" aria-labelledby="team-profile-name" aria-describedby="team-profile-roles team-profile-bio">
   <button type="button" class="team-profile-close" id="team-profile-close" aria-label="Profili kapat" autofocus>×</button>
@@ -951,6 +986,8 @@ const IMAGES = [
   {src:'img/entry/interior.jpg',       focus:[0.5,0.5],  spot:[0.49,0.36], t:'Overflowing Spectrums', v:'İç mekân'},
   {src:'img/entry/facade-split.jpg',   focus:[0.5,0.5],  spot:[0.42,0.62], t:'Dynamic Facade', v:'Gece ve gündüz'}
 ];
+SITE.base.welcome = IMAGES.map(({src,t,v})=>({src,t,v}));
+if(Array.isArray(CONTENT.welcome) && CONTENT.welcome.length) IMAGES.splice(0, IMAGES.length, ...CONTENT.welcome.filter(w=>w && w.src).map(w=>({src:w.src, focus:w.focus||[0.5,0.5], spot:w.spot||[0.5,0.5], t:w.t||'', v:w.v||''})));
 const FORMS = (window.BCAStudioForms && BCAStudioForms.names) || ['Kelebek','Çiçek','Uzay','Kara delik','Denizanası'];
 
 /* ---------- projects (from Batuhan Çelik's portfolio) ---------- */
@@ -1335,6 +1372,15 @@ if(!PROJECTS[P('ABR')]?.hidden) $('grid-research').innerHTML=cardHTML({p:P('ABR'
 if(P('PCE')>=0 && !PROJECTS[P('PCE')].hidden) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
 }
 renderStudioGrids();
+function renderBand(){
+  const list = PROJECTS.map((p,i)=>({p,i})).filter(({p})=>!p.hidden && p.img).sort((a,b)=>(a.p.studio-b.p.studio) || ((a.p.order ?? a.i) - (b.p.order ?? b.i))).map(({p})=>p);
+  const card = (p, dup) => '<a class="band-card" href="#'+(p.studio?'s-':'p-')+p.code+'"'+(dup?' aria-hidden="true" tabindex="-1"':'')+'><div class="bimg"><img src="'+p.img+'" alt="'+(dup?'':escapeAttr(p.name))+'" loading="lazy" style="object-position:'+fp(p.img)+'"></div><div class="bmeta"><span>'+(p.kind||'')+'</span><strong>'+p.name+'</strong></div></a>';
+  const t = $('band-track'); if(!t) return;
+  t.innerHTML = list.map(p=>card(p,false)).join('') + list.map(p=>card(p,true)).join('');
+  t.style.setProperty('--band-dur', Math.max(30, list.length*7)+'s');
+  $('band').hidden = !list.length;
+}
+renderBand();
 
 /* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
 const DG = 'img/dg/';
@@ -1713,7 +1759,7 @@ SITE.refresh = function(content){
   SITE.base.projects.forEach(b=>{ const p = PROJECTS.find(q=>q.code===b.code); if(!p) return; EDITABLE.forEach(k=>{ if(k in b) p[k] = JSON.parse(JSON.stringify(b[k])); else delete p[k]; }); });
   (content.added || []).forEach(n=>{ if(n && n.code && !PROJECTS.some(p=>p.code===n.code)) PROJECTS.push(Object.assign({facts:[], desc:[], gallery:[], cats:[], year:'—', kind:'', line:'', img:''}, JSON.parse(JSON.stringify(n)), {added:true})); });
   Object.entries(content.projects || {}).forEach(([code, o])=>{ const p = PROJECTS.find(q=>q.code===code); if(p) EDITABLE.forEach(k=>{ if(o[k] !== undefined) p[k] = JSON.parse(JSON.stringify(o[k])); }); });
-  renderStudioGrids();
+  renderStudioGrids(); renderBand();
   const view = DOC.dataset.view;
   if(view === 'project' || archOpenCode) renderProject(projIdx);
   else if(view === 'architecture') renderArch();
