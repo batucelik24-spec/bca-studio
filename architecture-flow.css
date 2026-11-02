@@ -116,3 +116,28 @@
 }
 @media(prefers-reduced-motion:reduce){.arch-toggle-icon,.arch-trigger .thumb img{transition:none}.arch-panel.is-opening .px-title,.arch-panel.is-opening .px-hud,.arch-panel.is-opening .arch-detail-bar,.arch-panel.is-opening .px-shade{animation:none}}
 @media(prefers-reduced-motion:reduce){.project-credits.is-entering{animation:none}.project-credits.is-leaving{transition:none}}
+
+/* floating close button — liquid glass */
+.arch-float{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border:0;border-radius:999px;font:400 14px/1 var(--f);letter-spacing:.01em;color:#fff;cursor:pointer;isolation:isolate;
+  background:linear-gradient(180deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.07) 48%,rgba(255,255,255,.12) 100%);
+  -webkit-backdrop-filter:blur(22px) saturate(190%) brightness(1.08);backdrop-filter:blur(22px) saturate(190%) brightness(1.08);
+  box-shadow:inset 0 1px .5px rgba(255,255,255,.75),inset 0 -1px .5px rgba(255,255,255,.22),inset 1px 0 .5px rgba(255,255,255,.18),inset -1px 0 .5px rgba(255,255,255,.18),inset 0 0 22px rgba(255,255,255,.07),0 1px 2px rgba(0,0,0,.25),0 14px 34px rgba(0,0,0,.38);
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+  opacity:0;transform:translate(-50%,24px) scale(.94);pointer-events:none;transition:opacity .35s ease,transform .5s cubic-bezier(.22,1,.36,1),background .25s}
+/* rim light: a thin bright edge that catches light at the top-left and bottom-right like curved glass */
+.arch-float::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;z-index:-1;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.12) 30%,rgba(255,255,255,.04) 55%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.6) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* soft specular sheen across the upper half */
+.arch-float::after{content:"";position:absolute;left:10%;right:10%;top:2px;height:45%;border-radius:999px;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));filter:blur(.5px)}
+.arch-float.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+.arch-float:hover{background:linear-gradient(180deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.1) 48%,rgba(255,255,255,.16) 100%)}
+.arch-float:active{transform:translate(-50%,0) scale(.97)}
+.arch-float:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:3px}
+.arch-float svg{transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.arch-float:hover svg{transform:translateY(-2px)}
+.arch-float.is-light{color:#1D1D1F;text-shadow:none;background:linear-gradient(180deg,rgba(255,255,255,.62) 0%,rgba(255,255,255,.38) 50%,rgba(255,255,255,.5) 100%);box-shadow:inset 0 1px .5px rgba(255,255,255,.95),inset 0 -1px .5px rgba(255,255,255,.5),inset 0 0 22px rgba(255,255,255,.25),0 1px 2px rgba(0,0,0,.08),0 12px 30px rgba(0,0,0,.14)}
+.arch-float.is-light::before{background:linear-gradient(135deg,rgba(255,255,255,1) 0%,rgba(0,0,0,.06) 35%,rgba(0,0,0,.08) 65%,rgba(255,255,255,.9) 100%)}
+.arch-float{transition:opacity .35s ease,transform .5s cubic-bezier(.22,1,.36,1),background .35s,color .35s,box-shadow .35s}
+@media(max-width:760px){.arch-float{bottom:calc(20px + env(safe-area-inset-bottom,0px));min-height:46px;padding:0 20px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.arch-float{transition:opacity .2s}}

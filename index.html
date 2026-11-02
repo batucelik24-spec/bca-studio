@@ -714,7 +714,7 @@ html{overflow-wrap:break-word}
 .evidence-method{margin-top:32px;padding:22px 0;border-block:1px solid var(--line)}.evidence-method summary{cursor:pointer;min-height:28px}.evidence-method p{color:var(--muted);max-width:85ch;line-height:1.7;font-size:15px}
 @media(max-width:760px){.arch-evidence{padding-block:40px}.evidence-result,.evidence-figures{grid-template-columns:1fr;gap:24px}.evidence-result{padding:24px}.evidence-figures .evidence-media{height:260px}.evidence-metrics{gap:14px}.evidence-metrics dt{font-size:12px}.evidence-metrics dd{font-size:32px}}
 </style>
-<link rel="stylesheet" href="architecture-flow.css?v=20261102-detail-rhythm">
+<link rel="stylesheet" href="architecture-flow.css?v=20261102-glass">
 
 </head>
 <body>
@@ -790,6 +790,7 @@ html{overflow-wrap:break-word}
       <span class="arch-count" id="arch-count" aria-live="polite"></span>
     </div>
     <div class="arch-flow" id="arch-flow" aria-label="Mimari projeler"></div>
+    <button type="button" class="arch-float" id="arch-float" aria-hidden="true" tabindex="-1"><span>Projeyi kapat</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <section class="awards">
       <span class="track muted">Ödüller ve yarışmalar</span>
       <div class="aw-row"><span>2024</span><strong>DASK Depreme Dayanıklı Yapı Tasarımı Yarışması</strong><span>Finalist · Altuni Hotel</span></div>
@@ -1289,7 +1290,7 @@ function renderArch(){
       '<a class="arch-trigger card" id="arch-trigger-'+p.code+'" href="#p-'+p.code+'" aria-expanded="false" aria-controls="arch-panel-'+p.code+'" aria-label="'+escapeAttr(p.name)+' — proje detayları">'+
       '<div class="meta"><span class="arch-index">'+String(n+1).padStart(2,'0')+' / '+p.year+'</span><h2>'+p.name+'</h2><span class="kind">'+p.kind+'</span>'+(loc?'<span class="arch-location">'+loc+'</span>':'')+'</div>'+
       '<div class="thumb"><img src="'+p.img+'"'+imageVariants(p.img,'(max-width: 760px) 90vw, 700px')+' alt="" loading="lazy" style="object-position:'+fp(p.img)+'"></div><span class="arch-toggle-icon" aria-hidden="true">+</span></a>'+
-      '<div class="arch-panel" id="arch-panel-'+p.code+'" role="region" aria-label="'+escapeAttr(p.name)+' detayları" hidden><div class="arch-detail-bar"><span>'+p.name+'</span><button type="button" class="arch-close" data-arch-close>Projeyi kapat <span aria-hidden="true">↑</span></button></div><div class="arch-panel-content"></div><div class="arch-detail-foot"><button type="button" class="arch-close" data-arch-close>Projeyi kapat <span aria-hidden="true">↑</span></button></div></div></section>';
+      '<div class="arch-panel" id="arch-panel-'+p.code+'" role="region" aria-label="'+escapeAttr(p.name)+' detayları" hidden><div class="arch-detail-bar"><span>'+p.name+'</span></div><div class="arch-panel-content"></div></div></section>';
   }).join('');
   reveal($('arch-flow'));
 }
@@ -1309,7 +1310,7 @@ function releaseArchProject(){
   projectPane.hidden=true;projectPane.classList.remove('inline-project');projectDock.after(projectPane);
   panel.hidden=true;panel.inert=false;panel.style.height='';panel.classList.remove('is-animating','is-opening','is-closing','has-hologram-bridge');
   entry.classList.remove('is-open','is-closing');const trigger=entry.querySelector('.arch-trigger');trigger.hidden=false;trigger.setAttribute('aria-expanded','false');
-  archOpenCode=null;
+  archOpenCode=null;syncArchFloat();
 }
 function morphArchCover(panel,from,to,source,duration,closing=false){
   const box=panel.getBoundingClientRect(),ghost=document.createElement('img');
@@ -1334,7 +1335,7 @@ function openArchProject(i,{animate=true,align=true}={}){
   panel.querySelector('.arch-panel-content').append(projectPane);projectPane.classList.add('inline-project');projectPane.hidden=false;
   renderProject(i);
   $('px-credits').classList.toggle('is-entering',animate&&!reduce);
-  if(animate)panel.querySelector('.arch-close').focus({preventScroll:true});
+  syncArchFloat();if(animate)setTimeout(()=>{if(archOpenCode===p.code)$('arch-float').focus({preventScroll:true});},120);
   const bridge=archPendingHologram;archPendingHologram=null;
   if(animate&&!reduce){
     const token=archMotionId,height=panel.offsetHeight,startHeight=Math.max(0,rowHeight-(entry.offsetHeight-height)),duration=bridge?1280:720;panel.classList.add('is-animating','is-opening');
@@ -1357,7 +1358,7 @@ function closeArchProject({animate=true,restore=true}={}){
   const entry=$('arch-entry-'+archOpenCode),panel=$('arch-panel-'+archOpenCode),trigger=entry.querySelector('.arch-trigger');
   const height=panel.getBoundingClientRect().height,startY=scrollY,targetY=Math.max(0,scrollY+entry.getBoundingClientRect().top-archReturnTop);
   cancelArchMotion();
-  trigger.setAttribute('aria-expanded','false');entry.classList.add('is-closing');panel.inert=true;
+  trigger.setAttribute('aria-expanded','false');entry.classList.add('is-closing');panel.inert=true;syncArchFloat(true);
   $('px-credits').classList.remove('is-entering');$('px-credits').classList.add('is-leaving');
   const finish=()=>{releaseArchProject();if(restore){scrollTo({top:targetY,behavior:'instant'});trigger.focus({preventScroll:true});}if(!reduce)trigger.querySelector('.meta').animate([{opacity:0},{opacity:1}],{duration:220});};
   if(!animate||reduce){finish();return;}
@@ -1371,6 +1372,27 @@ function closeArchProject({animate=true,restore=true}={}){
   if(restore){const t0=performance.now();const tick=now=>{if(token!==archMotionId)return;const t=Math.min(1,(now-t0)/560),k=t*t*(3-2*t);scrollTo({top:startY+(targetY-startY)*k,behavior:'instant'});if(t<1)archScrollFrame=requestAnimationFrame(tick);};archScrollFrame=requestAnimationFrame(tick);}
   archAnimation.onfinish=()=>{if(token!==archMotionId)return;finish();};
 }
+/* the floating liquid-glass close button, shown while an open project is on screen */
+function syncArchFloat(hide=false){
+  const b=$('arch-float');if(!b)return;
+  let on=false;
+  if(!hide&&archOpenCode){const panel=$('arch-panel-'+archOpenCode);if(panel&&!panel.hidden&&!panel.closest('.is-closing')){const r=panel.getBoundingClientRect();on=r.top<innerHeight*.72&&r.bottom>innerHeight*.35;}}
+  if(on){
+    /* like Apple's glass, the label turns dark when the button sits over a light part of the page */
+    const r=b.getBoundingClientRect(),x=innerWidth/2,y=r.top+r.height/2;let light=false;
+    const under=document.elementsFromPoint(x,y).filter(n=>n!==b&&!b.contains(n));
+    for(const n of under){
+      if(n.tagName==='IMG'||n.tagName==='VIDEO'||n.tagName==='CANVAS'){light=false;break;}
+      const c=getComputedStyle(n).backgroundColor.match(/[\d.]+/g);
+      if(c&&(c.length<4||+c[3]>.5)){light=(.299*c[0]+.587*c[1]+.114*c[2])/255>.6;break;}
+    }
+    b.classList.toggle('is-light',light);
+  }
+  if(b.classList.contains('on')!==on){b.classList.toggle('on',on);b.setAttribute('aria-hidden',String(!on));b.tabIndex=on?0:-1;if(!on&&document.activeElement===b)b.blur();}
+}
+addEventListener('scroll',()=>{if(archOpenCode)syncArchFloat();},{passive:true});
+addEventListener('resize',()=>syncArchFloat(),{passive:true});
+$('arch-float').addEventListener('click',()=>{if(archOpenCode)location.hash='architecture';});
 $('arch-flow').addEventListener('click',e=>{
   if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
   const trigger=e.target.closest('.arch-trigger'),close=e.target.closest('[data-arch-close]');
