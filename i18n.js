@@ -31,7 +31,7 @@
   hold.textContent = 'html.i18n-wait body{opacity:0}';
   document.head.appendChild(hold);
   setTimeout(()=>document.documentElement.classList.remove('i18n-wait'), 2500);
-  document.write('<script src="i18n-en.js?v=1"><\/script>');
+  document.write('<script src="i18n-en.js?v=2"><\/script>');
 
   const norm = s => String(s).replace(/\s+/g,' ').trim();
   let extra = {}, htmlEN = {};

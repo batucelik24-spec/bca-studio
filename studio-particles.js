@@ -68,7 +68,7 @@
       }`,fragmentShader:`varying float vOpacity;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;gl_FragColor=vec4(.137,.251,.902,vOpacity*(1.-smoothstep(.15,.5,d)));}`
   });
   const ambient=new T.Points(ag,am);ambient.frustumCulled=false;ambient.renderOrder=-1;scene.add(ambient);
-  const controls=document.createElement('div');controls.className='studio-form-controls';controls.setAttribute('role','group');controls.setAttribute('aria-label','Studio nokta animasyonu');
+  const controls=document.createElement('div');controls.className='studio-form-controls';controls.setAttribute('role','group');controls.setAttribute('aria-label','Stüdyo nokta animasyonu');
   controls.innerHTML='<button type="button" class="form-pause" aria-label="Animasyonu duraklat">Duraklat</button>';
   view.querySelector('.s-hero').append(controls);
   let slotA=-1,slotB=-1,last=0,paused=F.isPaused(),raf=0,dirty=true;

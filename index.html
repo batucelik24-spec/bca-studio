@@ -5,7 +5,7 @@
 <link rel="alternate" hreflang="tr" href="https://bcastud.io/?lang=tr">
 <link rel="alternate" hreflang="en" href="https://bcastud.io/?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://bcastud.io/">
-<script src="i18n.js?v=1"></script>
+<script src="i18n.js?v=2"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BCA Studio">
 <meta property="og:title" content="BCA Studio — Batuhan Çelik Architecture &amp; Studio">
@@ -47,6 +47,8 @@ a{color:inherit;text-decoration:none}
 .stage-logo{position:absolute;top:26px;left:50%;transform:translateX(-50%);height:34px;z-index:6;color:inherit;transition:color .6s}
 .side{position:absolute;top:50%;transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;transition:opacity .3s}
 .side.l{left:max(40px,4vw)}
+.stage-shade{position:absolute;inset:0 auto 0 0;width:min(62%,900px);z-index:3;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.5) 30%,rgba(0,0,0,.18) 62%,rgba(0,0,0,0) 100%);opacity:var(--shade,0);transition:opacity .35s}
+@media (max-width:760px){.stage-shade{inset:auto 0 0 0;width:auto;height:55%;background:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,.25) 50%,rgba(0,0,0,0))}}
 .side.r{right:max(40px,4vw);align-items:flex-end;text-align:right}
 .side strong{font-weight:300;font-size:clamp(34px,4.6vw,72px);line-height:1;letter-spacing:-.02em}
 .side span{font-size:15px;opacity:.75;transition:opacity .3s}
@@ -309,7 +311,10 @@ dialog#proj.closing::backdrop{animation:fadeout .26s ease forwards}
 .person:focus-visible .portrait.photo img{filter:grayscale(0);transform:scale(1.025)}
 dialog.team-profile{width:min(1048px,calc(100vw - 32px));max-width:none;max-height:calc(100svh - 32px);padding:24px;border:0;background:transparent;color:#1D1D1F;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;outline:none}
 dialog.team-profile::-webkit-scrollbar{display:none;width:0;height:0}
-dialog.team-profile::backdrop{background:rgba(245,245,247,.83);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+dialog.team-profile::backdrop{background:rgba(245,245,247,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+@media (max-width:760px),(hover:none){dialog.team-profile::backdrop{background:rgba(245,245,247,.95);backdrop-filter:none;-webkit-backdrop-filter:none}}
+html.profile-open .band-track{animation-play-state:paused}
+html{scrollbar-gutter:stable}
 .team-profile-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,2.15fr);gap:16px}
 .team-profile-photo,.team-profile-copy{border:1px solid rgba(0,0,0,.1);border-radius:12px;background:#fff;overflow:hidden}
 .team-profile-photo{position:relative;min-height:400px;height:400px;align-self:start;display:grid;place-items:center;font-size:64px;font-weight:300;color:#86868B}
@@ -332,8 +337,8 @@ dialog.team-profile::backdrop{background:rgba(245,245,247,.83);backdrop-filter:b
 @keyframes team-photo-in{from{opacity:0;transform:translate(-10px,20px) scale(.975)}to{opacity:1;transform:none}}
 @keyframes team-copy-in{from{opacity:0;transform:translate(10px,24px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes team-panel-out{to{opacity:0;transform:translateY(12px) scale(.985)}}
-@keyframes team-backdrop-in{from{background:rgba(245,245,247,0);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}to{background:rgba(245,245,247,.83);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}}
-@keyframes team-backdrop-out{to{background:rgba(245,245,247,0);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}}
+@keyframes team-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes team-backdrop-out{to{opacity:0}}
 @keyframes team-control-in{from{opacity:0}to{opacity:1}}
 .team-profile[open]:not(.closing) .team-profile-photo{animation:team-photo-in .6s cubic-bezier(.16,1,.3,1) both}
 .team-profile[open]:not(.closing) .team-profile-copy{animation:team-copy-in .64s .06s cubic-bezier(.16,1,.3,1) both}
@@ -735,13 +740,13 @@ html{overflow-wrap:break-word}
       <canvas id="scene" role="img" aria-label="Proje görselleri; imleç sağa gittikçe görsel akışkanlaşıp sürekli değişen bir parçacık formuna dönüşür"></canvas>
       <a href="#home" class="stage-logo" id="stage-logo" aria-label="BCA Studio"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg></a>
 
-      <a class="side l" id="side-a" href="#architecture"><strong>Architecture</strong><span>Projeleri gör ›</span></a>
-      <a class="side r" id="side-s" href="#studio"><strong>Studio</strong><span>Studio’yu keşfet ›</span></a>
+      <div class="stage-shade" id="stage-shade" aria-hidden="true"></div>
+      <a class="side l" id="side-a" href="#architecture"><strong>Mimarlık</strong><span>Projeleri gör ›</span></a>
+      <a class="side r" id="side-s" href="#studio"><strong>Stüdyo</strong><span>Stüdyo’yu keşfet ›</span></a>
       <a class="scroll-cue" href="#about" id="cue"><span class="track">Keşfet</span><i></i></a>
 
       <div class="welcome" id="welcome">
-        <h1>Welcome</h1>
-        <p class="track"><span class="hov">Keşfetmek için üzerine gelin</span><span class="tap">Keşfetmek için dokunun</span></p>
+        <h1>Hoş geldin</h1>
       </div>
     </section>
   </div>
@@ -765,7 +770,7 @@ html{overflow-wrap:break-word}
   <section class="team" id="team">
     <div class="wrap">
       <span class="track" style="color:var(--muted)">Ekip</span>
-      <h2>Team</h2>
+      <h2>Ekip</h2>
       <p class="team-lead" data-edit="home.team.lead">Tasarım, araştırma ve geliştirmeyi bir araya getiren küçük bir ekip. Ekip üyelerini yakından tanımak için fotoğraflarına tıklayın.</p>
       <div class="people" id="people"></div>
     </div>
@@ -775,11 +780,11 @@ html{overflow-wrap:break-word}
 <!-- ================= ARCHITECTURE ================= -->
 <main id="v-architecture" class="view" hidden>
   <header class="topbar"><div class="wrap">
-    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Architecture</span></a>
-    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Studio ›</a></nav>
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Mimarlık</span></a>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Stüdyo ›</a></nav>
   </div></header>
   <div class="wrap">
-    <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Architecture</h1><p data-edit="arch.lead">Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
+    <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Mimarlık</h1><p data-edit="arch.lead">Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
     <div class="toolbar">
       <div class="pills" id="filters" role="group" aria-label="Kategoriye göre süz"></div>
       <span class="arch-count" id="arch-count" aria-live="polite"></span>
@@ -796,8 +801,8 @@ html{overflow-wrap:break-word}
 <!-- ================= PROJECT ================= -->
 <article id="v-project" class="view px" aria-labelledby="pd-title" hidden>
   <header class="topbar px-bar" id="px-bar"><div class="wrap">
-    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span id="px-ctx">Architecture</span></a>
-    <nav aria-label="Sayfalar"><a href="#architecture" id="px-back">‹ Tüm projeler</a><a href="#studio" id="px-other">Studio ›</a></nav>
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span id="px-ctx">Mimarlık</span></a>
+    <nav aria-label="Sayfalar"><a href="#architecture" id="px-back">‹ Tüm projeler</a><a href="#studio" id="px-other">Stüdyo ›</a></nav>
   </div></header>
 
   <section class="px-hero">
@@ -888,21 +893,21 @@ html{overflow-wrap:break-word}
 <main id="v-studio" class="view" hidden>
   <canvas id="s-form" aria-hidden="true"></canvas>
   <header class="topbar"><div class="wrap">
-    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Studio</span></a>
-    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#studio" aria-current="page">Studio</a><a href="#architecture">Architecture ›</a></nav>
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Stüdyo</span></a>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#studio" aria-current="page">Stüdyo</a><a href="#architecture">Mimarlık ›</a></nav>
   </div></header>
   <div class="wrap">
     <div class="s-hero">
-      <div class="page-head"><span class="track muted">BCA</span><h1>Studio</h1><p data-edit="studio.lead">Tasarım araştırmaları, deneysel yöntemler ve yeni üretim biçimleri için açık bir çalışma alanı.</p></div>
+      <div class="page-head"><span class="track muted">BCA</span><h1>Stüdyo</h1><p data-edit="studio.lead">Tasarım araştırmaları, deneysel yöntemler ve yeni üretim biçimleri için açık bir çalışma alanı.</p></div>
 
     </div>
 
     <section class="s-sec studio-intro">
       <span class="track muted">Araştır · Tasarla · Geliştir</span>
       <h2 data-edit="studio.intro.title">Fikirleri deneyerek<br>hayata geçiriyoruz.</h2>
-      <div class="studio-copy" data-edit="studio.intro.text"><p>Studio’da tasarımın nasıl yapıldığını da araştırıyoruz. Malzeme denemeleri, görsel araştırmalar, ürünler, dijital deneyimler ve yaratıcı araçlar üzerinden farklı düşünme ve üretme biçimlerini bir araya getiriyoruz.</p><p>Amacımız, deneysel yöntemler geliştirerek tasarımın olanaklarını genişletmek. Sonucu baştan belirlemek yerine denemelerden öğreniyor; fikirleri prototiplerle sınayıp yeni işlere, araçlara ve başkalarının da kullanabileceği yöntemlere dönüştürüyoruz.</p></div>
+      <div class="studio-copy" data-edit="studio.intro.text"><p>Stüdyo’da tasarımın nasıl yapıldığını da araştırıyoruz. Malzeme denemeleri, görsel araştırmalar, ürünler, dijital deneyimler ve yaratıcı araçlar üzerinden farklı düşünme ve üretme biçimlerini bir araya getiriyoruz.</p><p>Amacımız, deneysel yöntemler geliştirerek tasarımın olanaklarını genişletmek. Sonucu baştan belirlemek yerine denemelerden öğreniyor; fikirleri prototiplerle sınayıp yeni işlere, araçlara ve başkalarının da kullanabileceği yöntemlere dönüştürüyoruz.</p></div>
     </section>
-    <section class="s-sec studio-categories" aria-label="Studio çalışma alanları">
+    <section class="s-sec studio-categories" aria-label="Stüdyo çalışma alanları">
       <div class="studio-category"><span class="track muted">01</span><h2>Projeler</h2><p data-edit="studio.cat.projects">Farklı ölçeklerde tasarımlar ve deneysel üretimler.</p><div id="grid-s"></div><div id="grid-x"></div></div>
       <div class="studio-category"><span class="track muted">02</span><h2>Uygulama ve<br>Yazılımlar</h2><p data-edit="studio.cat.apps">Fikirleri gündelik deneyimlere dönüştüren dijital ürünler.</p><div id="grid-apps"></div></div>
       <div class="studio-category"><span class="track muted">03</span><h2>Ar-Ge</h2><p data-edit="studio.cat.research">Yeni yöntemleri araştırdığımız deneyler ve atölyeler.</p><div id="grid-research"></div><div class="studio-entry"><span class="track muted">Atölye</span><strong>AI [UN]Plugged</strong><span>Tasarım sürecinde yapay zekâ üzerine araştırma ve denemeler.</span></div></div>
@@ -971,7 +976,7 @@ html{overflow-wrap:break-word}
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
 <script src="studio-forms.js?v=20261102-sync"></script>
-<script src="content.js?v=1"></script>
+<script src="content.js?v=2"></script>
 <script>/* editor preview: ?draft shows the unpublished draft from this browser only */
 window.BCA_PUBLISHED = window.BCA_CONTENT;
 try{ if(/[?&]draft\b/.test(location.search)){ const d = localStorage.getItem('bca-editor-draft'); if(d) window.BCA_CONTENT = JSON.parse(d); } }catch(e){}</script>
@@ -1027,7 +1032,7 @@ const PROJECTS = [
          'Form kumul, rüzgâr ve denizin etkileşiminden doğuyor. Heykelsi kabuk podyumun üzerinde süzülüyormuş gibi duruyor; kesintisiz şerit cephe doğanın akışkan hareketini ifade ediyor. Alışveriş alanları, yeme-içme, teraslar, müzeler ve rekreasyon alanları maç günleri dışında da açık kalıyor ve stadyum bir sosyal merkeze dönüşüyor.']},
   {code:'WA', name:'WA Tower', img:'img/covers/wa-extended.jpg', kind:'Yüksek yapı · Yarışma', badge:'EERI SDC 2025',
    gallery:['img/pf/wa-void.jpg','img/pf/wa-cafe.jpg','img/pf/wa-hall.jpg','img/pf/wa-structure.jpg','img/pf/wa-test.jpg'],
-   facts:[['Yıl','2025'],['Proje konumu','Kobe, Japonya'],['Yarışma','EERI Seismic Design Competition, San Francisco'],['Yükseklik','19 kat']],
+   facts:[['Yıl','2025'],['Proje konumu','Kobe, Japonya'],['Yarışma','EERI Sismik Tasarım Yarışması, San Francisco'],['Yükseklik','19 kat']],
    line:'Japon “Wa” felsefesinden beslenen; insan, doğa ve mimari arasında uyum arayan 19 katlı bir kule.',
    desc:['EERI Sismik Tasarım Yarışması, Deprem Mühendisliği Araştırma Enstitüsü’nün düzenlediği uluslararası bir yarışma. Üniversite takımları yüksek yapıların ölçekli modellerini tasarlıyor, analiz ediyor ve inşa ediyor; modeller deprem simülasyonu altında test ediliyor.',
          'WA Tower, enerjinin birikip boşalması ve temel parçacıkların çekim kuvveti gibi doğal ilkelerden ilham alıyor. Japon “Wa” felsefesine dayanan proje, kültürel kimliği performans odaklı tasarımla birleştiriyor.',
@@ -1055,7 +1060,7 @@ const PROJECTS = [
          'Sürdürülebilir ve kendi kendine yeten bir yapı olarak tasarlanan projede her katta yeşil alanlar bırakılarak karbondioksit oranının azaltılması ve yaşam kalitesinin artırılması hedeflendi.']},
   {code:'DYF', name:'Dynamic Facade', img:'img/entry/facade-split.jpg', kind:'Cephe · Konsept',
    gallery:['img/pf/dyf-states.jpg','img/pf/dyf-sketch.jpg','img/facade.jpg'],
-   facts:[['Tür','Cephe · Konsept'],['Kesişim','Architecture × Studio']],
+   facts:[['Tür','Cephe · Konsept'],['Kesişim','Mimarlık × Stüdyo']],
    line:'Rüzgâr ve hava verisiyle kendini sürekli yeniden tasarlayan bir cephe.',
    desc:['Çıkış sorusu: doğa kendi cephesini neden kendisi tasarlamasın?','Hareketli dijital paneller rüzgâr enerjisini ve hava koşullarını veriye çeviriyor. Yapının bir yüzü dijital ekran, diğeri yansıtıcı camlı paneller. Havaya göre bina şeffaflaşabiliyor ya da dijital bir sanat gösterisine dönüşebiliyor.'],
    url:OLD+'dynamic-facade'},
@@ -1086,7 +1091,7 @@ const PROJECTS = [
          'Projede Kore kültürünü çağdaş tasarım ilkeleriyle birleştirmek ve renk seçimine derin bir anlam yüklemek hedeflendi. Kore renk paletinden ilham alınırken Türk rengi olarak bilinen turkuaz güçlü bir kültürel bağ kurmak için kullanıldı; 2025’in yılın rengi seçilen Robin Egg Blue da paletin parçası oldu.',
          'Sonuç yalnızca bir hoparlör değil, kültürel bağları tasarımın diliyle anlatan bir nesne.']}
 ];
-PROJECTS.push({"code": "ABR", "studio": true, "name": "ArchBrick", "img": "img/archbrick/archbrick-studio-group.png", "kind": "Malzeme tasarımı · Ar-Ge", "badge": "Geometri odaklı tasarım", "gallery": ["img/archbrick/archbrick-prototype.png", "img/archbrick/archbrick-mould.png", "img/archbrick/archbrick-production.jpg", "img/archbrick/archbrick-lab.png"], "facts": [["Buluş sahibi", "Dr. Alper Çelik"], ["Araştırma", "Ankara Üniversitesi"], ["Patent başvurusu", "2024/021852"], ["Başvuru hak sahibi", "Ankara Üniversitesi"], ["Marka başvurusu", "2025/101842"]], "line": "Bir tuğlanın içindeki geometriyi yeniden düşünmek.", "desc": ["ArchBrick, Dr. Alper Çelik tarafından geliştirilen, iç boşluk geometrisini kemer formuyla yeniden ele alan bir duvar elemanı teknolojisi. Dış boyutları korurken yükün malzeme içinde nasıl aktarıldığına odaklanıyor. Studio’da deneysel yöntem ve malzeme tasarımının bir örneği olarak yer alıyor.", "Biyomimikriden ve kemerlerin yük aktarma mantığından beslenen yaklaşım, yalnızca boşluk oranını değil; boşlukların biçimini, konumunu ve bağlantılarını araştırıyor. Merkezdeki tek oval kemer halkası ve onu kesen bölmeler, tasarımın ayırt edici kesitini oluşturuyor.", "Geliştirme süreci; sayısal analiz, kalıp tasarımı, prototip üretim ve laboratuvar doğrulamasını bir araya getiriyor. ArchBrick’in resmî sitesine göre ArchBrick-M için Tokat ve Erzincan’daki iki fabrikada yaklaşık 8.000 birim üretilmiş; bölme duvar ürünleri ve ArchBlock için araştırmalar sürüyor.", "ArchBrick-M taşıyıcı yığma duvarlara odaklanıyor. ArchBrick-B 13.5 ve B 8.5 bölme duvar uygulamaları; ArchBlock ise farklı blok malzemeleri için geliştiriliyor. Ürün ailelerinin geliştirme aşamaları ve uygulama koşulları birbirinden farklı."], "publications": [{"title": "Numerical analysis of failure performance in novel hollow brick designs", "journal": "Engineering Failure Analysis · 2025", "authors": "Alper Çelik, Özgür Anıl, Ömer Mercimek", "doi": "10.1016/j.engfailanal.2025.109995", "summary": "Birim ölçeğinde farklı boşluk geometrilerini karşılaştıran sayısal araştırma. Kemer merkezli tasarımların yük taşıma ve enerji sönümleme davranışını inceliyor."}, {"title": "Seismic resilience of masonry buildings with a novel arch-type hollow brick (ArchBrick): Multi-scale numerical assessment from unit to building level", "journal": "Engineering Structures · 2026", "authors": "Alper Çelik", "doi": "10.1016/j.engstruct.2026.122190", "summary": "Birimden duvara ve iki katlı yapı modellerine uzanan sayısal değerlendirme. İç geometri, boşluk oranı ve harç sınıfının modellenen davranış üzerindeki etkilerini araştırıyor."}], "url": "https://archbrick.com.tr/"});
+PROJECTS.push({"code": "ABR", "studio": true, "name": "ArchBrick", "img": "img/archbrick/archbrick-studio-group.png", "kind": "Malzeme tasarımı · Ar-Ge", "badge": "Geometri odaklı tasarım", "gallery": ["img/archbrick/archbrick-prototype.png", "img/archbrick/archbrick-mould.png", "img/archbrick/archbrick-production.jpg", "img/archbrick/archbrick-lab.png"], "facts": [["Buluş sahibi", "Dr. Alper Çelik"], ["Araştırma", "Ankara Üniversitesi"], ["Patent başvurusu", "2024/021852"], ["Başvuru hak sahibi", "Ankara Üniversitesi"], ["Marka başvurusu", "2025/101842"]], "line": "Bir tuğlanın içindeki geometriyi yeniden düşünmek.", "desc": ["ArchBrick, Dr. Alper Çelik tarafından geliştirilen, iç boşluk geometrisini kemer formuyla yeniden ele alan bir duvar elemanı teknolojisi. Dış boyutları korurken yükün malzeme içinde nasıl aktarıldığına odaklanıyor. Stüdyo’da deneysel yöntem ve malzeme tasarımının bir örneği olarak yer alıyor.", "Biyomimikriden ve kemerlerin yük aktarma mantığından beslenen yaklaşım, yalnızca boşluk oranını değil; boşlukların biçimini, konumunu ve bağlantılarını araştırıyor. Merkezdeki tek oval kemer halkası ve onu kesen bölmeler, tasarımın ayırt edici kesitini oluşturuyor.", "Geliştirme süreci; sayısal analiz, kalıp tasarımı, prototip üretim ve laboratuvar doğrulamasını bir araya getiriyor. ArchBrick’in resmî sitesine göre ArchBrick-M için Tokat ve Erzincan’daki iki fabrikada yaklaşık 8.000 birim üretilmiş; bölme duvar ürünleri ve ArchBlock için araştırmalar sürüyor.", "ArchBrick-M taşıyıcı yığma duvarlara odaklanıyor. ArchBrick-B 13.5 ve B 8.5 bölme duvar uygulamaları; ArchBlock ise farklı blok malzemeleri için geliştiriliyor. Ürün ailelerinin geliştirme aşamaları ve uygulama koşulları birbirinden farklı."], "publications": [{"title": "Numerical analysis of failure performance in novel hollow brick designs", "journal": "Engineering Failure Analysis · 2025", "authors": "Alper Çelik, Özgür Anıl, Ömer Mercimek", "doi": "10.1016/j.engfailanal.2025.109995", "summary": "Birim ölçeğinde farklı boşluk geometrilerini karşılaştıran sayısal araştırma. Kemer merkezli tasarımların yük taşıma ve enerji sönümleme davranışını inceliyor."}, {"title": "Seismic resilience of masonry buildings with a novel arch-type hollow brick (ArchBrick): Multi-scale numerical assessment from unit to building level", "journal": "Engineering Structures · 2026", "authors": "Alper Çelik", "doi": "10.1016/j.engstruct.2026.122190", "summary": "Birimden duvara ve iki katlı yapı modellerine uzanan sayısal değerlendirme. İç geometri, boşluk oranı ve harç sınıfının modellenen davranış üzerindeki etkilerini araştırıyor."}], "url": "https://archbrick.com.tr/"});
 if(window.BCAPace) PROJECTS.push(window.BCAPace.project);
 const P = code => PROJECTS.findIndex(p=>p.code===code);
 /* where the main mass sits in each render (x%, y% from the top-left); every crop keeps this point in frame */
@@ -1118,7 +1123,7 @@ const BKA_CREDITS = {
   groups:[
     ['Proje sahibi',['Bahadır Kul']],
     ['Konsept Tasarım',['Bahadır Kul','Batuhan Çelik']],
-    ['Project Manager',['Hüseyin Yıldız']],
+    ['Proje Yöneticisi',['Hüseyin Yıldız']],
     ['Mimarlar',['Ayşenur Çam','Nergis Ayça Karagöl','Gülse Şevval Gül']]
   ]
 };
@@ -1161,8 +1166,8 @@ const touchDevice = matchMedia('(hover:none) and (pointer:coarse)').matches;
 const N = isPhone ? 14000 : 80000;
 
 const TEAM = [
-  {n:'Batuhan Çelik', r:'Kurucu · Mimar · Developer', i:'BÇ', img:'img/pf/batuhan-celik-portrait.png', b:'Erzincan, 2001. Ondokuz Mayıs Üniversitesi Mimarlık. Bahadır Kul Architects’te tasarım ekibi lideri, EERI Seismic Design OMU Chapter kurucu üyesi. Mimarlık kadar dijital sanatla da ilgileniyor.', profile:window.BCAPortfolio?.profile},
-  {n:'Dr. Alper Çelik', r:'Civil Engineer · Academic Advisor', i:'AÇ', img:'img/pf/alper-celik-portrait.png', b:'İnşaat mühendisi ve akademik danışman. ArchBrick teknolojisinin buluş sahibi. Yapı mekaniği, sayısal modelleme ve deneysel doğrulama üzerine çalışıyor.'},
+  {n:'Batuhan Çelik', r:'Kurucu · Mimar · Yazılım Geliştirici', i:'BÇ', img:'img/pf/batuhan-celik-portrait.png', b:'Erzincan, 2001. Ondokuz Mayıs Üniversitesi Mimarlık. Bahadır Kul Architects’te tasarım ekibi lideri, EERI Seismic Design OMU Chapter kurucu üyesi. Mimarlık kadar dijital sanatla da ilgileniyor.', profile:window.BCAPortfolio?.profile},
+  {n:'Dr. Alper Çelik', r:'İnşaat Mühendisi · Akademik Danışman', i:'AÇ', img:'img/pf/alper-celik-portrait.png', b:'İnşaat mühendisi ve akademik danışman. ArchBrick teknolojisinin buluş sahibi. Yapı mekaniği, sayısal modelleme ve deneysel doğrulama üzerine çalışıyor.'},
   {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'},
   {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'}
 ];
@@ -1186,7 +1191,10 @@ $('people').addEventListener('click',e=>{
   const button=e.target.closest('[data-person]');if(!button)return;
   const person=TEAM[Number(button.dataset.person)];if(!person)return;
   teamOpener=button;teamOverflow=document.body.style.overflow;
-  $('team-profile-name').textContent=person.n;$('team-profile-roles').textContent=person.r;
+  $('team-profile-name').textContent=person.n;
+  /* the roles are shown in capitals: English titles keep a plain I (not İ) even on the Turkish page */
+  const EN_ROLE=/\b(director|engineer|researcher|advisor|manager|designer|developer|architect|marketing|civil|academic|founder|lead|artist|consultant|intern|creative|officer|head)\b/i;
+  $('team-profile-roles').replaceChildren(...String(person.r||'').split(' · ').flatMap((part,i)=>{const sp=document.createElement('span');sp.textContent=part;if(EN_ROLE.test(part)&&!/[çğıöşüÇĞİÖŞÜ]/.test(part))sp.lang='en';return i?[' · ',sp]:[sp];}));
   $('team-profile-bio').replaceChildren();const paragraph=document.createElement('p');paragraph.textContent=person.b;$('team-profile-bio').append(paragraph);
   if(person.profile){
     const resume=document.createElement('details');resume.className='team-resume';
@@ -1199,13 +1207,23 @@ $('people').addEventListener('click',e=>{
     $('team-profile-bio').append(resume);
   }
   const photo=$('team-profile-photo');photo.replaceChildren();
-  if(person.img){const image=document.createElement('img');image.src=person.img;image.alt=person.n;photo.append(image);}else photo.textContent=person.i;
-  clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');teamProfile.showModal();document.body.style.overflow='hidden';teamProfile.scrollTop=0;
+  const show=()=>{clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');DOC.classList.add('profile-open');teamProfile.showModal();document.body.style.overflow='hidden';teamProfile.scrollTop=0;};
+  if(person.img){
+    /* decode the portrait off the main thread first, so opening the card doesn't stall the animation */
+    const image=document.createElement('img');image.decoding='async';image.alt=person.n;image.src=person.img;photo.append(image);
+    let shown=false;const go=()=>{if(!shown){shown=true;show();}};
+    (image.decode?image.decode():Promise.resolve()).then(go,go);setTimeout(go,220);
+  }else{photo.textContent=person.i;show();}
 });
+/* start loading a portrait as soon as the pointer reaches its card */
+const warmPortrait=e=>{const b=e.target.closest&&e.target.closest('[data-person]');const person=b&&TEAM[Number(b.dataset.person)];if(person&&person.img&&!warmPortrait[person.img]){const im=new Image();im.decoding='async';im.src=person.img;warmPortrait[person.img]=im;if(im.decode)im.decode().catch(()=>{});}};
+$('people').addEventListener('pointerover',warmPortrait,{passive:true});
+$('people').addEventListener('pointerdown',warmPortrait,{passive:true});
+$('people').addEventListener('focusin',warmPortrait);
 $('team-profile-close').addEventListener('click',()=>closeTeamProfile());
 teamProfile.addEventListener('click',e=>{if(e.target===teamProfile)closeTeamProfile();});
 teamProfile.addEventListener('cancel',e=>{e.preventDefault();closeTeamProfile();});
-teamProfile.addEventListener('close',()=>{clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');document.body.style.overflow=teamOverflow;if(teamOpener?.isConnected&&!teamOpener.closest('[hidden]'))teamOpener.focus({preventScroll:true});});
+teamProfile.addEventListener('close',()=>{clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');DOC.classList.remove('profile-open');document.body.style.overflow=teamOverflow;if(teamOpener?.isConnected&&!teamOpener.closest('[hidden]'))teamOpener.focus({preventScroll:true});});
 addEventListener('hashchange',()=>closeTeamProfile(true));
 
 /* ---------- project extras: categories, location for the list, model ↔ render pairs ---------- */
@@ -1663,9 +1681,9 @@ function renderProject(i){
   const st = projCtx === 's', STUDIO_SET = ['ABR','PCE','BDP','DYF','WA'];
   const list = st ? STUDIO_SET.map(c=>PROJECTS[P(c)]) : PROJECTS.filter(q=>!q.studio), nx = list[(list.indexOf(p) + 1) % list.length] || list[0];
   $('pd-next').setAttribute('href', '#'+projCtx+'-'+nx.code);
-  $('px-ctx').textContent = st ? 'Studio' : 'Architecture';
-  $('px-back').setAttribute('href', st ? '#studio' : '#architecture'); $('px-back').textContent = st ? '‹ Studio' : '‹ Tüm projeler';
-  $('px-other').setAttribute('href', st ? '#architecture' : '#studio'); $('px-other').textContent = st ? 'Architecture ›' : 'Studio ›'; $('pd-next-name').textContent = nx.name; $('pd-next-img').src = nx.img; $('pd-next-img').style.objectPosition = fp(nx.img);
+  $('px-ctx').textContent = st ? 'Stüdyo' : 'Mimarlık';
+  $('px-back').setAttribute('href', st ? '#studio' : '#architecture'); $('px-back').textContent = st ? '‹ Stüdyo' : '‹ Tüm projeler';
+  $('px-other').setAttribute('href', st ? '#architecture' : '#studio'); $('px-other').textContent = st ? 'Mimarlık ›' : 'Stüdyo ›'; $('pd-next-name').textContent = nx.name; $('pd-next-img').src = nx.img; $('pd-next-img').style.objectPosition = fp(nx.img);
 }
 
 /* lightbox: images or diagrams, step through with buttons, arrows or a swipe */
@@ -1783,7 +1801,7 @@ SITE.refresh = function(content){
 /* links between pages pass through a particle transition in the Studio language:
    points stream in from outside the screen as the destination colour floods in,
    gather into the page name with a loose cloud around it, then fly to the page's own heading and dissolve into it */
-const DEST = { architecture:['#000000','#F5F5F7','Architecture'], studio:['#F5F5F7','#1D1D1F','Studio'], home:['#FFFFFF','#1D1D1F','Welcome'], project:['#000000','#F5F5F7','Architecture'] };
+const DEST = { architecture:['#000000','#F5F5F7','Mimarlık'], studio:['#F5F5F7','#1D1D1F','Stüdyo'], home:['#FFFFFF','#1D1D1F','Hoş geldin'], project:['#000000','#F5F5F7','Mimarlık'] };
 const DEST_EL = { architecture:'#v-architecture .page-head h1', studio:'#v-studio .page-head h1', home:'#welcome h1', project:'#pd-title' };
 const fx = document.createElement('canvas');
 fx.setAttribute('aria-hidden','true');
@@ -1819,7 +1837,7 @@ function navigate(h, ox, oy){
   if(reduce || touchDevice){ location.hash = h; return; }
   navBusy = true;
   const view = viewOf(h), lightProj = view === 'project' && h[0] === 's', [bg, fg] = lightProj ? DEST.studio : DEST[view], darkDest = view === 'architecture' || (view === 'project' && !lightProj);
-  const label = view === 'project' ? ((PROJECTS[P(h.slice(2))] || {}).name || 'Architecture') : DEST[view][2];
+  const label = view === 'project' ? ((PROJECTS[P(h.slice(2))] || {}).name || 'Mimarlık') : DEST[view][2];
   const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio||1, 2);
   fx.width = W*dpr; fx.height = H*dpr; fctx.setTransform(dpr,0,0,dpr,0,0); fx.style.display = 'block';
   if(ox == null){ ox = W/2; oy = H/2; }
@@ -1967,6 +1985,7 @@ function syncPage(){
   stage.style.setProperty('--sfg', `rgb(${mixc(COL.fgA,COL.fgS,k)})`);
   stageLogo.style.color = veil.classList.contains('gone') ? '' : '#1D1D1F';
   sideA.style.opacity = (1 - 0.6*prog).toFixed(3);
+  stage.style.setProperty('--shade', veil.classList.contains('gone') ? (1 - smooth(0.45, 0.9, prog)).toFixed(3) : '0');
   sideS.style.opacity = (0.4 + 0.6*prog).toFixed(3);
 }
 let stageVisible = true;
@@ -2363,6 +2382,6 @@ requestAnimationFrame(frame);
 })();
 </script>
 
-<script src="studio-particles.js?v=20261102-sync"></script>
+<script src="studio-particles.js?v=20261102-tr"></script>
 <script>window.BCA_I18N && BCA_I18N.start();</script>
 </body></html>
