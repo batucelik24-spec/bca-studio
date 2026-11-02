@@ -1,7 +1,33 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-02T11:42:35.536Z",
+ "updated": "2026-11-02T11:52:22.682Z",
+ "projects": {
+  "PCE": {
+   "facts": [
+    [
+     "Yıl",
+     "2026"
+    ],
+    [
+     "Kurucu",
+     "Batuhan Çelik"
+    ],
+    [
+     "Platform",
+     "iOS · Android"
+    ],
+    [
+     "Aşama",
+     "Test ve yayına hazırlık"
+    ],
+    [
+     "Kapsam",
+     "Koşu Uygulaması"
+    ]
+   ]
+  }
+ },
  "team": [
   {
    "n": "Batuhan Çelik",
