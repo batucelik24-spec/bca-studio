@@ -288,6 +288,21 @@
     for(const x of [-.18,.18])box(g,x,.99,-.35,.06,.14,.09,bright);
   };
 
+  makers.HKK=function(g){
+    // Withdrawn room: two curtained drums, a round rug, ring lamps overhead and a back screen with the ink tree.
+    box(g,0,0,0,4.4,.1,3.6);
+    box(g,0,1.2,-1.75,4.4,2.4,.06,glass);
+    box(g,0,1.15,-1.68,1.0,1.4,.03,bright);
+    for(const [x,z] of [[-1.45,-.75],[1.45,-.75]]){
+      cylinder(g,x,1.0,z,.55,2.0);
+      for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=.57+.03*Math.sin(i*2.3);beam(g,[x+r*Math.cos(a),.12,z+r*Math.sin(a)],[x+r*Math.cos(a),2.0,z+r*Math.sin(a)],.006);}
+    }
+    const rug=cylinder(g,0,.07,.25,1.05,.03);rug.scale.z=.55;
+    for(const [y,r,x] of [[2.25,.62,-.35],[2.1,.45,.45],[2.35,.35,.1]]){const ring=mesh(g,new T.TorusGeometry(r,.014,6,48),bright,false);ring.rotation.x=Math.PI/2;ring.position.set(x,y,.1);}
+    for(const [x,z,w] of [[-1.5,1.1,.9],[1.3,1.25,1.0]]){box(g,x,.42,z,w,.06,.22);for(const dx of [-w/2+.08,w/2-.08])beam(g,[x+dx,.1,z],[x+dx,.42,z],.02);}
+    for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2,r=.2+Math.random()*.5;beam(g,[1.9,.2,1.3],[1.9+r*Math.cos(a)*.6,.9+Math.random()*1.2,1.3+r*Math.sin(a)*.6],.004);}
+  };
+
   const cache=new Map();
   function model(code){
     if(cache.has(code))return cache.get(code);

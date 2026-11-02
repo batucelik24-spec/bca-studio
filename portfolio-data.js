@@ -1,5 +1,81 @@
 window.BCAPortfolio = {
   "media": {
+    "img/portfolio/hkk-01.webp": {
+      "caption": "Hikikomori · Afiş",
+      "width": 1920,
+      "height": 1920,
+      "variants": [
+        [
+          "img/portfolio/hkk-01-500.webp",
+          500
+        ],
+        [
+          "img/portfolio/hkk-01-1000.webp",
+          1000
+        ],
+        [
+          "img/portfolio/hkk-01.webp",
+          1920
+        ]
+      ]
+    },
+    "img/portfolio/hkk-02.webp": {
+      "caption": "Hikikomori · İç mekân",
+      "width": 1920,
+      "height": 1920,
+      "variants": [
+        [
+          "img/portfolio/hkk-02-500.webp",
+          500
+        ],
+        [
+          "img/portfolio/hkk-02-1000.webp",
+          1000
+        ],
+        [
+          "img/portfolio/hkk-02.webp",
+          1920
+        ]
+      ]
+    },
+    "img/portfolio/hkk-03.webp": {
+      "caption": "Hikikomori · Beyaz model",
+      "width": 1920,
+      "height": 1920,
+      "variants": [
+        [
+          "img/portfolio/hkk-03-500.webp",
+          500
+        ],
+        [
+          "img/portfolio/hkk-03-1000.webp",
+          1000
+        ],
+        [
+          "img/portfolio/hkk-03.webp",
+          1920
+        ]
+      ]
+    },
+    "img/portfolio/hkk-04.webp": {
+      "caption": "Hikikomori · Perdeler ve bahar dalları",
+      "width": 1920,
+      "height": 1920,
+      "variants": [
+        [
+          "img/portfolio/hkk-04-500.webp",
+          500
+        ],
+        [
+          "img/portfolio/hkk-04-1000.webp",
+          1000
+        ],
+        [
+          "img/portfolio/hkk-04.webp",
+          1920
+        ]
+      ]
+    },
     "img/portfolio/opr-0862.webp": {
       "caption": "Giriş cephesi ve ışık aksı",
       "width": 3058,

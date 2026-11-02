@@ -5,7 +5,7 @@
 <link rel="alternate" hreflang="tr" href="https://bcastud.io/?lang=tr">
 <link rel="alternate" hreflang="en" href="https://bcastud.io/?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://bcastud.io/">
-<script src="i18n.js?v=2"></script>
+<script src="i18n.js?v=3"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BCA Studio">
 <meta property="og:title" content="BCA Studio — Batuhan Çelik Architecture &amp; Studio">
@@ -968,12 +968,12 @@ html{overflow-wrap:break-word}
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="holograms.js?v=20261102-loose"></script>
+<script src="holograms.js?v=20261102-hkk"></script>
 <script src="hologram-transition.js?v=20261102"></script>
 <link rel="stylesheet" href="pace.css?v=20261102">
 <link rel="stylesheet" href="studio-particles.css?v=20261102-cycle">
 <script src="pace-data.js?v=20261102"></script>
-<script src="portfolio-data.js?v=20261102-complete"></script>
+<script src="portfolio-data.js?v=20261102-hkk"></script>
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
 <script src="studio-forms.js?v=20261102-sync"></script>
@@ -1084,6 +1084,12 @@ const PROJECTS = [
    line:'Renk, ışık ve sesle kurgulanmış bir iç mekân.',
    desc:['[Proje metni eklenecek.]'],
    url:OLD+'overflowing-spectrums'},
+  {code:'HKK', name:'Hikikomori', img:'img/portfolio/hkk-02.webp', kind:'İç mekân · Görselleştirme',
+   gallery:['img/portfolio/hkk-01.webp','img/portfolio/hkk-03.webp','img/portfolio/hkk-04.webp'],
+   facts:[['Tür','İç mekân · Görselleştirme']],
+   line:'Japonca “içe çekilme” kavramını yorumlayan bir iç mekân görselleştirmesi.',
+   desc:['Hikikomori, Japoncada “içe çekilme, kapanma” anlamına geliyor; sosyal yaşamdan çekilip zamanının neredeyse tamamını kendi odasında geçiren yetişkin ya da gençleri tanımlıyor. Kavram hem bu toplumsal olguyu hem de ona dahil olan bireyleri anlatmak için kullanılıyor; hikikomoriler “modern çağın keşişleri” olarak da anılıyor.','Görselleştirme bu içe kapanışı bir oda olarak yorumluyor: kırmızı ve krem perdelerle sarılmış silindirik hacimler, ortada yuvarlak bir halı, tavanda halka armatürler, çiçek açmış dallar ve mürekkep bir ağaç resmi. Kırmızı “撤退” (geri çekilme) yazısı serinin ortak imzası.'],
+   url:OLD+'hikikomori'},
   {code:'BDP', studio:true, name:'Ballon de Paris × Batuhan Çelik', img:'img/covers/bdp-extended.jpg', kind:'Ürün tasarımı · Hoparlör',
    gallery:['img/pf/bdp-detail.jpg','img/pf/bdp-bed.jpg','img/pf/bdp-stand.jpg','img/pf/bdp-fair.jpg'],
    facts:[['Yıl','2025'],['Tür','Sınırlı üretim hoparlör koleksiyonu'],['Sergi','Seoul Living Design Fair, Güney Kore · 26.02.2025'],['Renkler','Turkuaz ve Robin Egg Blue']],
@@ -1240,6 +1246,7 @@ const EXTRA = {
   HMP:{cats:['Konsept'], year:'2024'},
   CBR:{cats:['İç mekân','Konsept'], year:'2024'},
   OVS:{cats:['İç mekân','Konsept'], year:'2024'},
+  HKK:{cats:['İç mekân','Konsept'], year:'—'},
   ABR:{cats:[], year:'2025–2026'},
   BDP:{cats:[], year:'2025'},
   PCE:{cats:[], year:'2026'}
@@ -1568,6 +1575,7 @@ const SHEETS = {
     ]},
   CBR:{ info:[0], concept:[1], detail:[], cdg:[], ddg:[] },
   OVS:{ info:[0], concept:[], detail:[], cdg:[], ddg:[] },
+  HKK:{ info:[0], concept:[1], detail:[], cdg:[], ddg:[] },
   BDP:{ info:[0], concept:[1,2], detail:[], cdg:[], ddg:[] }
 };
 /* Portfolio originals are curated separately from the presentation layout. */
