@@ -1214,18 +1214,18 @@ const EXTRA = {
 };
 PROJECTS.forEach(p=>Object.assign(p, EXTRA[p.code] || {cats:[], year:'—'}));
 SITE.cats = ['Stadyum','Kamusal','Kültür','Yarışma','Yüksek yapı','Konut','Konsept','İç mekân'];
-SITE.base.projects = JSON.parse(JSON.stringify(PROJECTS.map(p=>({code:p.code, studio:!!p.studio, name:p.name, kind:p.kind, line:p.line, year:p.year, cats:p.cats||[], facts:p.facts||[], desc:p.desc||[], img:p.img, gallery:p.gallery||[], badge:p.badge||'', hidden:false}))));
+SITE.base.projects = JSON.parse(JSON.stringify(PROJECTS.map(p=>({code:p.code, studio:!!p.studio, name:p.name, kind:p.kind, line:p.line, year:p.year, cats:p.cats||[], facts:p.facts||[], desc:p.desc||[], img:p.img, thumb:p.thumb||'', gallery:p.gallery||[], badge:p.badge||'', hidden:false}))));
 (CONTENT.added || []).forEach(n=>{ if(n && n.code && !PROJECTS.some(p=>p.code===n.code)) PROJECTS.push(Object.assign({facts:[], desc:[], gallery:[], cats:[], year:'—', kind:'', line:'', img:''}, n, {added:true})); });
-const EDITABLE = ['name','kind','line','year','cats','facts','desc','img','gallery','badge','hidden','order'];
+const EDITABLE = ['name','kind','line','year','cats','facts','desc','img','thumb','gallery','badge','hidden','order'];
 Object.entries(CONTENT.projects || {}).forEach(([code, o])=>{ const p = PROJECTS.find(q=>q.code===code); if(p) EDITABLE.forEach(k=>{ if(o[k] !== undefined) p[k] = o[k]; }); });
 const byOrder = (a, b) => (PROJECTS[a].order ?? a) - (PROJECTS[b].order ?? b);
 const factOf = (p, k) => (p.facts.find(f=>f[0]===k) || ['',''])[1];
 
 function cardHTML(k, ctx){
   if(k.p != null){
-    const p = PROJECTS[k.p];
+    const p = PROJECTS[k.p], ci = p.thumb || p.img;
     return '<a class="card" href="#'+(ctx || 'p')+'-'+p.code+'">'+
-      '<div class="thumb"><img src="'+p.img+'"'+imageVariants(p.img,'(max-width: 760px) 90vw, 45vw')+' alt="" loading="lazy" style="object-position:'+fp(p.img)+'">'+(p.badge?'<span class="badge">'+p.badge+'</span>':'')+'</div>'+
+      '<div class="thumb"><img src="'+ci+'"'+imageVariants(ci,'(max-width: 760px) 90vw, 45vw')+' alt="" loading="lazy" style="object-position:'+fp(ci)+'">'+(p.badge?'<span class="badge">'+p.badge+'</span>':'')+'</div>'+
       '<div class="meta"><span class="kind">'+(k.m || p.kind)+'</span><strong>'+p.name+'</strong><p>'+p.line+'</p></div></a>';
   }
   return '<div class="card" style="cursor:default"><div class="thumb ph">Görsel eklenecek'+(k.st?'<span class="status">'+k.st+'</span>':'')+'</div>'+
@@ -1374,7 +1374,7 @@ if(P('PCE')>=0 && !PROJECTS[P('PCE')].hidden) $('grid-apps').innerHTML=cardHTML(
 renderStudioGrids();
 function renderBand(){
   const list = PROJECTS.map((p,i)=>({p,i})).filter(({p})=>!p.hidden && p.img).sort((a,b)=>(a.p.studio-b.p.studio) || ((a.p.order ?? a.i) - (b.p.order ?? b.i))).map(({p})=>p);
-  const card = (p, dup) => '<a class="band-card" href="#'+(p.studio?'s-':'p-')+p.code+'"'+(dup?' aria-hidden="true" tabindex="-1"':'')+'><div class="bimg"><img src="'+p.img+'" alt="'+(dup?'':escapeAttr(p.name))+'" loading="lazy" style="object-position:'+fp(p.img)+'"></div><div class="bmeta"><span>'+(p.kind||'')+'</span><strong>'+p.name+'</strong></div></a>';
+  const card = (p, dup) => '<a class="band-card" href="#'+(p.studio?'s-':'p-')+p.code+'"'+(dup?' aria-hidden="true" tabindex="-1"':'')+'><div class="bimg"><img src="'+(p.thumb||p.img)+'" alt="'+(dup?'':escapeAttr(p.name))+'" loading="lazy" style="object-position:'+fp(p.thumb||p.img)+'"></div><div class="bmeta"><span>'+(p.kind||'')+'</span><strong>'+p.name+'</strong></div></a>';
   const t = $('band-track'); if(!t) return;
   t.innerHTML = list.map(p=>card(p,false)).join('') + list.map(p=>card(p,true)).join('');
   t.style.setProperty('--band-dur', Math.max(30, list.length*7)+'s');

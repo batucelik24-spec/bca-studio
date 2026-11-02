@@ -171,7 +171,7 @@ frame.addEventListener('load', ()=>{
 
 function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
-  (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
+  (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',thumb:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
   return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || [])};
 }
@@ -185,7 +185,7 @@ function diff(){
   state.projects.forEach(p=>{
     if(p.added){ const a = clone(p); delete a.added; added.push(a); return; }
     const b = BASE.projects.find(x=>x.code===p.code), o = {};
-    ['name','kind','line','year','cats','facts','desc','img','gallery','badge','hidden'].forEach(k=>{ if(!same(p[k], b[k])) o[k] = clone(p[k]); });
+    ['name','kind','line','year','cats','facts','desc','img','thumb','gallery','badge','hidden'].forEach(k=>{ if(!same(p[k], b[k])) o[k] = clone(p[k]); });
     if(reordered) o.order = p.order;
     if(Object.keys(o).length) projects[p.code] = o;
   });
@@ -243,6 +243,7 @@ function locate(target){
   const [kind, a, b] = target.split('|');
   if(kind==='p'){ const p = state.projects.find(q=>q.code===a); if(!p) return null;
     if(b==='hidden' || b==='order') return {hash:'architecture', sel:'#arch-trigger-'+p.code};
+    if(b==='thumb') return p.studio ? {hash:'studio', sel:'.card[href="#s-'+p.code+'"] .thumb'} : {hash:'band', sel:'#band-track .band-card[href="#p-'+p.code+'"] .bimg'};
     return {hash:(p.studio?'s-':'p-')+p.code, sel:PROJECT_SPOT[b] || '#pd-title'}; }
   if(kind==='team') return {hash:'team', sel:'[data-person="'+a+'"]'};
   if(kind==='w') return {hash:'home', sel:'#stage'};
@@ -263,7 +264,7 @@ function prepareFrame(w){
   const doc = w.document;
   if(!doc.getElementById('bca-editor-style')) doc.head.append(Object.assign(doc.createElement('style'), {id:'bca-editor-style', textContent:
     '.bca-hl{outline:2px solid #0066CC!important;outline-offset:6px!important;border-radius:4px;transition:outline-color .3s}'+
-    'html.bca-pick [data-edit],html.bca-pick [data-person],html.bca-pick #pd-title,html.bca-pick #px-lead,html.bca-pick #px-facts,html.bca-pick #px-info-text,html.bca-pick #px-tiles,html.bca-pick #px-kind,html.bca-pick #px-hud,html.bca-pick .arch-trigger{cursor:pointer!important}'+
+    'html.bca-pick [data-edit],html.bca-pick [data-person],html.bca-pick #pd-title,html.bca-pick #px-lead,html.bca-pick #px-facts,html.bca-pick #px-info-text,html.bca-pick #px-tiles,html.bca-pick #px-kind,html.bca-pick #px-hud,html.bca-pick .arch-trigger,html.bca-pick a.card,html.bca-pick a.band-card{cursor:pointer!important}'+
     '.bca-hov{outline:2px dashed #0066CC!important;outline-offset:4px!important}'}));
   doc.documentElement.classList.toggle('bca-pick', picking);
   if(doc._bcaWired) return; doc._bcaWired = true;
@@ -271,6 +272,7 @@ function prepareFrame(w){
     let n;
     if((n = target.closest('[data-edit]'))) return {node:n, go:()=>select('texts', null, 't|'+n.dataset.edit)};
     if((n = target.closest('[data-person]'))) return {node:n, go:()=>select('team', null, 'team|'+n.dataset.person)};
+    if((n = target.closest('a.card[href^="#s-"],a.card[href^="#p-"],a.band-card'))){ const code = n.getAttribute('href').slice(3); return {node:n, go:()=>select('project', code, 'p|'+code+'|thumb')}; }
     if((n = target.closest('.arch-trigger'))){ const code = n.id.replace('arch-trigger-',''); return {node:n, go:()=>select('project', code, 'p|'+code+'|name')}; }
     for(const [sel, f] of SPOT_FIELD){ if((n = target.closest(sel))){ const m = w.location.hash.match(/^#[ps]-(.+)$/); if(m) return {node:n, go:()=>select('project', m[1], 'p|'+m[1]+'|'+f)}; } }
     return null;
@@ -365,7 +367,8 @@ function renderProject(main, p){
     field('Kısa tanım', area(p.line, v=>p.line=v, {style:'min-height:64px'}), 'Projenin başında görünen tek cümle.', t('line')),
     p.studio ? null : field('Kategoriler', el('div',{class:'chips'}, CATS.map(c=>el('button',{type:'button',class:'chip','aria-pressed':p.cats.includes(c),onclick:e=>{ p.cats = p.cats.includes(c) ? p.cats.filter(x=>x!==c) : p.cats.concat(c); e.target.setAttribute('aria-pressed',p.cats.includes(c)); touch(); }},c))), null, t('cats')),
     field('Öne çıkan etiket', input(p.badge, v=>p.badge=v), 'İsteğe bağlı. Örnek: 1. Ödül', t('badge')),
-    field('Kapak görseli', coverControl(p), null, t('img')),
+    field('Kapak görseli', coverControl(p), 'Proje sayfasının en üstündeki büyük görsel.', t('img')),
+    field('Kart görseli', thumbControl(p), p.studio ? 'Studio sayfasındaki proje kartında görünen önizleme görseli. Boş bırakırsan kapak görseli kullanılır.' : 'Ana sayfadaki proje bandında görünen önizleme görseli. Boş bırakırsan kapak görseli kullanılır.', t('thumb')),
     field('Galeri', galleryControl(p), 'Kesikli çerçeveli görseller henüz yayınlanmadı.', t('gallery')),
     field('Künye', factsControl(p), 'Konum, rol, ofis, proje sahibi gibi satırlar.', t('facts')),
     field('Metin paragrafları', descControl(p), 'Proje bilgisi, konsept ve detay bölümleri bu paragraflardan oluşur.', t('desc')),
@@ -383,6 +386,17 @@ function coverControl(p){
     el('div',{class:'ctl'},
       el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.img = await addUpload(f, p.code+'-kapak'); touch(); draw(); }},'Yeni görsel yükle'),
       p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const n = parseInt(prompt('Galeriden kaçıncı görsel kapak olsun? (1-'+p.gallery.length+')'),10); if(n>=1&&n<=p.gallery.length){ p.img = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null));
+  draw(); return box;
+}
+function thumbControl(p){
+  const box = el('div',{class:'cover'});
+  const draw = ()=>box.replaceChildren(...[
+    el('div',{class:'thumb'+(uploads[p.thumb]?' pending':''),style:'aspect-ratio:4/3;max-width:280px;background-image:url("'+src(p.thumb||p.img)+'")'+(p.thumb?'':';opacity:.55')}),
+    el('div',{class:'ctl'},
+      el('button',{class:'btn small',type:'button',onclick:async()=>{ const [f] = await pickImages(false); if(!f) return; p.thumb = await addUpload(f, p.code+'-kart'); touch(); draw(); }},'Yeni görsel yükle'),
+      p.gallery.length ? el('button',{class:'btn small',type:'button',onclick:()=>{ const n = parseInt(prompt('Galeriden kaçıncı görsel kart görseli olsun? (1-'+p.gallery.length+')'),10); if(n>=1&&n<=p.gallery.length){ p.thumb = p.gallery[n-1]; touch(); draw(); } }},'Galeriden seç') : null,
+      p.thumb ? el('button',{class:'btn small',type:'button',onclick:()=>{ p.thumb=''; touch(); draw(); }},'Kapakla aynı yap') : null),
+    p.thumb ? null : el('div',{class:'hint'},'Şu an kapak görseli kullanılıyor.')].filter(Boolean));
   draw(); return box;
 }
 function galleryControl(p){
@@ -416,7 +430,7 @@ function newProject(studio){
   let code = slug(name).replace(/-/g,'').slice(0,3).toUpperCase() || 'NEW', n = 2; const base = code;
   while(state.projects.some(p=>p.code===code)) code = base + n++;
   const year = String(new Date().getFullYear());
-  state.projects.push({code, studio, added:true, name, kind:'', line:'', year, cats:[], facts:[['Yıl',year],['Konum','']], desc:[''], img:'', gallery:[], badge:'', hidden:false, order:state.projects.length});
+  state.projects.push({code, studio, added:true, name, kind:'', line:'', year, cats:[], facts:[['Yıl',year],['Konum','']], desc:[''], img:'', thumb:'', gallery:[], badge:'', hidden:false, order:state.projects.length});
   touch(); go('project', code);
 }
 
