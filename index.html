@@ -707,8 +707,8 @@ html{overflow-wrap:break-word}
   <section class="about" id="about">
     <div class="wrap">
       <span class="track eyebrow">Hakkımızda</span>
-      <p class="statement">Tasarımı araştırıyor,<br><em>yeni üretim yolları</em> deniyoruz.</p>
-      <div class="about-cols">
+      <p class="statement" data-edit="home.statement">Tasarımı araştırıyor,<br><em>yeni üretim yolları</em> deniyoruz.</p>
+      <div class="about-cols" data-edit="home.about">
         <p><b>BCA Studio</b>, tasarımı bir araştırma ve deneme alanı olarak ele alan disiplinler arası bir stüdyo. Nesneler, mekânlar, görsel işler ve dijital deneyimler üretirken, bu üretimi mümkün kılan yöntemleri de tasarlıyoruz.</p>
         <p><b>Yaklaşımımız</b>, sorular sormak, farklı alanlar arasında bağ kurmak ve fikirleri deneyerek geliştirmek üzerine kurulu. Malzeme, biçim, veri ve teknolojiyi birlikte araştırıyor; eskizler, modeller, kod ve prototiplerle olasılıkları sınayıp öğrendiklerimizi üretime taşıyoruz.</p>
         <p><b>Hedefimiz</b>, tasarımın ifade ve üretim olanaklarını genişleten deneysel yöntemler geliştirmek. Yeni araçlar, iş birlikleri ve disiplinler arası denemelerle hem ortaya çıkan işleri hem de tasarlama biçimimizi dönüştürmek; keşfettiklerimizi paylaşılabilir yöntemlere ve kullanılabilir deneyimlere dönüştürmek istiyoruz.</p>
@@ -720,7 +720,7 @@ html{overflow-wrap:break-word}
     <div class="wrap">
       <span class="track" style="color:var(--muted)">Ekip</span>
       <h2>Team</h2>
-      <p class="team-lead">Tasarım, araştırma ve geliştirmeyi bir araya getiren küçük bir ekip. Ekip üyelerini yakından tanımak için fotoğraflarına tıklayın.</p>
+      <p class="team-lead" data-edit="home.team.lead">Tasarım, araştırma ve geliştirmeyi bir araya getiren küçük bir ekip. Ekip üyelerini yakından tanımak için fotoğraflarına tıklayın.</p>
       <div class="people" id="people"></div>
     </div>
   </section>
@@ -733,7 +733,7 @@ html{overflow-wrap:break-word}
     <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Studio ›</a></nav>
   </div></header>
   <div class="wrap">
-    <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Architecture</h1><p>Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
+    <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Architecture</h1><p data-edit="arch.lead">Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
     <div class="toolbar">
       <div class="pills" id="filters" role="group" aria-label="Kategoriye göre süz"></div>
       <span class="arch-count" id="arch-count" aria-live="polite"></span>
@@ -743,7 +743,7 @@ html{overflow-wrap:break-word}
       <span class="track muted">Ödüller ve yarışmalar</span>
       <div class="aw-row"><span>2024</span><strong>DASK Depreme Dayanıklı Yapı Tasarımı Yarışması</strong><span>Finalist · Altuni Hotel</span></div>
     </section>
-    <section class="cta-band"><h2>Bir proje mi düşünüyorsunuz?</h2><p>Yazın, birlikte konuşalım. <span class="sel">batucelik2001@gmail.com</span></p></section>
+    <section class="cta-band"><h2 data-edit="arch.cta.title">Bir proje mi düşünüyorsunuz?</h2><p data-edit="arch.cta.text">Yazın, birlikte konuşalım. <span class="sel">batucelik2001@gmail.com</span></p></section>
   </div>
 </main>
 
@@ -847,19 +847,19 @@ html{overflow-wrap:break-word}
   </div></header>
   <div class="wrap">
     <div class="s-hero">
-      <div class="page-head"><span class="track muted">BCA</span><h1>Studio</h1><p>Tasarım araştırmaları, deneysel yöntemler ve yeni üretim biçimleri için açık bir çalışma alanı.</p></div>
+      <div class="page-head"><span class="track muted">BCA</span><h1>Studio</h1><p data-edit="studio.lead">Tasarım araştırmaları, deneysel yöntemler ve yeni üretim biçimleri için açık bir çalışma alanı.</p></div>
 
     </div>
 
     <section class="s-sec studio-intro">
       <span class="track muted">Araştır · Tasarla · Geliştir</span>
-      <h2>Fikirleri deneyerek<br>hayata geçiriyoruz.</h2>
-      <div class="studio-copy"><p>Studio’da tasarımın nasıl yapıldığını da araştırıyoruz. Malzeme denemeleri, görsel araştırmalar, ürünler, dijital deneyimler ve yaratıcı araçlar üzerinden farklı düşünme ve üretme biçimlerini bir araya getiriyoruz.</p><p>Amacımız, deneysel yöntemler geliştirerek tasarımın olanaklarını genişletmek. Sonucu baştan belirlemek yerine denemelerden öğreniyor; fikirleri prototiplerle sınayıp yeni işlere, araçlara ve başkalarının da kullanabileceği yöntemlere dönüştürüyoruz.</p></div>
+      <h2 data-edit="studio.intro.title">Fikirleri deneyerek<br>hayata geçiriyoruz.</h2>
+      <div class="studio-copy" data-edit="studio.intro.text"><p>Studio’da tasarımın nasıl yapıldığını da araştırıyoruz. Malzeme denemeleri, görsel araştırmalar, ürünler, dijital deneyimler ve yaratıcı araçlar üzerinden farklı düşünme ve üretme biçimlerini bir araya getiriyoruz.</p><p>Amacımız, deneysel yöntemler geliştirerek tasarımın olanaklarını genişletmek. Sonucu baştan belirlemek yerine denemelerden öğreniyor; fikirleri prototiplerle sınayıp yeni işlere, araçlara ve başkalarının da kullanabileceği yöntemlere dönüştürüyoruz.</p></div>
     </section>
     <section class="s-sec studio-categories" aria-label="Studio çalışma alanları">
-      <div class="studio-category"><span class="track muted">01</span><h2>Projeler</h2><p>Farklı ölçeklerde tasarımlar ve deneysel üretimler.</p><div id="grid-s"></div><div id="grid-x"></div></div>
-      <div class="studio-category"><span class="track muted">02</span><h2>Uygulama ve<br>Yazılımlar</h2><p>Fikirleri gündelik deneyimlere dönüştüren dijital ürünler.</p><div id="grid-apps"></div></div>
-      <div class="studio-category"><span class="track muted">03</span><h2>Ar-Ge</h2><p>Yeni yöntemleri araştırdığımız deneyler ve atölyeler.</p><div id="grid-research"></div><div class="studio-entry"><span class="track muted">Atölye</span><strong>AI [UN]Plugged</strong><span>Tasarım sürecinde yapay zekâ üzerine araştırma ve denemeler.</span></div></div>
+      <div class="studio-category"><span class="track muted">01</span><h2>Projeler</h2><p data-edit="studio.cat.projects">Farklı ölçeklerde tasarımlar ve deneysel üretimler.</p><div id="grid-s"></div><div id="grid-x"></div></div>
+      <div class="studio-category"><span class="track muted">02</span><h2>Uygulama ve<br>Yazılımlar</h2><p data-edit="studio.cat.apps">Fikirleri gündelik deneyimlere dönüştüren dijital ürünler.</p><div id="grid-apps"></div></div>
+      <div class="studio-category"><span class="track muted">03</span><h2>Ar-Ge</h2><p data-edit="studio.cat.research">Yeni yöntemleri araştırdığımız deneyler ve atölyeler.</p><div id="grid-research"></div><div class="studio-entry"><span class="track muted">Atölye</span><strong>AI [UN]Plugged</strong><span>Tasarım sürecinde yapay zekâ üzerine araştırma ve denemeler.</span></div></div>
     </section>
 
 
@@ -867,7 +867,7 @@ html{overflow-wrap:break-word}
 
 
     <section class="s-sec">
-      <div class="s-head"><h2>Notlar</h2><p>Araştırma yazıları ve süreç günlükleri.</p></div>
+      <div class="s-head"><h2>Notlar</h2><p data-edit="studio.notes.lead">Araştırma yazıları ve süreç günlükleri.</p></div>
       <div class="notes">
         <div class="note"><span>26.02.2025</span><strong>Ballon de Paris hoparlör koleksiyonu Seoul Living Design Fair’de</strong><span>Ürün</span></div>
         <div class="note"><span>2024</span><strong>AI [UN]Plugged Design Workshop: tasarımda yapay zekâ, yaklaşık 60 öğrenciyle</strong><span>Atölye</span></div>
@@ -876,13 +876,13 @@ html{overflow-wrap:break-word}
     </section>
 
     <section class="s-sec">
-      <div class="s-head"><h2>Birlikte geliştirelim</h2><p>Mimarlık ofisleri, girişimler ve kurumlar için.</p></div>
-      <div class="svc">
+      <div class="s-head"><h2 data-edit="studio.collab.title">Birlikte geliştirelim</h2><p data-edit="studio.collab.lead">Mimarlık ofisleri, girişimler ve kurumlar için.</p></div>
+      <div class="svc" data-edit="studio.services">
         <div><strong>Uygulama geliştirme</strong><p>iOS, Android ve web için tasarımdan yayına.</p></div>
         <div><strong>Yazılım ve araçlar</strong><p>Tasarım süreçlerini hızlandıran özel araçlar ve eklentiler.</p></div>
         <div><strong>Yapay zekâ Ar-Ge</strong><p>Görüntü, veri ve üretken modeller üzerine deneysel çalışmalar.</p></div>
       </div>
-      <p class="mail">İletişim: <span class="sel">batucelik2001@gmail.com</span></p>
+      <p class="mail" data-edit="studio.mail">İletişim: <span class="sel">batucelik2001@gmail.com</span></p>
     </section>
   </div>
 </main>
@@ -925,11 +925,19 @@ html{overflow-wrap:break-word}
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
 <script src="studio-forms.js?v=20261102-sync"></script>
+<script src="content.js?v=1"></script>
+<script>/* editor preview: ?draft shows the unpublished draft from this browser only */
+try{ if(/[?&]draft\b/.test(location.search)){ const d = localStorage.getItem('bca-editor-draft'); if(d) window.BCA_CONTENT = JSON.parse(d); } }catch(e){}</script>
 <script>
 (function(){
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DOC = document.documentElement;
 const $ = id => document.getElementById(id);
+/* edits made in editor.html live in content.js and are laid over the built-in content */
+const CONTENT = window.BCA_CONTENT || {};
+const SITE = window.BCA_SITE = {base:{texts:{}, team:[], projects:[]}};
+document.querySelectorAll('[data-edit]').forEach(el=>{ SITE.base.texts[el.dataset.edit] = el.innerHTML; });
+Object.entries(CONTENT.texts || {}).forEach(([key, html])=>{ const el = document.querySelector('[data-edit="'+key+'"]'); if(el && typeof html === 'string') el.innerHTML = html; });
 
 const IMAGES = [
   {src:'img/p/hall-sunset.jpg',        focus:[0.5,0.5],  spot:[0.52,0.6],  t:'Tashkent Opera House', v:'Taşkent · 2026'},
@@ -1107,6 +1115,11 @@ const TEAM = [
   {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'},
   {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'}
 ];
+SITE.base.team = TEAM.map(({n,r,i,img,b})=>({n,r,i,img:img||'',b}));
+if(Array.isArray(CONTENT.team) && CONTENT.team.length){
+  const before = TEAM.slice();
+  TEAM.splice(0, TEAM.length, ...CONTENT.team.map(t=>{ const old = before.find(o=>o.n===t.n); return Object.assign({}, t, old && old.profile ? {profile:old.profile} : {}); }));
+}
 $('people').innerHTML = TEAM.map((t,index)=>
   '<button type="button" class="person" data-person="'+index+'" aria-haspopup="dialog" aria-controls="team-profile" aria-label="Profili aç: '+escapeAttr(t.n)+'"><div class="portrait'+(t.img?' photo':'')+'">'+(t.img?'<img src="'+t.img+'" alt="'+t.n+'">':'<span class="ini">'+t.i+'</span>')+'</div>'+
   '<strong>'+t.n+'</strong><span class="role">'+t.r+'</span></button>').join('');
@@ -1161,6 +1174,12 @@ const EXTRA = {
   PCE:{cats:[], year:'2026'}
 };
 PROJECTS.forEach(p=>Object.assign(p, EXTRA[p.code] || {cats:[], year:'—'}));
+SITE.cats = ['Stadyum','Kamusal','Kültür','Yarışma','Yüksek yapı','Konut','Konsept','İç mekân'];
+SITE.base.projects = JSON.parse(JSON.stringify(PROJECTS.map(p=>({code:p.code, studio:!!p.studio, name:p.name, kind:p.kind, line:p.line, year:p.year, cats:p.cats||[], facts:p.facts||[], desc:p.desc||[], img:p.img, gallery:p.gallery||[], badge:p.badge||'', hidden:false}))));
+(CONTENT.added || []).forEach(n=>{ if(n && n.code && !PROJECTS.some(p=>p.code===n.code)) PROJECTS.push(Object.assign({facts:[], desc:[], gallery:[], cats:[], year:'—', kind:'', line:'', img:''}, n, {added:true})); });
+const EDITABLE = ['name','kind','line','year','cats','facts','desc','img','gallery','badge','hidden','order'];
+Object.entries(CONTENT.projects || {}).forEach(([code, o])=>{ const p = PROJECTS.find(q=>q.code===code); if(p) EDITABLE.forEach(k=>{ if(o[k] !== undefined) p[k] = o[k]; }); });
+const byOrder = (a, b) => (PROJECTS[a].order ?? a) - (PROJECTS[b].order ?? b);
 const factOf = (p, k) => (p.facts.find(f=>f[0]===k) || ['',''])[1];
 
 function cardHTML(k, ctx){
@@ -1191,7 +1210,7 @@ $('filters').addEventListener('click', e=>{
   cat = b.textContent; renderArch();
 });
 function renderArch(){
-  const idx = PROJECTS.map((_,i)=>i).filter(i=> !PROJECTS[i].studio && (cat === 'Tümü' || PROJECTS[i].cats.includes(cat)));
+  const idx = PROJECTS.map((_,i)=>i).filter(i=> !PROJECTS[i].studio && !PROJECTS[i].hidden && (cat === 'Tümü' || PROJECTS[i].cats.includes(cat))).sort(byOrder);
   document.dispatchEvent(new Event('bca-architecture-change'));
   [...$('filters').children].forEach(x=>x.setAttribute('aria-pressed',x.textContent===cat));
   $('arch-count').textContent = String(idx.length).padStart(2,'0')+' PROJE';
@@ -1306,11 +1325,11 @@ addEventListener('resize',()=>{
 });
 
 /* ---------- studio page grids ---------- */
-$('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].map(k=>cardHTML(k,'s')).join('');
+$('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].concat(PROJECTS.map((p,i)=>p.added && p.studio ? {p:i} : null).filter(Boolean)).filter(k=>k.p>=0 && !PROJECTS[k.p].hidden).map(k=>cardHTML(k,'s')).join('');
 $('grid-x').innerHTML = [{p:P('DYF'), m:'Cephe · Veri'}, {p:P('WA'), m:'Yapay zekâ destekli cephe'}].map(k=>cardHTML(k,'s')).join('');
 reveal($('grid-x'));
-$('grid-research').innerHTML=cardHTML({p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},'s');
-if(P('PCE')>=0) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
+if(!PROJECTS[P('ABR')]?.hidden) $('grid-research').innerHTML=cardHTML({p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},'s');
+if(P('PCE')>=0 && !PROJECTS[P('PCE')].hidden) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
 
 /* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
 const DG = 'img/dg/';
