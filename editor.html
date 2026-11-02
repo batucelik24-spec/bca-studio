@@ -112,6 +112,10 @@ textarea{min-height:96px;resize:vertical}
       </div>
       <span class="sp"></span>
       <button class="btn small pick" id="pick" type="button" aria-pressed="false" title="Önizlemede bir yere tıklayınca o alanın düzenleyicisi açılır">Tıklayarak seç</button>
+      <div class="seg" role="group" aria-label="Önizleme dili">
+        <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
       <div class="seg" role="group" aria-label="Ekran">
         <button type="button" data-dev="desktop" aria-pressed="true">Masaüstü</button>
         <button type="button" data-dev="mobile" aria-pressed="false">Mobil</button>
@@ -121,6 +125,7 @@ textarea{min-height:96px;resize:vertical}
   </section>
 </div>
 
+<script src="i18n-en.js?v=1"></script>
 <script>
 (function(){
 'use strict';
@@ -178,7 +183,7 @@ function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
   (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',thumb:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
-  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || []), focus: clone(content.focus || {})};
+  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || []), focus: clone(content.focus || {}), en: {texts: clone((content.en||{}).texts || {}), strings: clone((content.en||{}).strings || {})}};
 }
 
 /* only what differs from the built-in content is written to content.js */
@@ -201,9 +206,26 @@ function diff(){
   if(Object.keys(state.focus || {}).length) out.focus = clone(state.focus);
   const texts = {}; Object.entries(state.texts).forEach(([k,v])=>{ if(v !== BASE.texts[k]) texts[k] = v; });
   if(Object.keys(texts).length) out.texts = texts;
+  const en = state.en || {}, used = new Set(englishStrings(out)), enT = {}, enS = {};
+  Object.entries(en.texts || {}).forEach(([k,v])=>{ if(v && v.trim()) enT[k] = v; });
+  Object.entries(en.strings || {}).forEach(([k,v])=>{ if(v && v.trim() && used.has(k)) enS[k] = v; });
+  if(Object.keys(enT).length || Object.keys(enS).length) out.en = Object.assign({}, Object.keys(enT).length ? {texts:enT} : {}, Object.keys(enS).length ? {strings:enS} : {});
   return out;
 }
-const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null, focus:o.focus||{}});
+/* ---------- English: the site has built-in translations; edited text needs its own ---------- */
+const nrm = s => String(s == null ? '' : s).replace(/\s+/g,' ').trim();
+const EN = window.BCA_EN || {};
+function builtinEN(s){ const k = nrm(s); if(!k || !/[A-Za-zÇĞİÖŞÜçğıöşü]/.test(k) || EN[k] != null) return true; for(const sep of [' · ',' — ',' / ']) if(k.includes(sep)) return k.split(sep).every(builtinEN); return false; }
+/* every edited text that the built-in dictionary cannot translate */
+function englishStrings(d){
+  const out = [], add = v => { const k = nrm(v); if(k && !builtinEN(k) && !out.includes(k)) out.push(k); };
+  const proj = o => { if(!o) return; ['kind','line','badge'].forEach(f=>{ if(typeof o[f]==='string') add(o[f]); }); (o.facts||[]).forEach(r=>{ add(r[0]); add(r[1]); }); (o.desc||[]).forEach(add); };
+  Object.values(d.projects || {}).forEach(proj); (d.added || []).forEach(proj);
+  (d.team || []).forEach(t=>{ add(t.r); add(t.b); });
+  (d.welcome || []).forEach(w=>add(w.v));
+  return out;
+}
+const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null, focus:o.focus||{}, en:o.en||{}});
 /* the draft as the preview sees it: images not yet published are shown from memory */
 const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)":/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl)+':' : m).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
 
@@ -211,7 +233,7 @@ function init(published){
   publishedJSON = norm(published);
   state = compose(published);
   const saved = store.get('bca-editor-state');
-  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || []), focus:s.focus || {}}; } }catch(e){} }
+  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || []), focus:s.focus || {}, en:s.en || state.en}; } }catch(e){} }
   ready = true;
   view = {type:'project', id:(state.projects.find(p=>!p.studio) || state.projects[0]).code};
   $('#newtab').hidden = false; $('#publish').hidden = false;
@@ -235,8 +257,19 @@ let lastWelcome = null, welcomeTimer = 0;
 function reloadWithDraft(){
   const d = diff();
   if(!store.set('bca-editor-draft', JSON.stringify(withImages(d)))) store.set('bca-editor-draft', JSON.stringify(d));
-  frame.src = 'index.html?editor&draft&r='+Date.now()+'#home';
+  frame.src = 'index.html?editor&draft'+(previewLang==='en'?'&lang=en':'')+'&r='+Date.now()+'#home';
 }
+let previewLang = 'tr';
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click', ()=>{
+  if(b.dataset.lang === previewLang) return;
+  previewLang = b.dataset.lang;
+  document.querySelectorAll('[data-lang]').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  const w = site(), hash = w ? w.location.hash : '#home';
+  const d = diff();
+  if(!store.set('bca-editor-draft', JSON.stringify(withImages(d)))) store.set('bca-editor-draft', JSON.stringify(d));
+  frame.src = 'index.html?editor&draft'+(previewLang==='en'?'&lang=en':'')+'&r='+Date.now()+(hash || '#home');
+  status(previewLang==='en' ? 'Önizleme İngilizce' : 'Önizleme Türkçe');
+}));
 function pushPreview(){
   const w = site(); if(!w || !ready) return;
   try{ w.BCA_SITE.refresh(withImages(diff())); }catch(e){ console.warn('Önizleme güncellenemedi', e); }
@@ -324,7 +357,7 @@ function renderPicker(){
   sel.replaceChildren(
     el('optgroup',{label:'Mimarlık projeleri'}, state.projects.filter(p=>!p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
     el('optgroup',{label:'Studio projeleri'}, state.projects.filter(p=>p.studio).map(p=>opt('project:'+p.code, (p.name||p.code)+(p.hidden?' (gizli)':'')+dot(isDirty(p.code))))),
-    el('optgroup',{label:'Site'}, opt('welcome:', 'Welcome görselleri'+dot(d.welcome)), opt('team:', 'Ekip'+dot(d.team)), opt('texts:', 'Sayfa metinleri'+dot(d.texts)), opt('settings:', 'Bağlantı ayarı'+(token()?'':' (gerekli)'))));
+    el('optgroup',{label:'Site'}, opt('welcome:', 'Welcome görselleri'+dot(d.welcome)), opt('team:', 'Ekip'+dot(d.team)), opt('texts:', 'Sayfa metinleri'+dot(d.texts)), opt('en:', 'İngilizce çeviri'+(missingEN(d) ? ' ('+missingEN(d)+' eksik)' : dot(d.en))), opt('settings:', 'Bağlantı ayarı'+(token()?'':' (gerekli)'))));
 }
 const key = () => view.type+':'+(view.id||'');
 $('#picker').addEventListener('change', e=>{ const [type, id] = e.target.value.split(':'); go(type, id||null); });
@@ -341,6 +374,7 @@ function render(){
   else if(view.type==='welcome') renderWelcome(main);
   else if(view.type==='team') renderTeam(main);
   else if(view.type==='texts') renderTexts(main);
+  else if(view.type==='en') renderEnglish(main);
   else renderSettings(main);
 }
 $('#main').addEventListener('focusin', e=>{ const f = e.target.closest('[data-target]'); if(f){ activate(f); highlight(f.dataset.target); } });
@@ -511,6 +545,34 @@ function renderTexts(main){
     el('p',{class:'sub'},'Kalın için <b>…</b>, italik için <em>…</em>, satır başı için <br> kullanabilirsin.'),
     ...Object.keys(state.texts).map(k=>field(TEXT_LABELS[k] || k, area(state.texts[k], v=>state.texts[k]=v, {style:'min-height:'+(state.texts[k].length>220?'180px':'70px')}),
       state.texts[k] !== BASE.texts[k] ? el('button',{class:'btn small',type:'button',style:'margin-top:6px',onclick:()=>{ state.texts[k] = BASE.texts[k]; touch(); render(); }},'Orijinale döndür') : null, 't|'+k)));
+}
+
+/* ---------- English versions of edited content ---------- */
+function missingEN(d){
+  const en = state.en || {};
+  return englishStrings(d).filter(k=>!nrm(en.strings && en.strings[k])).length + Object.keys(d.texts || {}).filter(k=>!nrm(en.texts && en.texts[k])).length;
+}
+function renderEnglish(main){
+  const en = state.en = state.en || {texts:{}, strings:{}}; en.texts = en.texts || {}; en.strings = en.strings || {};
+  const d = diff(), list = englishStrings(d);
+  const flip = () => { const b = document.querySelector('[data-lang="en"]'); if(b && previewLang !== 'en') b.click(); };
+  main.append(el('h2',{},'İngilizce çeviri'),
+    el('p',{class:'sub'},'Site İngilizce açıldığında sitenin kendi metinleri hazır çevirileriyle görünür. Senin değiştirdiğin ya da eklediğin metinlerin İngilizcesini buraya yaz; boş kalan alan İngilizce sayfada Türkçe görünür. İsimler gibi çevrilmeyecek metinleri boş bırakabilirsin.'),
+    el('div',{class:'ctl',style:'margin-bottom:14px'}, el('button',{class:'btn small',type:'button',onclick:flip},'Önizlemeyi İngilizce aç')));
+  main.append(el('h3',{},'Değiştirdiğin içerik'));
+  if(!list.length) main.append(el('p',{class:'sub'},'Çevrilmesi gereken yeni metin yok.'));
+  list.forEach(k=>{
+    const long = k.length > 90;
+    const ctl = (long ? area : input)(en.strings[k] || '', v=>{ en.strings[k] = v; }, long ? {style:'min-height:110px'} : {});
+    main.append(field('Türkçe → İngilizce', el('div',{}, el('p',{class:'sub',style:'margin:0 0 8px;color:var(--fg)'}, k), ctl), null, null));
+  });
+  main.append(el('h3',{style:'margin-top:22px'},'Sayfa metinleri'),
+    el('p',{class:'sub'},'Değiştirmediğin metinler otomatik çevriliyor; istersen yine de kendi İngilizceni yazabilirsin. Aynı biçim kuralları geçerli (<b>, <em>, <br>).'));
+  Object.keys(state.texts).forEach(k=>{
+    const edited = state.texts[k] !== BASE.texts[k];
+    const t = area(en.texts[k] || '', v=>{ en.texts[k] = v; }, {style:'min-height:'+(state.texts[k].length>220?'150px':'60px'), placeholder: edited ? 'Türkçesini değiştirdin — İngilizcesini yaz' : 'Otomatik çeviri kullanılıyor'});
+    main.append(field((TEXT_LABELS[k] || k)+(edited && !nrm(en.texts[k]) ? ' · çeviri gerekli' : ''), t, null, 't|'+k));
+  });
 }
 
 /* ---------- settings: the GitHub key lives only in this browser ---------- */

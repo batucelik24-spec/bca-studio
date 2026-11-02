@@ -2,6 +2,10 @@
 <title>BCA Studio — Batuhan Çelik Architecture &amp; Studio</title>
 <meta name="description" content="BCA Studio: Batuhan Çelik Architecture ve Studio. Kamusal yapılar, stadyumlar, yarışma projeleri ile uygulama, yazılım ve yapay zekâ Ar-Ge çalışmaları.">
 <link rel="canonical" href="https://bcastud.io/">
+<link rel="alternate" hreflang="tr" href="https://bcastud.io/?lang=tr">
+<link rel="alternate" hreflang="en" href="https://bcastud.io/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://bcastud.io/">
+<script src="i18n.js?v=1"></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BCA Studio">
 <meta property="og:title" content="BCA Studio — Batuhan Çelik Architecture &amp; Studio">
@@ -70,6 +74,13 @@ a{color:inherit;text-decoration:none}
 .stat b{display:block;font-weight:300;font-size:clamp(44px,5vw,64px);line-height:1;letter-spacing:-.02em}
 .stat span{display:block;margin-top:10px;color:var(--muted);font-size:15px}
 .team{padding-block:120px 140px;background:var(--bg2)}
+.lang-switch{display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.06em;font-weight:500}
+.lang-switch span{opacity:.35}
+.lang-switch a,.topbar nav .lang-switch a{opacity:.42;transition:opacity .2s}
+.lang-switch a:hover,.lang-switch a[aria-current],.topbar nav .lang-switch a:hover,.topbar nav .lang-switch a[aria-current]{opacity:1}
+.lang-switch.on-stage{position:absolute;top:34px;right:32px;z-index:7;color:inherit}
+@media (max-width:760px){.lang-switch.on-stage{top:28px;right:18px}}
+#stage:has(#welcome:not(.gone)) .lang-switch.on-stage{color:#1D1D1F}
 a.sel,footer a{color:inherit;text-decoration:none}a.sel:hover,footer a:hover{text-decoration:underline;text-underline-offset:3px}
 /* project band: an endless right-to-left strip of the work, between About and Team */
 .band{padding-block:24px 120px;overflow:hidden}
@@ -1243,17 +1254,17 @@ let cat = 'Tümü', archOpenCode = null, archAnimation = null, archScrollFrame =
 let archReturnTop = 80;
 const projectPane = $('v-project'), projectDock = document.createComment('Project detail home');
 projectPane.before(projectDock);
-$('filters').innerHTML = CATS.map(c=>'<button type="button" aria-pressed="'+(c===cat)+'">'+c+'</button>').join('');
+$('filters').innerHTML = CATS.map(c=>'<button type="button" data-cat="'+c+'" aria-pressed="'+(c===cat)+'">'+c+'</button>').join('');
 $('filters').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   closeArchProject({animate:false,restore:false});
   if(location.hash.startsWith('#p-')) history.replaceState(history.state,'','#architecture');
-  cat = b.textContent; renderArch();
+  cat = b.dataset.cat; renderArch();
 });
 function renderArch(){
   const idx = PROJECTS.map((_,i)=>i).filter(i=> !PROJECTS[i].studio && !PROJECTS[i].hidden && (cat === 'Tümü' || PROJECTS[i].cats.includes(cat))).sort(byOrder);
   document.dispatchEvent(new Event('bca-architecture-change'));
-  [...$('filters').children].forEach(x=>x.setAttribute('aria-pressed',x.textContent===cat));
+  [...$('filters').children].forEach(x=>x.setAttribute('aria-pressed',x.dataset.cat===cat));
   $('arch-count').textContent = String(idx.length).padStart(2,'0')+' PROJE';
   $('arch-flow').innerHTML = idx.map((i,n)=>{const p=PROJECTS[i], loc=factOf(p,'Konum')||factOf(p,'Proje konumu');
     return '<section class="arch-entry" id="arch-entry-'+p.code+'">'+
@@ -1766,6 +1777,7 @@ SITE.refresh = function(content){
   const view = DOC.dataset.view;
   if(view === 'project' || archOpenCode) renderProject(projIdx);
   else if(view === 'architecture') renderArch();
+  if(window.BCA_I18N){ BCA_I18N.setContent(content); BCA_I18N.retranslate(); }
 };
 
 /* links between pages pass through a particle transition in the Studio language:
@@ -2338,4 +2350,5 @@ requestAnimationFrame(frame);
 </script>
 
 <script src="studio-particles.js?v=20261102-sync"></script>
+<script>window.BCA_I18N && BCA_I18N.start();</script>
 </body></html>
