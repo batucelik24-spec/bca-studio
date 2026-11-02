@@ -60,6 +60,11 @@ a{color:inherit;text-decoration:none}
 .welcome.gone{opacity:0;visibility:hidden}
 .welcome:not(.gone){transition:opacity .9s ease,visibility 0s}
 .welcome h1{margin:0;font-weight:300;font-size:clamp(64px,11vw,168px);letter-spacing:-.035em;line-height:1}
+.hello{display:inline-grid;justify-items:center;align-items:center;overflow:hidden;padding:.12em .1em;font-family:var(--f),'Hiragino Sans','Noto Sans JP','PingFang SC','Noto Sans SC','Noto Sans Arabic','Geeza Pro','Apple SD Gothic Neo','Noto Sans KR',sans-serif}
+.hello .hw{grid-area:1/1;white-space:nowrap;opacity:0;transform:translateY(55%);transition:transform .8s cubic-bezier(.22,1,.36,1),opacity .55s ease}
+.hello .hw.is-on{opacity:1;transform:none}.hello .hw.is-out{opacity:0;transform:translateY(-55%)}
+.hello .hw[lang=ja],.hello .hw[lang=zh],.hello .hw[lang=ko],.hello .hw[lang=ar]{font-weight:300;letter-spacing:0;font-size:.82em}
+@media (prefers-reduced-motion:reduce){.hello .hw{transition:opacity .3s}}
 .welcome p{margin:0;color:#6E6E73}
 .welcome .tap{display:none}
 @media (hover:none){.welcome .hov{display:none}.welcome .tap{display:inline}}
@@ -746,7 +751,7 @@ html{overflow-wrap:break-word}
       <a class="scroll-cue" href="#about" id="cue"><span class="track">Keşfet</span><i></i></a>
 
       <div class="welcome" id="welcome">
-        <h1>Merhaba</h1>
+        <h1 class="hello" id="hello" translate="no" aria-label="Merhaba"><span class="hw is-on">Merhaba</span></h1>
       </div>
     </section>
   </div>
@@ -1978,6 +1983,24 @@ const lift = ()=>{ clearTimeout(veilTimer); veil.classList.add('gone'); };
 stage.addEventListener('pointerenter', e=>{ if(e.pointerType === 'mouse' && innerWidth > 760) lift(); });
 stage.addEventListener('pointerleave', e=>{ if(e.pointerType !== 'mouse' || innerWidth <= 760) return; veilTimer = setTimeout(()=>{ veil.classList.remove('gone'); target = 0; }, 1400); });
 veil.addEventListener('click', lift);
+/* "Merhaba" in many languages: each word rises in from below and leaves upward */
+(function hello(){
+  const h = $('hello'); if(!h) return;
+  const HELLO = [['tr','Merhaba'],['en','Hello'],['sv','Hej'],['ja','こんにちは'],['zh','你好'],['ar','مرحبا'],['es','Hola'],['fr','Bonjour'],['ko','안녕하세요'],['it','Ciao'],['de','Hallo'],['pt','Olá'],['ru','Привет'],['el','Γεια σου'],['en','Hi']];
+  let i = Math.max(0, HELLO.findIndex(w=>w[0]===DOC.lang));
+  const show = first => {
+    const [lang, word] = HELLO[i];
+    if(first){ const s0 = h.querySelector('.hw'); s0.textContent = word; s0.lang = lang; h.setAttribute('aria-label', word); return; }
+    h.querySelectorAll('.hw.is-out').forEach(x=>x.remove());
+    const old = h.querySelector('.hw.is-on');
+    const n = document.createElement('span'); n.className = 'hw'; n.lang = lang; n.textContent = word; if(lang==='ar') n.dir = 'rtl';
+    h.append(n); n.getBoundingClientRect(); n.classList.add('is-on');
+    if(old){ old.classList.remove('is-on'); old.classList.add('is-out'); setTimeout(()=>old.remove(), 900); }
+  };
+  show(true);
+  if(reduce) return;
+  setInterval(()=>{ if(document.hidden || veil.classList.contains('gone') || !homeActive) return; i = (i+1) % HELLO.length; show(false); }, 1700);
+})();
 stage.addEventListener('focusin', lift);
 
 /* ---------- blend between the two sides follows the pointer ---------- */
