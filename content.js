@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-02T12:07:44.023Z",
+ "updated": "2026-11-02T16:37:55.939Z",
  "projects": {
   "PCE": {
    "facts": [
@@ -25,7 +25,8 @@ window.BCA_CONTENT = {
      "Kapsam",
      "Koşu Uygulaması"
     ]
-   ]
+   ],
+   "thumb": "img/uploads/pce-kart-logo-mvzheu7j.jpg"
   }
  },
  "team": [
@@ -114,5 +115,19 @@ window.BCA_CONTENT = {
    "t": "Coastal Bar",
    "v": "2024"
   }
- ]
+ ],
+ "focus": {
+  "img/p/hall-sunset.jpg": [
+   51,
+   44
+  ],
+  "img/pace/cover.svg": [
+   32,
+   48
+  ],
+  "img/uploads/pce-kart-logo-mvzheu7j.jpg": [
+   51,
+   51
+  ]
+ }
 };
