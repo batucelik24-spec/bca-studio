@@ -1,0 +1,18 @@
+/* Keep the Studio's cobalt ink and light paper, with translucent point membranes. */
+#v-studio>#s-form{opacity:1}
+.s-hero{position:relative;min-height:76svh}
+.s-hero .page-head{position:relative;z-index:1;max-width:min(47%,560px)}
+.studio-form-controls{position:absolute;right:0;bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;max-width:60%;color:var(--muted);padding:0 10px;background:rgba(245,245,247,.72);backdrop-filter:blur(7px);border-radius:5px}
+.studio-form-controls button{font:400 11px/1.3 var(--f);letter-spacing:.04em;min-height:44px;border:0;background:none;color:inherit;cursor:pointer;padding:5px 0;position:relative}
+.studio-form-controls button[aria-pressed="true"]{color:var(--accent)}
+.studio-form-controls button[aria-pressed="true"]:after{content:"";position:absolute;bottom:6px;left:0;width:100%;height:1px;background:currentColor}
+.studio-form-controls button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+.studio-form-controls .form-pause{min-width:64px}
+.studio-form-controls .form-pause:after{display:none}
+@media(max-width:760px){
+ .s-hero{min-height:800px;min-height:max(760px,88svh);align-items:flex-start;padding-top:48px;padding-bottom:100px}
+ .s-hero .page-head{max-width:100%;padding-block:32px 0}
+ .studio-form-controls{max-width:none;left:0;right:0;bottom:20px;justify-content:flex-end;gap:14px}
+ .studio-form-controls button{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.studio-form-controls .form-pause{display:none}}

@@ -1,0 +1,2250 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>BCA Studio Prototip</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap">
+<style>
+/* Layout: three views. Home = a white "Welcome" stage that opens into the image↔particle interaction on hover, then About and Team. Architecture and Studio are their own pages. Type: Jost, echoing the logo. */
+:root{
+  --bg:#FFFFFF; --bg2:#F5F5F7; --fg:#1D1D1F; --muted:#6E6E73; --line:rgba(0,0,0,.1);
+  --glass:rgba(255,255,255,.7); --glass-line:rgba(0,0,0,.08); --accent:#0066CC; --card:#F5F5F7;
+  --f:'Jost','Futura','Avenir Next','Century Gothic',system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[data-view="architecture"]{
+  --bg:#000000; --bg2:#0B0B0C; --fg:#F5F5F7; --muted:#A1A1A6; --line:rgba(255,255,255,.12);
+  --glass:rgba(22,22,23,.72); --glass-line:rgba(255,255,255,.1); --accent:#2997FF; --card:#161617;
+  color-scheme:dark;
+}
+:root[data-view="studio"]{ --bg:#F5F5F7; --bg2:#FFFFFF; --card:#FFFFFF; }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--f);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background-color .5s,color .5s}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.track{font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.logo{display:block;height:100%;width:auto}
+
+/* ---------- home stage ---------- */
+.stage-wrap{padding:12px max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
+.stage{position:relative;height:calc(100vh - 24px);height:calc(100svh - 24px);min-height:560px;max-height:980px;border-radius:28px;overflow:hidden;background:var(--sbg,#0B0B0C);color:var(--sfg,#fff)}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.stage-logo{position:absolute;top:26px;left:50%;transform:translateX(-50%);height:34px;z-index:6;color:inherit;transition:color .6s}
+.side{position:absolute;top:50%;transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;transition:opacity .3s}
+.side.l{left:max(40px,4vw)}
+.side.r{right:max(40px,4vw);align-items:flex-end;text-align:right}
+.side strong{font-weight:300;font-size:clamp(34px,4.6vw,72px);line-height:1;letter-spacing:-.02em}
+.side span{font-size:15px;opacity:.75;transition:opacity .3s}
+.side:hover span,.side:focus-visible span{opacity:1;text-decoration:underline}
+.scroll-cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.7;font-size:12px}
+.scroll-cue i{width:1px;height:28px;background:currentColor;opacity:.6}
+/* welcome veil */
+.welcome{position:absolute;inset:0;z-index:5;background:#fff;color:#1D1D1F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .9s ease,visibility 0s linear .9s;cursor:default}
+.welcome.gone{opacity:0;visibility:hidden}
+.welcome:not(.gone){transition:opacity .9s ease,visibility 0s}
+.welcome h1{margin:0;font-weight:300;font-size:clamp(64px,11vw,168px);letter-spacing:-.035em;line-height:1}
+.welcome p{margin:0;color:#6E6E73}
+.welcome .tap{display:none}
+@media (hover:none){.welcome .hov{display:none}.welcome .tap{display:inline}}
+
+/* ---------- home sections ---------- */
+.about{padding-block:140px 120px}
+.about .eyebrow{color:var(--muted)}
+.statement{margin:20px 0 0;font-weight:300;font-size:clamp(34px,4.4vw,60px);line-height:1.08;letter-spacing:-.02em;max-width:18ch;text-wrap:balance}
+.statement em{font-style:normal;color:var(--muted)}
+.about-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:40px;margin-top:64px}
+.about-cols p{margin:0;color:var(--muted);max-width:52ch}
+.about-cols p b{color:var(--fg);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:24px;margin-top:80px;padding-top:40px;border-top:1px solid var(--line)}
+.stat b{display:block;font-weight:300;font-size:clamp(44px,5vw,64px);line-height:1;letter-spacing:-.02em}
+.stat span{display:block;margin-top:10px;color:var(--muted);font-size:15px}
+.team{padding-block:120px 140px;background:var(--bg2)}
+.team h2,.page-head h1{margin:12px 0 0;font-weight:300;font-size:clamp(44px,6vw,80px);letter-spacing:-.025em;line-height:1}
+.team-lead{margin:18px 0 56px;color:var(--muted);max-width:52ch}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:20px}
+.person{position:relative;display:flex;flex-direction:column;gap:14px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.portrait{position:relative;aspect-ratio:4/5;max-width:100%;border-radius:22px;overflow:hidden;background:#E8E8ED;display:flex;align-items:center;justify-content:center}
+.portrait .ini{font-weight:300;font-size:64px;letter-spacing:.06em;color:#86868B}
+.person strong{font-weight:500;font-size:19px}
+.person .role{color:var(--muted);font-size:15px;margin-top:-10px}
+
+/* ---------- project pages ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px}
+.topbar .brand{display:flex;align-items:center;gap:12px;height:28px;font-size:14px}
+.topbar .brand svg{height:28px}
+.topbar nav{display:flex;gap:24px;font-size:14px}
+.topbar nav a{opacity:.8}.topbar nav a:hover,.topbar nav a[aria-current="page"]{opacity:1}
+.page-head{padding-block:96px 48px}
+.page-head p{margin:18px 0 0;font-size:21px;color:var(--muted);max-width:44ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px;padding-bottom:120px}
+.card{display:flex;flex-direction:column;gap:16px;min-width:0;background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.thumb{position:relative;aspect-ratio:1/1;max-width:100%;border-radius:22px;overflow:hidden;background:var(--card)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.card:hover .thumb img,.card:focus-visible .thumb img{transform:scale(1.03)}
+.thumb.ph{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+.badge{position:absolute;left:14px;top:14px;padding:6px 11px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-size:12px}
+.card .meta{display:flex;flex-direction:column;gap:4px;padding-inline:4px}
+.card .kind{font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.card strong{font-weight:500;font-size:21px;letter-spacing:-.01em}
+.card p{margin:0;font-size:15px;line-height:1.45;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:28px 40px;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* project sheet */
+dialog#proj{border:0;background:var(--bg2);color:var(--fg);width:min(1080px,calc(100vw - 32px));max-width:none;max-height:calc(100vh - 32px);padding:0;overflow:auto;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog#proj::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.pj{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))}
+.pj img#pj-img{width:100%;height:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#fff}
+.pj-body{padding:36px 40px 40px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.pj-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+.pj-close{width:36px;height:36px;border-radius:50%;border:0;background:var(--line);color:var(--fg);font-size:20px;line-height:1;cursor:pointer}
+.pj h3{margin:0;font-weight:400;font-size:clamp(28px,3vw,40px);line-height:1.08;letter-spacing:-.015em}
+.pj-desc{display:flex;flex-direction:column;gap:12px}
+.pj-desc p{margin:0;color:var(--muted)}
+.pj dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 24px;padding-top:20px;border-top:1px solid var(--line);font-size:15px}
+.pj dt{color:var(--muted)}
+.pj dd{margin:0}
+.pj-link{color:var(--accent)}
+.pj-link:hover{text-decoration:underline}
+.pj-thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.pj-thumbs:empty{display:none}
+.pj-thumbs button{width:64px;height:64px;padding:0;border:2px solid transparent;border-radius:12px;overflow:hidden;background:var(--line);cursor:pointer}
+.pj-thumbs button[aria-pressed="true"]{border-color:var(--accent)}
+.pj-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* page transition: a curtain rises in the destination's colour, carrying the logo and the page name */
+.curtain{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--cbg,#000);color:var(--cfg,#fff);transform:translateY(101%);pointer-events:none;visibility:hidden}
+.curtain.in,.curtain.out{visibility:visible;pointer-events:auto}
+.curtain.in{transform:translateY(0);transition:transform .7s cubic-bezier(.76,0,.24,1)}
+.curtain.out{transform:translateY(-101%);transition:transform .7s cubic-bezier(.76,0,.24,1)}
+.c-inner{display:flex;flex-direction:column;align-items:center;gap:20px;opacity:0;transform:translateY(16px);transition:opacity .45s ease .25s,transform .6s cubic-bezier(.2,.8,.2,1) .25s}
+.curtain.in .c-inner{opacity:1;transform:none}
+.curtain.out .c-inner{opacity:0;transform:translateY(-16px);transition-delay:0s}
+.c-inner svg{height:44px;width:auto}
+.c-inner strong{font-weight:300;font-size:clamp(36px,5vw,64px);letter-spacing:-.02em;line-height:1}
+/* project sheet opens and closes with a short lift */
+dialog#proj[open]{animation:pop .5s cubic-bezier(.2,.8,.2,1)}
+dialog#proj[open]::backdrop{animation:fadein .5s ease}
+dialog#proj.closing{animation:popout .26s ease forwards}
+dialog#proj.closing::backdrop{animation:fadeout .26s ease forwards}
+@keyframes pop{from{opacity:0;transform:translateY(28px) scale(.97)}}
+@keyframes popout{to{opacity:0;transform:translateY(16px) scale(.98)}}
+@keyframes fadein{from{opacity:0}}
+@keyframes fadeout{to{opacity:0}}
+#pj-img.swap{animation:imgin .5s ease}
+@keyframes imgin{from{opacity:0}}
+
+@media (max-width:760px){
+  .side strong{font-size:34px}
+  .side.l{left:16px}.side.r{right:16px}
+  .topbar nav a.hide-s{display:none}
+  .pj-body{padding:24px}
+}
+:root[data-view="project"]{
+  --bg:#000000; --bg2:#0B0B0C; --fg:#F5F5F7; --muted:#A1A1A6; --line:rgba(255,255,255,.12);
+  --glass:rgba(22,22,23,.72); --glass-line:rgba(255,255,255,.1); --accent:#2997FF; --card:#161617;
+  color-scheme:dark;
+}
+.muted{color:var(--muted)}
+.sel{user-select:all;color:var(--fg)}
+/* architecture page */
+.feature{position:relative;display:block;aspect-ratio:21/9;max-width:100%;border-radius:28px;overflow:hidden;background:var(--card)}
+.feature img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.feature:hover img{transform:scale(1.03)}
+.feature::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0) 55%)}
+.feature-cap{position:absolute;left:32px;bottom:28px;right:32px;z-index:1;display:flex;flex-direction:column;gap:8px;color:#fff}
+.feature-cap strong{font-weight:300;font-size:clamp(28px,3.4vw,48px);letter-spacing:-.02em;line-height:1.05}
+.feature-cap .go{font-size:17px;color:#fff;opacity:.9}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:56px 0 32px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pills button,.pill-btn{font:400 14px/1 var(--f);color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:0 16px;min-height:36px;display:inline-flex;align-items:center;cursor:pointer;transition:background-color .25s,color .25s,border-color .25s}
+.pills button[aria-pressed="true"],.pill-btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.seg2{display:flex;padding:3px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.seg2 button{font:400 13px/1 var(--f);color:var(--fg);background:transparent;border:0;border-radius:999px;padding:0 14px;min-height:32px;cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.grid .card{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.plist{border-top:1px solid var(--line);margin-bottom:120px}
+.prow{display:grid;grid-template-columns:72px minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) 24px;gap:16px;align-items:center;padding:22px 4px;border-bottom:1px solid var(--line);transition:padding .3s,background-color .3s}
+.prow:hover,.prow:focus-visible{padding-left:14px;background:var(--card)}
+.prow span{color:var(--muted);font-size:15px}
+.prow strong{font-weight:400;font-size:21px;letter-spacing:-.01em}
+.hover-img{position:fixed;left:0;top:0;width:280px;aspect-ratio:4/3;object-fit:cover;border-radius:16px;pointer-events:none;z-index:50;opacity:0;transform:scale(.9);transition:opacity .25s,transform .25s;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.hover-img.on{opacity:1;transform:scale(1)}
+.awards{padding:80px 0 0;border-top:1px solid var(--line)}
+.aw-row{display:grid;grid-template-columns:72px minmax(0,2fr) minmax(0,1fr);gap:16px;padding:22px 4px;border-bottom:1px solid var(--line);margin-top:18px}
+.aw-row span{color:var(--muted)}
+.aw-row strong{font-weight:400}
+.cta-band{padding:120px 0 140px;text-align:center}
+.cta-band h2{margin:0;font-weight:300;font-size:clamp(36px,5vw,64px);letter-spacing:-.02em}
+.cta-band p{margin:16px 0 0;color:var(--muted);font-size:19px}
+
+/* project page */
+.pd-head{padding-block:72px 32px;display:flex;flex-direction:column;gap:12px}
+.pd-head h1{margin:0;font-weight:300;font-size:clamp(44px,7vw,96px);letter-spacing:-.03em;line-height:1}
+.pd-hero{position:relative;margin:0;aspect-ratio:16/9;max-width:100%;border-radius:28px;overflow:hidden;background:var(--card)}
+.pd-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.pd-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:24px;margin:48px 0 0;padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.pd-facts div{display:flex;flex-direction:column;gap:6px}
+.pd-facts dt{font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.pd-facts dd{margin:0;font-size:17px}
+.pd-story{padding:72px 0;display:flex;flex-direction:column;gap:20px;max-width:720px}
+.pd-story p{margin:0;font-size:clamp(19px,1.8vw,24px);line-height:1.5;font-weight:300}
+.pd-story p:first-child{font-size:clamp(24px,2.6vw,34px);line-height:1.3}
+.pd-sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px}
+.pd-sec-head p{margin:0;color:var(--muted);font-size:15px}
+.cmp{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:28px;overflow:hidden;background:var(--card);--x:50%}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cmp-a{clip-path:inset(0 calc(100% - var(--x)) 0 0)}
+.cmp-line{position:absolute;top:0;bottom:0;left:var(--x);width:2px;margin-left:-1px;background:#fff;pointer-events:none}
+.cmp-line i{position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.cmp-line i::before{content:"‹ ›";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#1D1D1F;font-size:16px;letter-spacing:.1em}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmp input:focus-visible + .cmp-tag{outline:none}
+.cmp:focus-within .cmp-line i{box-shadow:0 0 0 3px var(--accent)}
+.cmp-tag{position:absolute;bottom:16px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;font-size:13px;pointer-events:none}
+.cmp-tag.l{left:16px}.cmp-tag.r{right:16px}
+.pd-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px;padding:72px 0 0}
+.pd-gallery figure{margin:0;border-radius:22px;overflow:hidden;background:var(--card)}
+.pd-gallery img{width:100%;height:100%;max-height:720px;object-fit:cover;display:block}
+.pd-gallery figure.draw{grid-column:1/-1;background:#fff;padding:32px}
+.pd-gallery figure.draw img{object-fit:contain;max-height:none;height:auto}
+.pd-next{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:96px 0 120px;padding:28px 0;border-top:1px solid var(--line)}
+.pd-next div{display:flex;flex-direction:column;gap:8px;min-width:0}
+.pd-next strong{font-weight:300;font-size:clamp(30px,4vw,52px);letter-spacing:-.02em;line-height:1.05}
+.pd-next img{width:min(320px,40vw);aspect-ratio:4/3;object-fit:cover;border-radius:18px;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.pd-next:hover img{transform:scale(1.04)}
+
+/* studio page */
+.s-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:24px}
+#s-form{width:100%;aspect-ratio:1/1;max-width:560px;justify-self:end}
+.s-sec{padding:80px 0;border-top:1px solid var(--line)}
+.s-head{display:flex;justify-content:space-between;align-items:baseline;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.s-head h2{margin:0;font-weight:300;font-size:clamp(32px,4vw,52px);letter-spacing:-.02em}
+.s-head p{margin:0;color:var(--muted);max-width:44ch}
+.status{position:absolute;left:14px;top:14px;padding:6px 11px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);font-size:12px}
+.lab{display:flex;flex-direction:column;gap:18px}
+#lab-c{width:100%;aspect-ratio:16/9;max-width:100%;border-radius:28px;background:#FBFBFD;border:1px solid var(--line);display:block}
+.lab.drag #lab-c{outline:2px dashed var(--accent);outline-offset:4px}
+.lab-ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.lab-range{font-size:14px;color:var(--muted);margin-left:8px}
+#lab-k{width:min(260px,60vw);accent-color:var(--fg)}
+.lab-note{margin:0;color:var(--muted);font-size:14px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.notes{border-top:1px solid var(--line)}
+.note{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:16px;padding:22px 4px;border-bottom:1px solid var(--line)}
+.note span{color:var(--muted)}
+.note strong{font-weight:400;font-size:19px}
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px}
+.svc div{padding:28px;border-radius:22px;background:var(--bg2)}
+.svc strong{font-weight:500;font-size:19px}
+.svc p{margin:8px 0 0;color:var(--muted);font-size:15px}
+.mail{margin:32px 0 40px;color:var(--muted)}
+@media (max-width:760px){
+  .s-hero{grid-template-columns:1fr}
+  #s-form{max-width:320px;justify-self:center}
+  .prow{grid-template-columns:52px minmax(0,1fr) 20px}
+  .prow span.k,.prow span.l{display:none}
+  .aw-row{grid-template-columns:52px minmax(0,1fr)}
+  .aw-row span:last-child{grid-column:2}
+  .feature{aspect-ratio:4/3}
+  .note{grid-template-columns:1fr}
+}
+
+/* images settle into place as they scroll in */
+.thumb img.rv,.pd-gallery img.rv,.px-fig img.rv{transform:scale(1.12);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.thumb img.rv.in,.pd-gallery img.rv.in,.px-fig img.rv.in{transform:scale(1)}
+.card:hover .thumb img.rv.in{transform:scale(1.03)}
+@media (max-width:760px){.feat{aspect-ratio:4/5}.feat .feature-cap{right:24px;bottom:84px;left:24px}.feat-ui{left:24px;right:auto;bottom:24px}}
+
+/* hologram on card hover */
+.thumb .holo{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.thumb.holo-on::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(127,233,255,.07) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.35))}
+.thumb .badge,.thumb .status{z-index:3}
+
+.portrait.photo{background:#fff}
+.portrait.photo img{width:78%;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:50%;filter:grayscale(1);transform:scale(1);transition:filter .45s ease,transform .6s cubic-bezier(.2,.7,.2,1);object-position:50% 58%}
+@media(hover:hover){.person:hover .portrait.photo img{filter:grayscale(0);transform:scale(1.025)}}
+.person:focus-visible .portrait.photo img{filter:grayscale(0);transform:scale(1.025)}
+dialog.team-profile{width:min(1048px,calc(100vw - 32px));max-width:none;max-height:calc(100svh - 32px);padding:24px;border:0;background:transparent;color:#1D1D1F;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;outline:none}
+dialog.team-profile::-webkit-scrollbar{display:none;width:0;height:0}
+dialog.team-profile::backdrop{background:rgba(245,245,247,.83);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.team-profile-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,2.15fr);gap:16px}
+.team-profile-photo,.team-profile-copy{border:1px solid rgba(0,0,0,.1);border-radius:12px;background:#fff;overflow:hidden}
+.team-profile-photo{position:relative;min-height:400px;height:400px;align-self:start;display:grid;place-items:center;font-size:64px;font-weight:300;color:#86868B}
+.team-profile-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 58%}
+.team-profile-copy{padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:400px}
+.team-profile-roles{font-size:11px;letter-spacing:.18em;text-transform:uppercase;line-height:1.8;color:#6E6E73;margin:0 36px 14px 0}
+.team-profile-copy h2{font-size:clamp(28px,3.4vw,44px);font-weight:400;letter-spacing:-.035em;line-height:1.15;margin:0}
+.team-profile-bio{border-top:1px solid rgba(0,0,0,.1);margin-top:28px;padding-top:24px;font-size:18px;line-height:1.75;color:#55565c}
+.team-profile-bio p{margin:0}
+.team-resume{margin-top:24px;padding-top:18px;border-top:1px solid rgba(0,0,0,.1);font-size:15px;line-height:1.65}
+.team-resume summary{cursor:pointer;font-weight:500;color:#1D1D1F;padding-block:4px;list-style-position:outside;margin-left:18px}
+.team-resume .resume-intro{margin-top:20px}
+.team-resume p + p{margin-top:12px}
+.team-resume section{margin-top:24px}
+.team-resume h3{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#6E6E73;margin:0 0 12px}
+.team-resume dl{margin:0;display:grid;gap:16px}
+.team-resume dt{font-weight:500;color:#1D1D1F}
+.team-resume dd{margin:4px 0 0}
+.team-profile-close{position:absolute;top:36px;right:36px;width:32px;height:32px;border:0;border-radius:50%;background:#F5F5F7;color:#1D1D1F;font:24px/1 var(--f);cursor:pointer;z-index:1}
+@keyframes team-photo-in{from{opacity:0;transform:translate(-10px,20px) scale(.975)}to{opacity:1;transform:none}}
+@keyframes team-copy-in{from{opacity:0;transform:translate(10px,24px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes team-panel-out{to{opacity:0;transform:translateY(12px) scale(.985)}}
+@keyframes team-backdrop-in{from{background:rgba(245,245,247,0);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}to{background:rgba(245,245,247,.83);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}}
+@keyframes team-backdrop-out{to{background:rgba(245,245,247,0);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}}
+@keyframes team-control-in{from{opacity:0}to{opacity:1}}
+.team-profile[open]:not(.closing) .team-profile-photo{animation:team-photo-in .6s cubic-bezier(.16,1,.3,1) both}
+.team-profile[open]:not(.closing) .team-profile-copy{animation:team-copy-in .64s .06s cubic-bezier(.16,1,.3,1) both}
+.team-profile[open]:not(.closing) .team-profile-close{animation:team-control-in .3s .18s ease both}
+.team-profile[open]::backdrop{animation:team-backdrop-in .45s ease both}
+.team-profile.closing .team-profile-photo,.team-profile.closing .team-profile-copy{animation:team-panel-out .25s ease both}
+.team-profile.closing .team-profile-close{opacity:0;transition:opacity .15s}
+.team-profile.closing::backdrop{animation:team-backdrop-out .25s ease both}
+@media(prefers-reduced-motion:reduce){.team-profile[open] .team-profile-photo,.team-profile[open] .team-profile-copy,.team-profile[open] .team-profile-close,.team-profile[open]::backdrop{animation:none!important}}
+@media(max-width:760px){dialog.team-profile{width:calc(100vw - 16px);max-height:calc(100svh - 16px);padding:16px}.team-profile-grid{grid-template-columns:minmax(0,1fr);gap:12px}.team-profile-photo{min-height:0;height:220px}.team-profile-copy{padding:28px;min-height:0}.team-profile-close{top:28px;right:28px}.team-profile-bio{font-size:16px;margin-top:22px;padding-top:20px}.team-profile-roles{font-size:10px;margin-right:0}}
+@media(prefers-reduced-motion:reduce){.portrait.photo img{transition:none}}
+
+/* ---------- project page: edge to edge ---------- */
+.px .topbar{position:fixed;left:0;right:0;top:0;background:transparent;border-bottom-color:transparent;color:#fff;transition:background-color .4s,border-color .4s,color .4s;backdrop-filter:none;-webkit-backdrop-filter:none}
+.px .topbar.solid{background:var(--glass);border-bottom-color:var(--line);color:var(--fg);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.px-hero{position:relative;height:100vh;height:100svh;min-height:560px;max-height:1200px;overflow:hidden;background:#000;color:#fff}
+.px-hero img{position:absolute;inset:-4% 0 0 0;width:100%;height:108%;object-fit:cover;will-change:transform}
+.px-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 50%,rgba(0,0,0,.72))}
+.px-title{position:absolute;left:max(24px,5vw);right:max(24px,5vw);bottom:12vh;display:flex;flex-direction:column;gap:14px;z-index:2}
+.px-title .track{opacity:.85}
+.px-title h1{margin:0;font-weight:300;font-size:clamp(48px,9vw,148px);line-height:.95;letter-spacing:-.035em;max-width:12ch;text-wrap:balance}
+.px-hud{position:absolute;right:max(24px,5vw);top:18vh;z-index:2;width:min(300px,40vw);margin:0;padding:18px 20px;display:grid;grid-template-columns:1fr;gap:12px;background:rgba(18,18,20,.42);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.px-hud::before,.px-hud::after{content:"";position:absolute;width:14px;height:14px;border:0 solid #fff}
+.px-hud::before{left:-6px;top:-6px;border-width:1px 0 0 1px}
+.px-hud::after{right:-6px;bottom:-6px;border-width:0 1px 1px 0}
+.px-hud div{display:flex;flex-direction:column;gap:3px}
+.px-hud dt{font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.65}
+.px-hud dd{margin:0;font-size:15px;line-height:1.35}
+.px-spot{position:absolute;z-index:2;display:flex;align-items:center;gap:0;pointer-events:none}
+.px-spot i{position:relative;width:10px;height:10px;border-radius:50%;background:#fff;flex:none}
+.px-spot i::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px solid rgba(255,255,255,.7);animation:pulse 2.4s ease-out infinite}
+.px-spot b{display:block;width:64px;height:1px;background:rgba(255,255,255,.75)}
+.px-spot span{max-width:min(320px,34vw);overflow:hidden;text-overflow:ellipsis;padding:6px 12px;border-radius:999px;background:rgba(18,18,20,.42);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:12px;letter-spacing:.06em;white-space:nowrap}
+.px-spot:empty,.px-spot[hidden]{display:none}
+.px-down{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);z-index:2;color:#fff;opacity:.75}
+
+.px-lead{padding:clamp(40px,5vw,72px) max(24px,6vw) 8vh}
+.px-lead > .px-label{margin-bottom:clamp(28px,3vw,48px)}
+.px-lead p{margin:0;font-weight:300;font-size:clamp(30px,4.4vw,68px);line-height:1.12;letter-spacing:-.02em;max-width:20ch;text-wrap:balance}
+.px-facts{margin:10vh 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:28px;padding-top:28px;border-top:1px solid var(--line)}
+.px-facts div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.px-facts dt{font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.px-facts dd{margin:0;font-size:16px;line-height:1.45}
+
+.px-block{display:grid;grid-template-columns:minmax(0,62fr) minmax(0,38fr);align-items:center;gap:6vw;padding-block:6vh}
+.px-block.r{grid-template-columns:minmax(0,38fr) minmax(0,62fr)}
+.px-block.r .px-fig{order:2}
+.px-fig{margin:0;height:86vh;min-height:420px;overflow:hidden;background:var(--card)}
+.px-fig img{width:100%;height:100%;object-fit:cover;display:block}
+.px-text{display:flex;flex-direction:column;gap:18px;padding-right:max(24px,6vw);max-width:560px}
+.px-block.r .px-text{padding-right:0;padding-left:max(24px,6vw);justify-self:end}
+.px-text .track{color:var(--muted)}
+.px-text p{margin:0;font-size:clamp(18px,1.5vw,22px);line-height:1.6;font-weight:300}
+.px-block.solo{grid-template-columns:1fr;padding:10vh max(24px,6vw)}
+.px-block.solo .px-text{max-width:820px;padding:0}
+.px-block.solo .px-text p{font-size:clamp(22px,2.2vw,32px);line-height:1.45}
+.px-draw{margin:6vh 0;background:#fff;padding:8vh max(24px,4vw)}
+.px-draw img{width:100%;height:auto;display:block}
+.px-draw figcaption{margin-top:20px;color:#6E6E73;font-size:13px;letter-spacing:.3em;text-transform:uppercase}
+
+.px-sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:0 max(24px,6vw);margin-bottom:22px}
+.px-compare{padding-top:10vh}
+.px-cmp{border-radius:0;aspect-ratio:auto;height:88vh;min-height:420px}
+.px-stripwrap{padding:14vh 0 4vh}
+.px-strip{display:flex;gap:2vw;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 max(24px,6vw) 18px;scrollbar-width:thin;cursor:grab}
+.px-strip.drag{cursor:grabbing;scroll-snap-type:none}
+.px-strip figure{margin:0;flex:0 0 auto;height:68vh;min-height:300px;scroll-snap-align:start;background:var(--card);overflow:hidden}
+.px-strip img{height:100%;width:auto;max-width:none;display:block;pointer-events:none;user-select:none}
+.px-stripwrap[hidden]{display:none}
+
+.px-next{position:relative;display:block;height:82vh;min-height:420px;margin-top:12vh;overflow:hidden;color:#fff;background:#000}
+.px-next img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;transition:transform 1.4s cubic-bezier(.2,.7,.2,1),opacity .6s}
+.px-next:hover img{transform:scale(1.04);opacity:.9}
+.px-next div{position:absolute;left:max(24px,5vw);bottom:10vh;display:flex;flex-direction:column;gap:12px}
+.px-next strong{font-weight:300;font-size:clamp(40px,7vw,112px);line-height:.95;letter-spacing:-.03em}
+.px-next .go{font-size:17px;opacity:.85}
+.px ~ footer{margin-top:0}
+
+@media (max-width:760px){
+  .px-hud{left:24px;right:24px;top:auto;bottom:4vh;width:auto;grid-template-columns:1fr 1fr}
+  .px-title{bottom:calc(4vh + 170px)}
+  .px-spot b{width:28px}
+  #px-spot1{display:none}
+  .px-spot span{max-width:52vw}
+  .px-down{display:none}
+  .px-block,.px-block.r{grid-template-columns:1fr;gap:28px}
+  .px-block.r .px-fig{order:0}
+  .px-fig{height:60vh}
+  .px-text,.px-block.r .px-text{padding:0 24px;justify-self:start}
+  .px-strip figure{height:50vh}
+}
+
+/* ---------- project page flow: info → concept → details → images ---------- */
+.px-label{display:flex;align-items:baseline;gap:18px;padding-top:22px;border-top:1px solid currentColor;margin-bottom:clamp(28px,3vw,40px);opacity:.95}
+.px-label .n{font-weight:300;font-size:14px;letter-spacing:.1em}
+.px-label .muted{margin-left:auto;font-size:14px}
+.px-info{padding:16vh max(24px,6vw) 14vh;background:var(--bg);color:var(--fg)}
+.px-info .px-label{border-top-color:var(--line)}
+.px-lead{margin:0;font-weight:300;font-size:clamp(30px,4.4vw,68px);line-height:1.12;letter-spacing:-.02em;max-width:20ch;text-wrap:balance}
+.px-info-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:6vw;margin-top:12vh;align-items:start}
+.px-info-grid .px-facts{margin:0;display:flex;flex-direction:column;gap:0;border-top:0;padding:0}
+.px-info-grid .px-facts div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.px-facts dt{font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.px-facts dd{margin:0;font-size:16px;line-height:1.45}
+.px-paras{display:flex;flex-direction:column;gap:22px;max-width:62ch}
+.px-paras p{margin:0;font-size:clamp(17px,1.35vw,20px);line-height:1.65;font-weight:300;color:var(--muted)}
+.px-paras p:first-child{color:var(--fg)}
+
+/* Paper bands and drawing plates follow the proportions of the finished portfolio. */
+.px-paper{--ink:#1D1D1F;--ink2:#6A6A70;--rule:rgba(0,0,0,.14);--plate:transparent;--paper:#F3F2EE;
+  background:var(--paper);color:var(--ink);padding-block:clamp(48px,6vw,80px);padding-inline:max(24px,calc((100vw - 1240px)/2))}
+.px-detail{--paper:#FAFAF8}
+.px-paper .px-label{border-top-color:var(--rule);margin-bottom:36px}
+.px-paper[hidden]{display:none}
+
+/* concept: statement on the left stays put while the diagrams pass on the right */
+.px-cg{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:clamp(40px,7vw,120px);align-items:start}
+.px-concept-text{position:sticky;top:120px;display:flex;flex-direction:column;gap:24px}
+.px-concept-text p{margin:0;font-weight:300;font-size:clamp(21px,1.65vw,26px);line-height:1.45;letter-spacing:-.005em;max-width:28ch;text-wrap:pretty}
+.px-concept-text p + p{font-size:16px;line-height:1.7;color:var(--ink2);max-width:44ch;letter-spacing:0}
+.px-concept-text:empty{display:none}
+.px-concept-text.is-long{position:static}
+.px-source-mark{margin:8px 0 0;max-width:250px}
+.px-source-mark img{display:block;width:auto;max-width:100%;max-height:84px;object-fit:contain;mix-blend-mode:multiply}
+.px-source-mark figcaption{font-size:11px;line-height:1.5;color:var(--ink2);margin-top:10px;letter-spacing:.06em}
+.px-cg.solo{grid-template-columns:minmax(0,1fr)}
+.px-cg.solo .px-concept-text{position:static}
+.px-cg.solo .px-concept-text p{max-width:34ch}
+
+.dg-grid,.px-sheet .dg-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:clamp(20px,2.5vw,32px);row-gap:40px;align-items:start}
+.dg{margin:0;display:flex;flex-direction:column;gap:14px;min-width:0;grid-column:span 6;--drawing-ratio:3/2;--drawing-height:440px}
+.dg.span-4{grid-column:span 4}
+.dg.w{grid-column:1 / -1}
+.dg.frame-square{--drawing-ratio:1;--drawing-height:420px}
+.dg.frame-portrait{--drawing-ratio:3/4;--drawing-height:440px}
+.dg.w.frame-portrait{width:min(100%,460px);justify-self:center}
+.dg.frame-panorama{--drawing-ratio:3/1;--drawing-height:320px}
+.dg.frame-plate{--drawing-ratio:4/3;--drawing-height:600px}
+#px-concept-dg .dg{--drawing-height:360px}
+#px-concept-dg .dg.frame-plate{--drawing-height:430px}
+.dg .dg-media{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:var(--drawing-ratio);max-height:var(--drawing-height);padding:0;border:0;background:transparent;position:relative;overflow:hidden}
+.dg button.dg-media{cursor:zoom-in}
+.dg img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.dg .dg-media.has-companion{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:12px}
+.dg .dg-media.has-companion img{position:static;min-width:0;min-height:0}
+.dg button:hover img{transform:scale(1.03)}
+.motion-frame{width:100%;aspect-ratio:4/3;max-height:360px;background:transparent;position:relative}
+.dg.w .motion-frame{aspect-ratio:3/2;max-height:430px}
+.lb-motion{width:min(1100px,calc(100vw - 80px));height:min(74vh,850px);background:#fff}
+.lb-motion[hidden],.lb-fig>img[hidden]{display:none}
+@media(max-width:760px){.motion-frame,.dg.w .motion-frame{max-height:320px}.lb-motion{width:calc(100vw - 32px);height:65svh}}
+.dg figcaption{display:grid;grid-template-columns:42px minmax(0,1fr);column-gap:10px;row-gap:5px;align-items:baseline}
+.dg figcaption .k{font-size:11px;letter-spacing:.06em;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dg figcaption b{font-weight:500;font-size:11px;line-height:1.6;letter-spacing:.14em;text-transform:uppercase;text-wrap:balance}
+.dg figcaption .t{grid-column:2;font-size:14px;line-height:1.6;color:var(--ink2);max-width:58ch;text-wrap:pretty}
+.dg figcaption .t:only-of-type{grid-column:2}
+.dg figcaption .dg-symbol{position:static;display:inline-block;width:28px;height:28px;margin-left:10px;vertical-align:middle;object-fit:contain}
+
+/* One section heading, followed by its text and drawings without an empty title column. */
+.px-detail-head{max-width:74ch;margin:0}
+.px-detail-text{display:flex;flex-direction:column;gap:16px;max-width:none}
+.px-paper .px-paras p{margin:0;font-size:16px;line-height:1.7;color:var(--ink2);max-width:60ch}
+.px-paper .px-paras p:first-child{color:var(--ink)}
+.px-detail .px-detail-text p{max-width:none}
+.px-detail-head:not([hidden]) + .px-sheet:not([hidden]){margin-top:36px}
+.dg-group{margin:0}
+.dg-group + .dg-group{margin-top:48px}
+.dg-gh{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-top:14px;border-top:1px solid var(--rule);margin-bottom:24px}
+.dg-gh b{font-weight:500;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase}
+.dg-gh span{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+@media (max-width:1000px){
+  .px-sheet .dg.span-4{grid-column:span 6}
+}
+@media (max-width:760px){
+  .px-paper{padding-block:40px}
+  .px-cg{grid-template-columns:minmax(0,1fr);row-gap:32px}
+  .px-detail-head:not([hidden]) + .px-sheet:not([hidden]){margin-top:28px}
+  .dg-group + .dg-group{margin-top:40px}
+  .px-concept-text{position:static}
+  .dg-grid,.px-sheet .dg-grid{grid-template-columns:minmax(0,1fr);row-gap:32px}
+  .dg,.dg.w,.px-sheet .dg.span-4{grid-column:1 / -1}
+  .dg .dg-media{max-height:380px}
+  .dg.frame-panorama .dg-media{aspect-ratio:5/2}
+  .dg figcaption b{letter-spacing:.12em}
+}
+
+/* images: centered gallery with generous side margins */
+.px-images{padding:64px max(24px,8vw);background:var(--bg);color:var(--fg)}
+.px-images .px-label{max-width:840px;margin-inline:auto;border-top-color:var(--line);margin-bottom:32px}
+.px-tiles{display:grid;width:100%;max-width:840px;margin-inline:auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,32px)}
+@media(max-width:900px){.px-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.px-tiles{grid-template-columns:minmax(0,1fr)}}
+.px-tiles button{position:relative;display:block;aspect-ratio:1/1;padding:0;border:0;overflow:hidden;background:var(--card);cursor:zoom-in}
+.px-tiles img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1s cubic-bezier(.2,.7,.2,1),filter .5s}
+.px-tiles:hover img{filter:brightness(.55) saturate(.8)}
+.px-tiles button:hover img,.px-tiles button:focus-visible img{filter:none;transform:scale(1.06)}
+.px-tiles button:focus-visible{outline-offset:-3px}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:90;background:rgba(6,6,7,.96);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .35s ease}
+.lb.on{opacity:1}
+.lb[hidden]{display:none}
+.lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;gap:16px;max-width:calc(100vw - 160px)}
+.lb-fig img{max-width:100%;max-height:calc(100vh - 140px);object-fit:contain;display:block;transition:opacity .3s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.lb-fig img.out{opacity:0;transform:translateX(calc(var(--dir,1) * -30px)) scale(.985)}
+.lb-fig img.white{background:#fff}
+.lb-fig figcaption{color:#A1A1A6;font-size:14px;text-align:center;max-width:70ch}
+.lb-count{position:fixed;left:max(24px,env(safe-area-inset-left,0px));top:calc(22px + env(safe-area-inset-top,0px));color:#F5F5F7;font-size:13px;letter-spacing:.2em;font-variant-numeric:tabular-nums}
+.lb-btn{position:fixed;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:24px;line-height:1;cursor:pointer;transition:background-color .25s}
+.lb-btn:hover{background:rgba(255,255,255,.2)}
+.lb-x{right:max(20px,env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px))}
+.lb-prev{left:max(20px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}
+.lb-next{right:max(20px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
+
+@media (max-width:760px){
+  .px-info-grid{grid-template-columns:1fr;gap:48px}
+  .dg,.dg.s4{grid-column:1 / -1}
+  .px-dgs .dg:nth-child(even):not(.w){margin-top:0}
+  .px-dgs,.px-sheet{row-gap:64px}
+  .lb-fig{max-width:100vw}
+  .lb-prev,.lb-next{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:none}
+}
+
+/* hero: tall renders stand whole at the right, a blurred copy fills the frame */
+#px-hero-bg{display:none}
+.px-hero.tall #px-hero-bg{display:block;position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(38px) brightness(.55) saturate(1.1);transform:none}
+.px-hero.tall #px-hero-img{inset:auto;top:0;right:max(24px,7vw);left:auto;width:auto;height:100%;max-width:56vw;object-fit:contain;object-position:50% 50%;box-shadow:0 0 120px rgba(0,0,0,.45)}
+.px-hero.tall .px-shade{background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.1) 55%,rgba(0,0,0,0)),linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,0) 25%)}
+.px-hero.tall .px-hud{right:auto;left:max(24px,5vw);top:16vh}
+.px-hero.tall .px-spot{display:none}
+.px-hero.tall .px-title h1{max-width:9ch}
+
+/* project pages opened from Studio stay in the light theme */
+:root[data-view="project"][data-tone="light"]{
+  --bg:#F5F5F7; --bg2:#FFFFFF; --fg:#1D1D1F; --muted:#6E6E73; --line:rgba(0,0,0,.1);
+  --glass:rgba(255,255,255,.72); --glass-line:rgba(0,0,0,.08); --accent:#0066CC; --card:#FFFFFF;
+  color-scheme:light;
+}
+:root[data-tone="light"] .px-images{background:var(--bg)}
+:root[data-tone="light"] .px-tiles:hover img{filter:brightness(.8) saturate(.9)}
+:root[data-tone="light"] .px-next{background:#E8E8ED}
+:root[data-tone="light"] .lb{background:rgba(245,245,247,.97)}
+:root[data-tone="light"] .lb-btn{border-color:rgba(0,0,0,.12);background:rgba(0,0,0,.05);color:#1D1D1F}
+:root[data-tone="light"] .lb-btn:hover{background:rgba(0,0,0,.1)}
+:root[data-tone="light"] .lb-count{color:#1D1D1F}
+:root[data-tone="light"] .lb-fig figcaption{color:#6E6E73}
+:root[data-tone="light"] .px-hero{background:#E8E8ED}
+:root[data-tone="light"] .px-hero.tall #px-hero-bg{filter:blur(38px) brightness(1.08) saturate(1.05)}
+:root[data-tone="light"] .px-hero.tall .px-shade{background:linear-gradient(90deg,rgba(245,245,247,.85),rgba(245,245,247,.25) 55%,rgba(245,245,247,0))}
+:root[data-tone="light"] .px-hero.tall{color:#1D1D1F}
+:root[data-tone="light"] .px-hero.tall .px-hud{background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.08)}
+:root[data-tone="light"] .px-hero.tall .px-hud::before,:root[data-tone="light"] .px-hero.tall .px-hud::after{border-color:#1D1D1F}
+:root[data-tone="light"] .px-hero.tall .px-down{color:#1D1D1F}
+.px .topbar.ink:not(.solid){color:#1D1D1F}
+:root[data-tone="light"] .px .topbar.solid{color:var(--fg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+
+/* Extended covers keep the complete architectural silhouette visible. */
+@media (min-width:761px){
+ .px-hero.extended-cover{height:min(100svh,56.25vw);min-height:0}
+ .px-hero.extended-cover #px-hero-img{inset:0;width:100%;height:100%;transform:none!important}
+}
+
+/* Mobile layout and touch controls. */
+html{overflow-wrap:break-word}
+@media(max-width:760px){
+ body{font-size:16px}
+ .wrap{padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+ .stage-wrap{padding:8px 8px 0}
+ .stage{height:calc(100svh - 16px);min-height:440px;border-radius:20px}
+ .stage-logo{top:22px;height:30px}
+ .side{top:auto;bottom:90px;transform:none;max-width:46%;padding:12px 8px;gap:8px}
+ .side.l{left:12px}.side.r{right:12px}
+ .side strong{font-size:clamp(26px,7vw,42px)}.side span{font-size:13px}
+ .welcome h1{font-size:clamp(60px,16vw,108px)}.welcome p{font-size:11px;text-align:center;padding:0 20px}
+ .scroll-cue{bottom:18px}.scroll-cue i{height:20px}
+ .about,.team{padding-block:64px}
+ .about-cols{margin-top:32px;gap:24px}.stats{margin-top:40px;gap:28px;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .people{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}.person strong{font-size:17px}.person .role{font-size:13px}
+ .portrait{border-radius:14px}
+ .topbar .wrap{gap:8px;height:auto;min-height:60px;padding-block:8px}
+ .topbar .brand{gap:8px;font-size:12px;flex-shrink:0}
+ .topbar nav{gap:12px;font-size:12px;flex-wrap:wrap;justify-content:flex-end}
+ .topbar nav a{display:inline-flex;align-items:center;min-height:44px}.hide-s{display:none!important}
+ .page-head{padding-block:48px 32px}.page-head p{font-size:18px}
+ .toolbar{margin:32px 0 24px;gap:16px}.pills button,.pill-btn,.seg2 button{min-height:44px}
+ .feat-arrow{width:44px;height:44px}.feat-bars{gap:4px}.feat-bars button{width:22px;height:44px}.feat-ui{gap:8px;left:16px;bottom:12px}
+ .grid{padding-bottom:64px;gap:28px}.thumb{border-radius:16px}
+ .px-hero,.px-hero.extended-cover{height:auto;min-height:0;max-height:none;padding-top:52svh;display:flex;flex-direction:column;background:var(--bg)}
+ .px-hero #px-hero-img{inset:0;width:100%;height:52svh;object-fit:cover;transform:none!important}
+ .px-hero .px-shade{height:52svh;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 50%,var(--bg))}
+ .px-title{position:relative;inset:auto;padding:24px 24px 20px;gap:12px;color:var(--fg)}
+ .px-title h1{font-size:clamp(36px,10vw,62px);max-width:none;overflow-wrap:normal}
+ .px-title .track{font-size:10px;letter-spacing:.18em}
+ .px-hud{position:relative;inset:auto;margin:0 24px 28px;width:auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:16px;color:var(--fg);background:var(--card);backdrop-filter:none}
+ .px-hud dd{font-size:13px;overflow-wrap:anywhere}.px-hud dt{font-size:9px;letter-spacing:.14em}
+ .px-spot{display:none}.px-lead{padding:64px 24px 48px}.px-facts{margin-top:40px;gap:24px}
+ .px-label{gap:12px;margin-bottom:32px;flex-wrap:wrap}.px-label .track{letter-spacing:.18em}
+ .px-concept,.px-detail{padding-block:48px}
+ .px-next{height:52svh;min-height:320px;margin-top:48px}.px-next div{left:24px;right:24px;bottom:40px}.px-next strong{font-size:40px}
+ .px-images{padding:48px 24px}.px-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:520px}
+ .lb-fig{max-width:calc(100vw - 24px)}.lb-fig img{max-height:calc(100svh - 180px)}.lb-fig figcaption{padding-inline:16px}
+ .lb-count{top:max(22px,env(safe-area-inset-top))}.lb-x{top:max(14px,env(safe-area-inset-top))}
+ .s-hero{padding-block:48px}.note strong{font-size:17px}footer{padding-bottom:max(28px,env(safe-area-inset-bottom))}footer .wrap{overflow-wrap:anywhere}
+}
+@media(hover:none){
+ .px-tiles:hover img,:root[data-tone="light"] .px-tiles:hover img{filter:none}
+ .px-tiles button:hover img,.card:hover .thumb img{transform:none}
+ .hover-img{display:none}
+ a,button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+}
+@media(max-width:360px){.people{grid-template-columns:1fr}.feat-bars button{width:18px}.feat-ui{gap:4px}}
+
+
+#v-studio{position:relative;isolation:isolate}
+#v-studio>#s-form{position:fixed;inset:0;width:100%;height:100svh;max-width:none;aspect-ratio:auto;pointer-events:none;z-index:-1;opacity:.5}
+#v-studio>.wrap{position:relative}
+.s-hero{display:block;min-height:70svh;display:flex;align-items:center}
+.s-hero .page-head{max-width:600px}
+.studio-intro{max-width:900px;padding-block:64px 100px}
+.studio-intro h2{font-size:clamp(34px,5vw,64px);line-height:1.08;font-weight:300;letter-spacing:-.03em;margin:24px 0 40px}
+.studio-copy{display:grid;grid-template-columns:1fr 1fr;gap:40px;color:var(--muted);line-height:1.7}
+.studio-copy p{margin:0}
+.studio-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;align-items:start}
+.studio-category{min-width:0;border-top:1px solid var(--line);padding-top:24px}
+.studio-category h2{font-size:clamp(26px,2.8vw,38px);font-weight:300;line-height:1.15;margin:20px 0}
+.studio-category>p{color:var(--muted);min-height:72px}
+.studio-entry,.studio-empty{display:flex;flex-direction:column;gap:12px;padding:24px 0;border-top:1px solid var(--line);font-size:15px;color:var(--muted)}
+.studio-entry strong{font-size:23px;color:var(--fg);font-weight:400}
+.studio-category .card{padding-block:24px;border-top:1px solid var(--line)}
+.studio-category .thumb{aspect-ratio:4/3;border-radius:12px}
+#v-studio .lab,#v-studio .notes,#v-studio .svc{background:rgba(245,245,247,.85)}
+@media(max-width:760px){.s-hero{min-height:65svh}.studio-copy,.studio-categories{grid-template-columns:1fr;gap:28px}.studio-intro{padding-block:32px 56px}.studio-category>p{min-height:0}.studio-categories{gap:48px}#v-studio>#s-form{opacity:.32}}
+
+/* Mobile home: scrolling drives the image-to-particle transition. */
+@media(max-width:760px){
+ .stage-wrap{height:185svh;position:relative}
+ .stage-wrap .stage{position:sticky;top:8px;height:calc(100svh - 16px)}
+ .stage .welcome .tap{display:inline}.stage .welcome .hov{display:none}
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){.stage-wrap{height:auto}}
+
+.product-cover{background:#fff;color:#1d1d1f}
+.product-cover #px-hero-img{object-fit:contain;background:#fff;transform:none!important;inset:0;height:100%}
+.product-cover .px-shade,.product-cover .px-hud,.product-cover .px-spot{display:none}
+.product-cover .px-title h1{font-size:clamp(40px,6vw,88px)}
+.product-cover .px-down{color:#1d1d1f}
+.project-publications{max-width:1280px;margin-inline:auto;padding:64px max(24px,6vw)}
+.project-publications .px-label{margin-bottom:28px}.pub-intro{max-width:70ch;color:var(--muted);margin-bottom:36px}
+.publication-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.publication{padding:28px;background:var(--card);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;gap:14px}
+.publication h3{font-size:23px;line-height:1.3;font-weight:400;margin:0}.publication p{margin:0;font-size:15px;color:var(--muted)}
+.publication .track{font-size:10px;letter-spacing:.16em}.publication-link{margin-top:auto;padding-top:12px;color:var(--accent)}
+.archbrick-links{display:flex;flex-wrap:wrap;gap:24px;margin-top:32px}.archbrick-links a{color:var(--accent);min-height:44px;display:flex;align-items:center}
+.archbrick-note{font-size:13px;color:var(--muted);max-width:90ch;line-height:1.6}
+@media(max-width:760px){.publication-grid{grid-template-columns:1fr}.publication{padding:22px}.product-cover #px-hero-img{height:52svh}.product-cover .px-title{background:#fff;color:#1d1d1f}.project-publications{padding-block:40px}}
+
+.arch-evidence{max-width:1280px;margin-inline:auto;padding:64px max(24px,6vw)}
+.arch-evidence .px-label{margin-bottom:32px}.arch-evidence h2{font-size:clamp(30px,4vw,54px);line-height:1.12;font-weight:300;letter-spacing:-.025em;margin:0 0 24px}
+.evidence-lead{max-width:74ch;color:var(--muted);line-height:1.7;margin-bottom:40px}
+.evidence-result{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:32px;border:1px solid var(--line);background:var(--card);border-radius:16px;margin-bottom:64px}
+.evidence-result>div:first-child{display:flex;flex-direction:column;gap:20px}.evidence-result strong{font-size:clamp(32px,4vw,60px);line-height:1.1;font-weight:300;letter-spacing:-.03em}
+.evidence-result p{margin:0 0 16px}.arch-evidence a{color:var(--accent)}
+.evidence-footnote{color:var(--muted);font-size:13px;line-height:1.65}.evidence-subtitle{font-size:28px;font-weight:400;margin-bottom:28px}
+.evidence-figures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 28px}
+.evidence-figures figure{margin:0;min-width:0}.evidence-figures .evidence-media{width:100%;height:320px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;overflow:hidden;padding:12px}
+.evidence-figures img{display:block;max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain}
+.evidence-figures .evidence-diagram img{mix-blend-mode:multiply}
+.evidence-figures figcaption{padding-top:20px}.evidence-figures h4{font-size:22px;font-weight:400;margin:12px 0}.evidence-figures p{font-size:15px;color:var(--muted);line-height:1.65;margin:0}.evidence-figures .track{font-size:10px;letter-spacing:.16em}
+.numerical-evidence{margin-top:56px;border-top:1px solid var(--line);padding-top:32px}.numerical-evidence h3{font-size:28px;font-weight:400;margin:20px 0}.numerical-evidence>p{max-width:80ch;color:var(--muted)}
+.evidence-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:32px 0}.evidence-metrics div{border-top:1px solid var(--line);padding-top:20px}.evidence-metrics dt{font-size:14px;color:var(--muted)}.evidence-metrics dd{font-size:clamp(34px,4vw,52px);font-weight:300;margin:12px 0}
+.evidence-method{margin-top:32px;padding:22px 0;border-block:1px solid var(--line)}.evidence-method summary{cursor:pointer;min-height:28px}.evidence-method p{color:var(--muted);max-width:85ch;line-height:1.7;font-size:15px}
+@media(max-width:760px){.arch-evidence{padding-block:40px}.evidence-result,.evidence-figures{grid-template-columns:1fr;gap:24px}.evidence-result{padding:24px}.evidence-figures .evidence-media{height:260px}.evidence-metrics{gap:14px}.evidence-metrics dt{font-size:12px}.evidence-metrics dd{font-size:32px}}
+</style>
+<link rel="stylesheet" href="architecture-flow.css?v=20261102-detail-rhythm">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="liquid" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence id="liq-t" type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="2" seed="4"/><feDisplacementMap id="liq-d" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <symbol id="bca-logo" viewBox="0 0 773 972"><g transform="translate(0,972) scale(0.1,-0.1)" fill="currentColor">
+<path d="M6 9704 c-3 -8 -3 -2002 1 -4430 l6 -4414 249 0 c243 0 248 0 238 19 -7 13 -10 624 -10 1904 0 1780 1 1886 18 1906 17 22 19 22 473 22 256 0 499 -5 555 -11 240 -26 365 -78 484 -199 114 -115 175 -257 200 -461 13 -109 13 -470 0 -580 -27 -222 -113 -385 -257 -486 -37 -26 -72 -51 -77 -55 -14 -12 8 -33 80 -75 168 -98 281 -290 319 -541 21 -136 20 -591 0 -728 -35 -234 -94 -364 -220 -490 -115 -115 -223 -172 -392 -209 -62 -13 -15 -14 581 -15 l649 -1 -8 309 c-4 171 -4 314 -1 320 4 5 77 -61 164 -147 96 -97 194 -183 252 -224 125 -88 301 -179 432 -223 l106 -35 472 0 472 0 92 30 c199 67 398 178 574 323 51 42 110 81 130 87 50 15 1187 9 1202 -6 9 -9 49 -177 90 -376 l11 -58 410 0 c225 0 409 2 409 5 0 7 -173 789 -501 2270 -190 858 -264 1173 -276 1183 -12 8 -63 12 -168 12 -173 0 -177 -2 -230 -85 -45 -70 -731 -1190 -1078 -1760 -360 -592 -418 -683 -459 -722 -48 -46 -197 -136 -285 -173 -222 -93 -542 -94 -768 -5 -193 77 -380 230 -502 413 -171 258 -209 644 -90 932 61 149 144 267 273 389 131 125 276 204 450 248 108 27 402 24 509 -5 115 -31 266 -109 379 -196 75 -58 102 -73 115 -66 26 14 481 475 481 487 0 19 -127 130 -232 203 -459 317 -1048 411 -1551 246 -285 -93 -494 -231 -736 -483 -74 -76 -135 -138 -137 -138 -3 0 -4 1374 -4 3053 l0 3052 -1444 0 c-1305 0 -1444 -2 -1450 -16z m6488 -6996 c86 -397 136 -662 127 -671 -10 -10 -600 -11 -610 -1 -5 4 397 676 429 717 12 15 25 27 30 27 4 0 15 -33 24 -72z"/>
+<path d="M997 4256 c-16 -16 -17 -58 -15 -584 l3 -567 125 -3 c165 -4 368 14 433 38 74 28 121 71 156 143 41 84 51 159 53 404 2 312 -29 432 -131 510 -70 54 -120 63 -376 70 -210 5 -232 4 -248 -11z"/>
+<path d="M992 2638 c-17 -17 -17 -1323 0 -1334 6 -4 122 -8 257 -8 227 -1 251 1 316 21 119 38 181 97 219 208 38 114 46 706 11 838 -39 148 -148 247 -305 277 -78 15 -483 13 -498 -2z"/>
+<path d="M189 786 c-127 -45 -177 -178 -106 -285 22 -33 48 -50 154 -103 97 -48 133 -71 150 -97 80 -119 -72 -270 -204 -203 -42 22 -68 53 -79 96 -7 29 -16 31 -63 15 -26 -9 -31 -15 -25 -33 14 -50 62 -112 108 -141 44 -27 58 -30 125 -30 58 0 85 5 116 22 99 53 152 164 125 262 -18 69 -69 114 -194 175 -120 57 -156 89 -156 138 0 117 162 160 239 63 19 -25 21 -26 50 -11 42 22 43 28 14 65 -53 68 -168 98 -254 67z"/>
+<path d="M7220 786 c-116 -33 -211 -113 -263 -224 -29 -61 -32 -76 -32 -163 0 -90 2 -99 37 -171 45 -91 103 -147 196 -191 61 -29 75 -32 167 -32 92 0 106 3 167 32 93 44 151 100 196 191 35 72 37 81 37 171 0 87 -3 102 -32 163 -85 181 -287 276 -473 224z m244 -100 c234 -114 233 -458 -2 -573 -48 -24 -70 -28 -137 -28 -67 0 -89 4 -137 28 -212 104 -240 400 -52 544 90 68 223 80 328 29z"/>
+<path d="M1380 750 l0 -40 95 0 95 0 0 -350 0 -350 45 0 45 0 0 350 0 350 95 0 95 0 0 40 0 40 -235 0 -235 0 0 -40z"/>
+<path d="M2772 492 c3 -297 3 -298 29 -347 86 -167 349 -193 470 -45 53 63 59 105 59 412 l0 278 -45 0 -45 0 0 -285 c0 -323 -2 -335 -70 -384 -106 -77 -267 -31 -299 84 -7 25 -11 144 -11 313 l0 272 -46 0 -46 0 4 -298z"/>
+<path d="M4330 401 l0 -391 109 0 c124 0 197 12 257 41 139 67 227 233 209 392 -11 101 -41 165 -109 233 -88 87 -140 105 -323 112 l-143 5 0 -392z m324 275 c62 -31 110 -80 140 -145 31 -69 30 -198 -3 -265 -56 -113 -142 -166 -283 -174 l-88 -5 0 313 0 313 90 -5 c70 -4 102 -11 144 -32z"/>
+<path d="M5870 400 l0 -390 45 0 45 0 0 390 0 390 -45 0 -45 0 0 -390z"/>
+</g></symbol>
+</svg>
+
+<!-- ================= HOME ================= -->
+<main id="v-home" class="view">
+  <div class="stage-wrap">
+    <section class="stage" id="stage" aria-label="Giriş">
+      <canvas id="scene" role="img" aria-label="Proje görselleri; imleç sağa gittikçe görsel akışkanlaşıp sürekli değişen bir parçacık formuna dönüşür"></canvas>
+      <a href="#home" class="stage-logo" id="stage-logo" aria-label="BCA Studio"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg></a>
+
+      <a class="side l" id="side-a" href="#architecture"><strong>Architecture</strong><span>Projeleri gör ›</span></a>
+      <a class="side r" id="side-s" href="#studio"><strong>Studio</strong><span>Studio’yu keşfet ›</span></a>
+      <a class="scroll-cue" href="#about" id="cue"><span class="track">Keşfet</span><i></i></a>
+
+      <div class="welcome" id="welcome">
+        <h1>Welcome</h1>
+        <p class="track"><span class="hov">Keşfetmek için üzerine gelin</span><span class="tap">Keşfetmek için dokunun</span></p>
+      </div>
+    </section>
+  </div>
+
+  <section class="about" id="about">
+    <div class="wrap">
+      <span class="track eyebrow">Hakkımızda</span>
+      <p class="statement">Tasarımı araştırıyor,<br><em>yeni üretim yolları</em> deniyoruz.</p>
+      <div class="about-cols">
+        <p><b>BCA Studio</b>, tasarımı bir araştırma ve deneme alanı olarak ele alan disiplinler arası bir stüdyo. Nesneler, mekânlar, görsel işler ve dijital deneyimler üretirken, bu üretimi mümkün kılan yöntemleri de tasarlıyoruz.</p>
+        <p><b>Yaklaşımımız</b>, sorular sormak, farklı alanlar arasında bağ kurmak ve fikirleri deneyerek geliştirmek üzerine kurulu. Malzeme, biçim, veri ve teknolojiyi birlikte araştırıyor; eskizler, modeller, kod ve prototiplerle olasılıkları sınayıp öğrendiklerimizi üretime taşıyoruz.</p>
+        <p><b>Hedefimiz</b>, tasarımın ifade ve üretim olanaklarını genişleten deneysel yöntemler geliştirmek. Yeni araçlar, iş birlikleri ve disiplinler arası denemelerle hem ortaya çıkan işleri hem de tasarlama biçimimizi dönüştürmek; keşfettiklerimizi paylaşılabilir yöntemlere ve kullanılabilir deneyimlere dönüştürmek istiyoruz.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="team" id="team">
+    <div class="wrap">
+      <span class="track" style="color:var(--muted)">Ekip</span>
+      <h2>Team</h2>
+      <p class="team-lead">Tasarım, araştırma ve geliştirmeyi bir araya getiren küçük bir ekip. Ekip üyelerini yakından tanımak için fotoğraflarına tıklayın.</p>
+      <div class="people" id="people"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= ARCHITECTURE ================= -->
+<main id="v-architecture" class="view" hidden>
+  <header class="topbar"><div class="wrap">
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Architecture</span></a>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Studio ›</a></nav>
+  </div></header>
+  <div class="wrap">
+    <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Architecture</h1><p>Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
+    <div class="toolbar">
+      <div class="pills" id="filters" role="group" aria-label="Kategoriye göre süz"></div>
+      <span class="arch-count" id="arch-count" aria-live="polite"></span>
+    </div>
+    <div class="arch-flow" id="arch-flow" aria-label="Mimari projeler"></div>
+    <section class="awards">
+      <span class="track muted">Ödüller ve yarışmalar</span>
+      <div class="aw-row"><span>2024</span><strong>DASK Depreme Dayanıklı Yapı Tasarımı Yarışması</strong><span>Finalist · Altuni Hotel</span></div>
+    </section>
+    <section class="cta-band"><h2>Bir proje mi düşünüyorsunuz?</h2><p>Yazın, birlikte konuşalım. <span class="sel">batucelik2001@gmail.com</span></p></section>
+  </div>
+</main>
+
+<!-- ================= PROJECT ================= -->
+<article id="v-project" class="view px" aria-labelledby="pd-title" hidden>
+  <header class="topbar px-bar" id="px-bar"><div class="wrap">
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span id="px-ctx">Architecture</span></a>
+    <nav aria-label="Sayfalar"><a href="#architecture" id="px-back">‹ Tüm projeler</a><a href="#studio" id="px-other">Studio ›</a></nav>
+  </div></header>
+
+  <section class="px-hero">
+    <img id="px-hero-bg" alt="" aria-hidden="true">
+    <img id="px-hero-img" alt="">
+    <div class="px-shade" aria-hidden="true"></div>
+    <div class="px-spot" id="px-spot1" aria-hidden="true"><i></i><b></b><span></span></div>
+    <div class="px-spot" id="px-spot2" aria-hidden="true"><i></i><b></b><span></span></div>
+    <div class="px-title"><span class="track" id="px-kind"></span><h1 id="pd-title"></h1></div>
+    <dl class="px-hud" id="px-hud"></dl>
+    <a class="px-down track" href="#px-lead-anchor" id="px-down">Kaydır ↓</a>
+  </section>
+
+  <aside class="project-credits" id="px-credits" aria-label="Proje künyesi" lang="tr" hidden></aside>
+
+  <section class="px-info" id="px-lead-anchor">
+    <div class="px-label"><span class="n">01</span><span class="track">Proje bilgileri</span></div>
+    <p class="px-lead" id="px-lead"></p>
+    <div class="px-info-grid">
+      <dl class="px-facts" id="px-facts"></dl>
+      <div class="px-paras" id="px-info-text"></div>
+    </div>
+  </section>
+
+  <section class="px-paper" id="px-concept">
+    <div class="px-label"><span class="n">02</span><span class="track">Konsept fikir</span></div>
+    <div class="px-cg" id="px-cg">
+      <div class="px-concept-text" id="px-concept-text"></div>
+      <div class="dg-grid" id="px-concept-dg"></div>
+    </div>
+  </section>
+
+  <section class="px-paper px-detail" id="px-detail">
+    <div class="px-label"><span class="n">03</span><span class="track">Proje detayları</span></div>
+    <div class="px-detail-head" id="px-detail-head">
+      <div class="px-paras px-detail-text" id="px-detail-text"></div>
+    </div>
+    <div class="px-sheet" id="px-detail-dg"></div>
+  </section>
+
+
+  <section id="px-evidence" class="arch-evidence" hidden aria-labelledby="evidence-title">
+    <div class="px-label"><span class="track">Deney · Ölçüm · Doğrulama</span></div>
+    <h2 id="evidence-title">Geometriden ölçülebilir davranışa.</h2>
+    <p class="evidence-lead">Malzeme karakterizasyonu, prototip üretimi ve duvar deneyleri, sayısal modelleme ile birlikte ele alınıyor. Fotoğraflar deney ortamını; aşağıdaki bulgular ise kendi kaynaklarında bildirilen karşılaştırmaları gösteriyor.</p>
+    <div class="evidence-result">
+      <div><span class="track">Deneysel bulgu · Duvar ölçeği</span><strong>%80’in üzerinde</strong><span>Düzlem içi kesme kapasitesinde bildirilen artış</span></div>
+      <div><p>Ankara Üniversitesi, geliştirilen tuğlalarla örülen duvarların deneylerinde geleneksel yığma tuğla duvarlara göre bu artışın elde edildiğini bildiriyor.</p><p class="evidence-footnote">Kaynak, üniversitenin 14 Ağustos 2026 tarihli duyurusudur. Bu özet değer tüm geometri, harç ve yükleme koşullarına genellenmez.</p><a href="https://kurumsaliletisim.ankara.edu.tr/2026/08/14/ankara-universitesinden-yigma-yapilarin-deprem-dayanimina-yenilikci-cozum/" target="_blank" rel="noopener">Deneysel bulgunun kaynağı ↗</a></div>
+    </div>
+    <h3 class="evidence-subtitle">Deney düzenekleri ve gözlemler</h3>
+    <div class="evidence-figures">
+      <figure><div class="evidence-media"><img src="img/archbrick/archbrick-test-1.png" alt="Köşegen doğrultuda yerleştirilmiş duvar paneli, yükleme başlıkları ve kamera" loading="lazy"></div><figcaption><span class="track">01 · Deney fotoğrafı</span><h4>Diyagonal basınç</h4><p>Duvar paneli karşılıklı köşelerinden yükleniyor. Bu yerleşim, panelin kesme davranışının incelenmesine olanak veriyor. Kameralar numune yüzeyindeki hareketi izlemek için yerleştirilmiş.</p></figcaption></figure>
+      <figure><div class="evidence-media evidence-diagram"><img src="img/archbrick/archbrick-test-2.png" alt="Hidrolik pistonlar, yükleme çerçevesi, LVDT ölçerler ve DIC kameralarını gösteren deney şeması" loading="lazy"></div><figcaption><span class="track">02 · Düzenek şeması</span><h4>Yükleme ve ölçüm sistemi</h4><p>Şema; eksenel ve yatay yükleme pistonlarını, LVDT yer değiştirme ölçerlerini, veri toplama ünitesini ve dijital görüntü korelasyonu (DIC) sistemini gösteriyor.</p></figcaption></figure>
+      <figure><div class="evidence-media"><img src="img/archbrick/archbrick-test-3.png" alt="Diyagonal yükleme sonrasında duvar panelinde oluşan çatlaklar" loading="lazy"></div><figcaption><span class="track">03 · Deney sonrası</span><h4>Çatlak gelişimi</h4><p>Yükleme sonrasında numunede oluşan çatlaklar görülüyor. Hasar örüntüsü, ölçülen tepkiyle birlikte incelenebilen fiziksel bir kayıt oluşturuyor.</p></figcaption></figure>
+      <figure><div class="evidence-media evidence-diagram"><img src="img/archbrick/archbrick-method.png" alt="Malzeme numuneleri, basınç ve çekme testleri, gerilme şekil değiştirme eğrileri ve sayısal modelleme akışı" loading="lazy"></div><figcaption><span class="track">04 · Yöntem görseli</span><h4>Malzemeden modele</h4><p>ArchBrick’in paylaştığı yöntem görseli, malzeme deneyleri ile sayısal model arasındaki bağı gösteriyor. 2025 makalesi, model yaklaşımının referans tuğlaların üç doğrultudaki basınç deneyleriyle kontrol edildiğini açıklıyor.</p></figcaption></figure>
+    </div>
+    <p class="evidence-footnote">Düzenek fotoğrafları ve şemalar: <a href="https://archbrick.com.tr/arge-ve-dogrulama.html" target="_blank" rel="noopener">ArchBrick · Ar-Ge ve Doğrulama ↗</a>.</p>
+    <div class="numerical-evidence">
+      <span class="track">Sayısal analiz · Birim ölçeği · 2025</span><h3>Geometrilerin karşılaştırılması</h3>
+      <p>2025 çalışması 12 boşluk geometrisini inceliyor. Nihai tasarım için referansa kıyasla bildirilen en yüksek artışlar:</p>
+      <dl class="evidence-metrics"><div><dt>Yük kapasitesi</dt><dd>+%24</dd></div><div><dt>Rijitlik</dt><dd>+%13</dd></div><div><dt>Enerji sönümleme kapasitesi</dt><dd>+%182</dd></div></dl>
+      <p class="evidence-footnote">Bunlar deneyden doğrudan ölçülmüş ürün garantileri değil, çalışmadaki X, Y ve Z doğrultularındaki sayısal karşılaştırmaların en yüksek sonuçlarıdır. <a href="https://doi.org/10.1016/j.engfailanal.2025.109995" target="_blank" rel="noopener">Engineering Failure Analysis · DOI ↗</a></p>
+    </div>
+    <details class="evidence-method"><summary>Veriyi nasıl okumalı?</summary><p>Deney düzeneği, numune geometrisi, harç sınıfı, yükleme doğrultusu ve sınır koşulları sonucu etkiler. Üniversitenin deney duyurusundaki %80’in üzerindeki artış ile makalelerin sayısal sonuçları farklı karşılaştırmalardır.</p><p>Burada kaynaklarda yayımlanan özet bulgular sunuluyor. Ham yük–yer değiştirme kayıtları, numune bazlı sonuçlar ve istatistiksel dağılımlar paylaşılmadığı için bu verilerden yeni eğriler veya ortalama değerler üretilmemiştir.</p></details>
+  </section>
+
+<section id="px-publications" class="project-publications" hidden></section>
+  <section class="px-images" id="px-images">
+    <div class="px-label"><span class="n">04</span><span class="track">Görseller</span><span class="muted" id="px-img-count"></span></div>
+    <div class="px-tiles" id="px-tiles"></div>
+  </section>
+
+  <a class="px-next" id="pd-next" href="#architecture">
+    <img id="pd-next-img" alt="">
+    <div><span class="track">Sonraki proje</span><strong id="pd-next-name"></strong><span class="go">Projeye geç ›</span></div>
+  </a>
+</article>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Görsel görüntüleyici" hidden>
+  <figure class="lb-fig"><img id="lb-img" alt=""><div id="lb-motion" class="lb-motion" hidden></div><figcaption id="lb-cap"></figcaption></figure>
+  <span class="lb-count" id="lb-count"></span>
+  <button type="button" class="lb-btn lb-x" id="lb-close" aria-label="Kapat">×</button>
+  <button type="button" class="lb-btn lb-prev" id="lb-prev" aria-label="Önceki görsel">‹</button>
+  <button type="button" class="lb-btn lb-next" id="lb-next" aria-label="Sonraki görsel">›</button>
+</div>
+
+<!-- ================= STUDIO ================= -->
+<main id="v-studio" class="view" hidden>
+  <canvas id="s-form" aria-hidden="true"></canvas>
+  <header class="topbar"><div class="wrap">
+    <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Studio</span></a>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#studio" aria-current="page">Studio</a><a href="#architecture">Architecture ›</a></nav>
+  </div></header>
+  <div class="wrap">
+    <div class="s-hero">
+      <div class="page-head"><span class="track muted">BCA</span><h1>Studio</h1><p>Tasarım araştırmaları, deneysel yöntemler ve yeni üretim biçimleri için açık bir çalışma alanı.</p></div>
+
+    </div>
+
+    <section class="s-sec studio-intro">
+      <span class="track muted">Araştır · Tasarla · Geliştir</span>
+      <h2>Fikirleri deneyerek<br>hayata geçiriyoruz.</h2>
+      <div class="studio-copy"><p>Studio’da tasarımın nasıl yapıldığını da araştırıyoruz. Malzeme denemeleri, görsel araştırmalar, ürünler, dijital deneyimler ve yaratıcı araçlar üzerinden farklı düşünme ve üretme biçimlerini bir araya getiriyoruz.</p><p>Amacımız, deneysel yöntemler geliştirerek tasarımın olanaklarını genişletmek. Sonucu baştan belirlemek yerine denemelerden öğreniyor; fikirleri prototiplerle sınayıp yeni işlere, araçlara ve başkalarının da kullanabileceği yöntemlere dönüştürüyoruz.</p></div>
+    </section>
+    <section class="s-sec studio-categories" aria-label="Studio çalışma alanları">
+      <div class="studio-category"><span class="track muted">01</span><h2>Projeler</h2><p>Farklı ölçeklerde tasarımlar ve deneysel üretimler.</p><div id="grid-s"></div><div id="grid-x"></div></div>
+      <div class="studio-category"><span class="track muted">02</span><h2>Uygulama ve<br>Yazılımlar</h2><p>Fikirleri gündelik deneyimlere dönüştüren dijital ürünler.</p><div id="grid-apps"></div></div>
+      <div class="studio-category"><span class="track muted">03</span><h2>Ar-Ge</h2><p>Yeni yöntemleri araştırdığımız deneyler ve atölyeler.</p><div id="grid-research"></div><div class="studio-entry"><span class="track muted">Atölye</span><strong>AI [UN]Plugged</strong><span>Tasarım sürecinde yapay zekâ üzerine araştırma ve denemeler.</span></div></div>
+    </section>
+
+
+
+
+
+    <section class="s-sec">
+      <div class="s-head"><h2>Notlar</h2><p>Araştırma yazıları ve süreç günlükleri.</p></div>
+      <div class="notes">
+        <div class="note"><span>26.02.2025</span><strong>Ballon de Paris hoparlör koleksiyonu Seoul Living Design Fair’de</strong><span>Ürün</span></div>
+        <div class="note"><span>2024</span><strong>AI [UN]Plugged Design Workshop: tasarımda yapay zekâ, yaklaşık 60 öğrenciyle</strong><span>Atölye</span></div>
+        <div class="note"><span>2024</span><strong>EERI Seismic Design OMU Chapter kuruldu</strong><span>Topluluk</span></div>
+      </div>
+    </section>
+
+    <section class="s-sec">
+      <div class="s-head"><h2>Birlikte geliştirelim</h2><p>Mimarlık ofisleri, girişimler ve kurumlar için.</p></div>
+      <div class="svc">
+        <div><strong>Uygulama geliştirme</strong><p>iOS, Android ve web için tasarımdan yayına.</p></div>
+        <div><strong>Yazılım ve araçlar</strong><p>Tasarım süreçlerini hızlandıran özel araçlar ve eklentiler.</p></div>
+        <div><strong>Yapay zekâ Ar-Ge</strong><p>Görüntü, veri ve üretken modeller üzerine deneysel çalışmalar.</p></div>
+      </div>
+      <p class="mail">İletişim: <span class="sel">batucelik2001@gmail.com</span></p>
+    </section>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 BCA Studio · Batuhan Çelik Architecture</span><span>batucelik2001@gmail.com · Instagram @bca.studio</span></div></footer>
+
+<dialog id="team-profile" class="team-profile" aria-labelledby="team-profile-name" aria-describedby="team-profile-roles team-profile-bio">
+  <button type="button" class="team-profile-close" id="team-profile-close" aria-label="Profili kapat" autofocus>×</button>
+  <div class="team-profile-grid">
+    <div class="team-profile-photo" id="team-profile-photo"></div>
+    <div class="team-profile-copy">
+      <p class="team-profile-roles" id="team-profile-roles"></p>
+      <h2 id="team-profile-name"></h2>
+      <div class="team-profile-bio" id="team-profile-bio"></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="proj" aria-labelledby="pj-title">
+  <div class="pj">
+    <img id="pj-img" alt="">
+    <div class="pj-body">
+      <div class="pj-top"><span class="track" id="pj-code"></span><button type="button" class="pj-close" id="pj-close" aria-label="Kapat">×</button></div>
+      <h3 id="pj-title"></h3>
+      <div class="pj-desc" id="pj-desc"></div>
+      <div class="pj-thumbs" id="pj-thumbs"></div>
+      <dl id="pj-facts"></dl>
+      <a class="pj-link" id="pj-link" href="https://bcastudio.myportfolio.com/work" target="_blank" rel="noopener">Eski portfolyoda gör ↗</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="holograms.js?v=20261102-loose"></script>
+<script src="hologram-transition.js?v=20261102"></script>
+<link rel="stylesheet" href="pace.css?v=20261102">
+<link rel="stylesheet" href="studio-particles.css?v=20261102-cycle">
+<script src="pace-data.js?v=20261102"></script>
+<script src="portfolio-data.js?v=20261102-complete"></script>
+<script src="stc-motion-data.js?v=20261102-complete"></script>
+<script src="alpha-motion.js?v=20261102-embedded"></script>
+<script src="studio-forms.js?v=20261102-sync"></script>
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DOC = document.documentElement;
+const $ = id => document.getElementById(id);
+
+const IMAGES = [
+  {src:'img/p/hall-sunset.jpg',        focus:[0.5,0.5],  spot:[0.52,0.6],  t:'Tashkent Opera House', v:'Taşkent · 2026'},
+  {src:'img/pf/alj-night.jpg',         focus:[0.5,0.4],  spot:[0.5,0.36],  t:'Al-Jazira Stadium', v:'Abu Dabi · 2026'},
+  {src:'img/covers/wa-extended.jpg',       focus:[0.5,0.55], spot:[0.33,0.6],  t:'WA Tower', v:'Kobe · 2025'},
+  {src:'img/covers/tas-extended.jpg',   focus:[0.5,0.34], spot:[0.76,0.25], t:'Yangi Tashkent Stadium', v:'Taşkent · 2026'},
+  {src:'img/pf/tas-aerial.jpg',        focus:[0.5,0.42], spot:[0.62,0.38], t:'Yangi Tashkent Stadium', v:'Kuşbakışı'},
+  {src:'img/covers/alt-extended.jpg',          focus:[0.5,0.55], spot:[0.5,0.6],   t:'Altuni Tower', v:'Kahramanmaraş · 2024'},
+  {src:'img/pf/stc-street.jpg',        focus:[0.5,0.5],  spot:[0.5,0.55],  t:'Science and Technology Center', v:'Samsun · 2023'},
+  {src:'img/entry/interior.jpg',       focus:[0.5,0.5],  spot:[0.49,0.36], t:'Overflowing Spectrums', v:'İç mekân'},
+  {src:'img/entry/facade-split.jpg',   focus:[0.5,0.5],  spot:[0.42,0.62], t:'Dynamic Facade', v:'Gece ve gündüz'}
+];
+const FORMS = (window.BCAStudioForms && BCAStudioForms.names) || ['Kelebek','Çiçek','Uzay','Kara delik','Denizanası'];
+
+/* ---------- projects (from Batuhan Çelik's portfolio) ---------- */
+const OLD = 'https://bcastudio.myportfolio.com/';
+const BKA = 'Bahadır Kul Architects';
+const PROJECTS = [
+  {code:'OPR', name:'Tashkent Opera House', img:'img/p/hall-sunset.jpg', kind:'Kültür · Opera',
+   gallery:['img/pf/opr-dusk.jpg','img/pf/opr-front.jpg','img/pf/opr-night.jpg','img/pf/opr-roof.jpg','img/p/hall-section.jpg'],
+   facts:[['Yıl','2026'],['Konum','Taşkent, Özbekistan'],['Rol','Tasarım ekibi lideri'],['Mimari ofis',BKA],['Proje sahibi','Bahadır Kul'],['Sorumluluklar','Konsept tasarım, tasarım geliştirme, CAD çizimleri, 3D modelleme, sunum, diyagram, görselleştirme ve animasyon']],
+   line:'Geleneksel Özbek yurtunu Taşkent için yeni bir kültür simgesine dönüştüren bir opera binası.',
+   desc:['Proje, geleneksel Özbek yurtunu çağdaş bir mimari dille yeniden yorumluyor. Yurtun dairesel geometrisini ve ışınsal strüktürünü Taşkent için yeni bir kültür simgesine dönüştürüyor. Tarihî formları birebir tekrarlamak yerine yurtun mekânsal düzenini, topluluk karakterini ve gökyüzüyle kurduğu sembolik ilişkiyi akışkan ve anıtsal bir ifadeye çeviriyor.',
+         'Merkezdeki ışık aksı ziyaretçi deneyimini düzenliyor; yükselen form yapı, peyzaj ve gökyüzü arasında güçlü bir bağ kuruyor. Opera böylece hem çağdaş bir mekânsal jest hem de Özbek geleneğini, topluluğu ve geleceği birbirine bağlayan bir metafor hâline geliyor.']},
+  {code:'TAS', name:'Yangi Tashkent Stadium', img:'img/covers/tas-extended.jpg', kind:'Stadyum · FIFA',
+   gallery:['img/pf/tas-aerial.jpg','img/pf/tas-arches.jpg','img/pf/tas-bowl.jpg','img/pf/tas-city.jpg','img/pf/tas-park.jpg','img/pf/tas-locker.jpg','img/pf/tas-tunnel.jpg','img/pf/tas-hub.jpg'],
+   facts:[['Yıl','2026'],['Konum','Taşkent, Özbekistan'],['Rol','Konsept tasarımcı'],['Mimari ofis',BKA],['Proje sahibi','Bahadır Kul'],['Sorumluluklar','Tasarım geliştirme, CAD çizimleri, 3D modelleme, sunum, diyagram, görselleştirme ve animasyon']],
+   line:'Özbek mimarisinin sivri kemerlerini çağdaş bir dille yorumlayan, FIFA standartlarında bir stadyum.',
+   desc:['Proje, Yeni Taşkent için FIFA standartlarına uygun bir stadyum öneriyor ve Özbekistan’ın mimari mirasını çağdaş bir dille yeniden yorumluyor. Anıtsal sivri kemerler stadyumun kimliğini belirliyor; ritmik tekrarları, net dolaşım ve kamusal işlevler yapıyı yeni bir kent simgesine dönüştürüyor.',
+         'Temel hedef, geleneksel Özbek mimarisinin anıtsal kemer tipolojisini çağdaş stadyum tasarımıyla buluşturmak. Tekrarlanan kemer modülleri güçlü bir kentsel kimlik kuruyor; dairesel düzen ve açık dolaşım sistemi kullanıcı deneyimini güçlendirip stadyumu aktif bir kamusal buluşma noktasına çeviriyor.',
+         'Tasarım, tarihî sivri kemeri yalnızca biçimsel bir gönderme olarak değil, stadyumun kimliğini tanımlayan ana mimari öğe olarak ele alıyor. Her kemer bağımsız, anıtsal bir kapı gibi çalışıyor; ritmik tekrarları bütünlüklü bir mimari ifade yaratıyor. Böylece kültürel miras ile çağdaş mühendislik ve uluslararası stadyum standartları bir araya geliyor.']},
+  {code:'ALJ', name:'Al-Jazira Stadium', img:'img/pf/alj-aerial.jpg', kind:'Stadyum · FIFA',
+   gallery:['img/p/arena-model.jpg','img/pf/alj-facade.jpg','img/pf/alj-pitch.jpg','img/pf/alj-match.jpg'],
+   facts:[['Yıl','2026'],['Konum','Abu Dabi, BAE'],['Rol','Tasarım ekibi lideri'],['Mimari ofis',BKA],['Proje sahibi','Bahadır Kul'],['Sorumluluklar','Konsept tasarım, CAD çizimleri, sunum, diyagram, görselleştirme ve animasyon']],
+   line:'Çöl kumulları, rüzgâr ve denizden biçimlenen, maç olmayan günlerde de yaşayan bir stadyum.',
+   desc:['Abu Dabi için FIFA standartlarında bir stadyum. Biçimini çöl peyzajından, rüzgârdan ve kıyı hareketinden alıyor. Yıl boyu yaşayan bir kent durağı olarak tasarlanan yapı; verimli geniş açıklıklı strüktürü, iklime duyarlı tasarımı ve karma kamusal işlevleri bir araya getiriyor.',
+         'Hedef ekonomik, iklime duyarlı ve sosyal olarak aktif bir stadyum. Hafif yapım sistemleri, optimize edilmiş açıklıklar ve pasif çevresel stratejiler malzeme tüketimini ve işletme maliyetini düşürüyor. Doğal havalandırma, gölgeli kamusal alanlar ve kontrollü hava akışı sert çöl iklimini dengeleyip ısıl konforu artırıyor.',
+         'Form kumul, rüzgâr ve denizin etkileşiminden doğuyor. Heykelsi kabuk podyumun üzerinde süzülüyormuş gibi duruyor; kesintisiz şerit cephe doğanın akışkan hareketini ifade ediyor. Alışveriş alanları, yeme-içme, teraslar, müzeler ve rekreasyon alanları maç günleri dışında da açık kalıyor ve stadyum bir sosyal merkeze dönüşüyor.']},
+  {code:'WA', name:'WA Tower', img:'img/covers/wa-extended.jpg', kind:'Yüksek yapı · Yarışma', badge:'EERI SDC 2025',
+   gallery:['img/pf/wa-void.jpg','img/pf/wa-cafe.jpg','img/pf/wa-hall.jpg','img/pf/wa-structure.jpg','img/pf/wa-test.jpg'],
+   facts:[['Yıl','2025'],['Proje konumu','Kobe, Japonya'],['Yarışma','EERI Seismic Design Competition, San Francisco'],['Yükseklik','19 kat']],
+   line:'Japon “Wa” felsefesinden beslenen; insan, doğa ve mimari arasında uyum arayan 19 katlı bir kule.',
+   desc:['EERI Sismik Tasarım Yarışması, Deprem Mühendisliği Araştırma Enstitüsü’nün düzenlediği uluslararası bir yarışma. Üniversite takımları yüksek yapıların ölçekli modellerini tasarlıyor, analiz ediyor ve inşa ediyor; modeller deprem simülasyonu altında test ediliyor.',
+         'WA Tower, enerjinin birikip boşalması ve temel parçacıkların çekim kuvveti gibi doğal ilkelerden ilham alıyor. Japon “Wa” felsefesine dayanan proje, kültürel kimliği performans odaklı tasarımla birleştiriyor.',
+         'En büyük zorluk, 4. ile 6. katlar arasında kuleyi çapraz kesen bir boşluktu. Strüktürel düzeni bozan bu yükseltilmiş kent geçidi ileri mühendislik çözümleri gerektirdi. Boşluk saklanmak yerine kenti kıyıya bağlayan sosyal bir koridora dönüştürüldü.',
+         'Yapay zekâ destekli cephe sistemleri iklim verisine tepki vererek ışığı ve havalandırmayı dinamik olarak kontrol ediyor; akıllı sulama dikey yeşili besliyor ve doğa ile teknolojinin birliğini ifade ediyor.']},
+  {code:'ALT', name:'Altuni Tower', img:'img/covers/alt-extended.jpg', kind:'Yüksek yapı · Yarışma', badge:'DASK 2024 finalisti',
+   gallery:['img/pf/alt-street.jpg','img/pf/alt-model.jpg','img/altuni.jpg'],
+   facts:[['Yıl','2024'],['Proje konumu','Kahramanmaraş, Türkiye'],['Yarışma','DASK Depreme Dayanıklı Yapı Tasarımı Yarışması, İstanbul'],['Sonuç','Finalist']],
+   line:'Kahramanmaraş’ın tarihî dokusunu deprem sonrası yeniden yorumlayan, depreme dayanıklı bir otel kulesi.',
+   desc:['DASK Depreme Dayanıklı Yapı Tasarımı Yarışması, mimarlık ve mühendislik öğrencilerinde deprem güvenliği bilinci oluşturmayı amaçlayan ulusal bir yarışma. Takımlar orta yükseklikte yapıların ölçekli modellerini tasarlayıp inşa ediyor; modeller sarsma masalarında test ediliyor.',
+         'Proje, deprem sonrası Kahramanmaraş’ın tarihî ve kültürel dokusunu korumayı ve yeniden yorumlamayı amaçlıyor. Sonradan dayatılmış değil, sanki hep oradaymış gibi yerel halk ve kentle benimsenecek bir tasarım hedefleniyor.',
+         'Alt katlar kaybolan mimari öğeleri geleneksel kemer formlarıyla yeniden yorumluyor; üst cephe modern bir siluet çiziyor. Seçilen taşıyıcı sistem hem görsel kompozisyonu hem de sismik dayanımı güçlendiriyor; simetri ve sadelik kültürel süreklilik ile strüktürel sağlamlığı birlikte sağlıyor.']},
+  {code:'STC', name:'Science and Technology Center', img:'img/pf/stc-street.jpg', kind:'Kamusal · Öğrenci projesi',
+   gallery:['img/pf/stc-model.jpg','img/pf/stc-curve.jpg','img/p/hall-wire.jpg'],
+   facts:[['Yıl','2023'],['Konum','Canik, Samsun'],['Ders','arch401'],['Arazi','100.000 m²']],
+   line:'Kentin tarihî dokusunu çağdaş inovasyonla buluşturan, Karadeniz’e doğru yükselen bir teknoloji merkezi.',
+   desc:['Proje, kentin tarihî dokusunu modern inovasyonla buluşturuyor ve tüketim yerine üretimi teşvik ediyor. Enerji verimliliği, sürdürülebilirlik ve topluluk katılımına odaklanan merkez, bölgenin sosyal ve ekonomik altyapısını güçlendirmeyi amaçlıyor.',
+         'Samsun’un genç nüfusuna ve iki üniversitesine rağmen bölgede yeterli teknolojik altyapı yok. Canik’te kurgulanan merkez, genç ve orta yaşlı bireyleri güçlendirmeyi ve bölgenin teknolojik kapasitesini artırmayı hedefliyor. Programda yapay zekâ yazılım ofisleri, bilim araştırma laboratuvarları ve oyun tasarım ofisleri yer alıyor.',
+         'Tasarım, enerjinin birikip boşalması ve temel parçacıkların çekim kuvveti gibi doğal ilkelerden ilham alıyor. Alan, çevredeki referans noktalarını bir araya getirerek merkezi bir çekim odağı oluşturuyor; form ileriye bakan bir vizyonla Karadeniz’e doğru yükseliyor.']},
+  {code:'SOC', name:'Social Housing', img:'img/covers/soc-extended.jpg', kind:'Konut · Öğrenci projesi',
+   gallery:['img/pf/soc-section.jpg','img/pf/soc-terrace.jpg','img/pf/soc-units.jpg'],
+   facts:[['Yıl','2022'],['Konum','Atakum, Samsun'],['Ders','arch301'],['Tür','Sosyal konut']],
+   line:'Kaybolan komşuluk ilişkilerini ve kapı önü sohbetlerini yeniden yaşatan bir konut projesi.',
+   desc:['Proje, insanların giderek uzaklaştığı komşuluk ilişkilerini, mahalle yaşamını ve kapı önü sohbetlerini yeniden yaşatma fikrine dayanıyor. Eski sokak evleri yapının diline taşındı.',
+         'Sürdürülebilir ve kendi kendine yeten bir yapı olarak tasarlanan projede her katta yeşil alanlar bırakılarak karbondioksit oranının azaltılması ve yaşam kalitesinin artırılması hedeflendi.']},
+  {code:'DYF', name:'Dynamic Facade', img:'img/entry/facade-split.jpg', kind:'Cephe · Konsept',
+   gallery:['img/pf/dyf-states.jpg','img/pf/dyf-sketch.jpg','img/facade.jpg'],
+   facts:[['Tür','Cephe · Konsept'],['Kesişim','Architecture × Studio']],
+   line:'Rüzgâr ve hava verisiyle kendini sürekli yeniden tasarlayan bir cephe.',
+   desc:['Çıkış sorusu: doğa kendi cephesini neden kendisi tasarlamasın?','Hareketli dijital paneller rüzgâr enerjisini ve hava koşullarını veriye çeviriyor. Yapının bir yüzü dijital ekran, diğeri yansıtıcı camlı paneller. Havaya göre bina şeffaflaşabiliyor ya da dijital bir sanat gösterisine dönüşebiliyor.'],
+   url:OLD+'dynamic-facade'},
+  {code:'HMP', name:'Hemp Café', img:'img/pf/hmp-render.jpg', kind:'Kafe · Malzeme araştırması',
+   gallery:['img/pf/hmp-blocks.jpg','img/canteen.jpg'],
+   facts:[['Yıl','2024'],['Konum','Türkiye'],['Malzeme','Kenevir betonu, pleksi panel'],['Tür','Modüler kafe']],
+   line:'Kenevir betonundan, büyüyüp küçülebilen ve cephesi kent mobilyasına dönüşen modüler bir kafe.',
+   desc:['Bugün yenilik ve sürdürülebilirlik mimari tasarımın temelini oluşturuyor. Kenevir betonu (hempcrete) sürdürülebilir ve çevre dostu bir malzeme olarak öne çıkıyor; tasarım, malzemenin özelliklerinden yararlanan dayanıklı ve çevreci bir kafe yapısı öneriyor.',
+         'Kenevir esaslı yapı kent merkezleri, kampüsler, spor tesisleri ya da doğal parklar gibi farklı bağlamlara uyum sağlayabiliyor. Modüler tasarım sayesinde gerektiğinde büyüyüp küçülebiliyor.',
+         'Cephe elemanları açılıp kapanarak farklı işlevler üstleniyor: paneller güneşliğe, bazı elemanlar kent mobilyasına dönüşebiliyor. Kenevir betonu ve panellerle kurgulanan bu yapı, çevresel ihtiyaçlarla uyumlu ve kullanıcı konforunu artıran esnek bir çözüm sunuyor.'],
+   url:OLD+'hempcrate-canteen'},
+  {code:'CBR', name:'Coastal Bar', img:'img/pf/cbr-1.jpg', kind:'İç mekân · Konsept',
+   gallery:['img/pf/cbr-2.jpg','img/coastal.jpg'],
+   facts:[['Tür','Kıyı barı · Konsept']],
+   line:'Su ile kayanın etkileşiminden doğan renkler ve yansımalar.',
+   desc:['Proje, su ile kaya arasındaki uzun soluklu etkileşimden yola çıkıyor ve rengin bir algı mı yoksa bu etkileşime verilen bir tepki mi olduğunu soruyor.','Deniz ile kıyının süregelen mücadelesi dışarıya bir dinginlik taşıyor. Renkler yansıtıcı yüzeylerde beliriyor; şeffaf mekânda rengin etkisi ve tepkisi aynı anda deneyimleniyor.'],
+   url:OLD+'coastal-bar'},
+  {code:'OVS', name:'Overflowing Spectrums', img:'img/entry/interior.jpg', kind:'İç mekân · Konsept',
+   facts:[['Tür','İç mekân · Konsept']],
+   line:'Renk, ışık ve sesle kurgulanmış bir iç mekân.',
+   desc:['[Proje metni eklenecek.]'],
+   url:OLD+'overflowing-spectrums'},
+  {code:'BDP', studio:true, name:'Ballon de Paris × Batuhan Çelik', img:'img/covers/bdp-extended.jpg', kind:'Ürün tasarımı · Hoparlör',
+   gallery:['img/pf/bdp-detail.jpg','img/pf/bdp-bed.jpg','img/pf/bdp-stand.jpg','img/pf/bdp-fair.jpg'],
+   facts:[['Yıl','2025'],['Tür','Sınırlı üretim hoparlör koleksiyonu'],['Sergi','Seoul Living Design Fair, Güney Kore · 26.02.2025'],['Renkler','Turkuaz ve Robin Egg Blue']],
+   line:'Kore kültürünü çağdaş tasarımla buluşturan, sınırlı üretim bir hoparlör koleksiyonu.',
+   desc:['Ballon de Paris iş birliğiyle özel olarak tasarlanan hoparlör koleksiyonu sınırlı üretim olarak piyasaya çıktı ve ilk kez Güney Kore’deki Seoul Living Design Fair’de kullanıcılarla buluştu.',
+         'Projede Kore kültürünü çağdaş tasarım ilkeleriyle birleştirmek ve renk seçimine derin bir anlam yüklemek hedeflendi. Kore renk paletinden ilham alınırken Türk rengi olarak bilinen turkuaz güçlü bir kültürel bağ kurmak için kullanıldı; 2025’in yılın rengi seçilen Robin Egg Blue da paletin parçası oldu.',
+         'Sonuç yalnızca bir hoparlör değil, kültürel bağları tasarımın diliyle anlatan bir nesne.']}
+];
+PROJECTS.push({"code": "ABR", "studio": true, "name": "ArchBrick", "img": "img/archbrick/archbrick-studio-group.png", "kind": "Malzeme tasarımı · Ar-Ge", "badge": "Geometri odaklı tasarım", "gallery": ["img/archbrick/archbrick-prototype.png", "img/archbrick/archbrick-mould.png", "img/archbrick/archbrick-production.jpg", "img/archbrick/archbrick-lab.png"], "facts": [["Buluş sahibi", "Dr. Alper Çelik"], ["Araştırma", "Ankara Üniversitesi"], ["Patent başvurusu", "2024/021852"], ["Başvuru hak sahibi", "Ankara Üniversitesi"], ["Marka başvurusu", "2025/101842"]], "line": "Bir tuğlanın içindeki geometriyi yeniden düşünmek.", "desc": ["ArchBrick, Dr. Alper Çelik tarafından geliştirilen, iç boşluk geometrisini kemer formuyla yeniden ele alan bir duvar elemanı teknolojisi. Dış boyutları korurken yükün malzeme içinde nasıl aktarıldığına odaklanıyor. Studio’da deneysel yöntem ve malzeme tasarımının bir örneği olarak yer alıyor.", "Biyomimikriden ve kemerlerin yük aktarma mantığından beslenen yaklaşım, yalnızca boşluk oranını değil; boşlukların biçimini, konumunu ve bağlantılarını araştırıyor. Merkezdeki tek oval kemer halkası ve onu kesen bölmeler, tasarımın ayırt edici kesitini oluşturuyor.", "Geliştirme süreci; sayısal analiz, kalıp tasarımı, prototip üretim ve laboratuvar doğrulamasını bir araya getiriyor. ArchBrick’in resmî sitesine göre ArchBrick-M için Tokat ve Erzincan’daki iki fabrikada yaklaşık 8.000 birim üretilmiş; bölme duvar ürünleri ve ArchBlock için araştırmalar sürüyor.", "ArchBrick-M taşıyıcı yığma duvarlara odaklanıyor. ArchBrick-B 13.5 ve B 8.5 bölme duvar uygulamaları; ArchBlock ise farklı blok malzemeleri için geliştiriliyor. Ürün ailelerinin geliştirme aşamaları ve uygulama koşulları birbirinden farklı."], "publications": [{"title": "Numerical analysis of failure performance in novel hollow brick designs", "journal": "Engineering Failure Analysis · 2025", "authors": "Alper Çelik, Özgür Anıl, Ömer Mercimek", "doi": "10.1016/j.engfailanal.2025.109995", "summary": "Birim ölçeğinde farklı boşluk geometrilerini karşılaştıran sayısal araştırma. Kemer merkezli tasarımların yük taşıma ve enerji sönümleme davranışını inceliyor."}, {"title": "Seismic resilience of masonry buildings with a novel arch-type hollow brick (ArchBrick): Multi-scale numerical assessment from unit to building level", "journal": "Engineering Structures · 2026", "authors": "Alper Çelik", "doi": "10.1016/j.engstruct.2026.122190", "summary": "Birimden duvara ve iki katlı yapı modellerine uzanan sayısal değerlendirme. İç geometri, boşluk oranı ve harç sınıfının modellenen davranış üzerindeki etkilerini araştırıyor."}], "url": "https://archbrick.com.tr/"});
+if(window.BCAPace) PROJECTS.push(window.BCAPace.project);
+const P = code => PROJECTS.findIndex(p=>p.code===code);
+/* where the main mass sits in each render (x%, y% from the top-left); every crop keeps this point in frame */
+const FOCUS = {
+  'img/p/hall-sunset.jpg':[50,42], 'img/pf/opr-dusk.jpg':[60,62], 'img/pf/opr-front.jpg':[55,68], 'img/pf/opr-night.jpg':[50,45], 'img/pf/opr-roof.jpg':[50,45],
+  'img/covers/tas-extended.jpg':[50,50], 'img/pf/tas-aerial.jpg':[68,50], 'img/pf/tas-arches.jpg':[50,45], 'img/pf/tas-bowl.jpg':[50,55],
+  'img/pf/tas-city.jpg':[62,55], 'img/pf/tas-park.jpg':[48,45], 'img/pf/alj-aerial.jpg':[62,40], 'img/p/arena-model.jpg':[45,62], 'img/pf/alj-night.jpg':[50,62],
+  'img/pf/alj-facade.jpg':[35,72], 'img/pf/alj-pitch.jpg':[50,55], 'img/pf/alj-match.jpg':[40,55], 'img/covers/wa-extended.jpg':[50,50], 'img/p/tower-model.jpg':[50,42],
+  'img/pf/wa-void.jpg':[40,50], 'img/pf/wa-cafe.jpg':[55,50], 'img/pf/wa-test.jpg':[55,50], 'img/covers/alt-extended.jpg':[50,50], 'img/pf/alt-street.jpg':[30,40],
+  'img/pf/alt-model.jpg':[45,50], 'img/altuni.jpg':[35,45], 'img/pf/stc-street.jpg':[60,35], 'img/pf/stc-model.jpg':[50,75], 'img/pf/stc-curve.jpg':[45,45],
+  'img/p/hall-wire.jpg':[50,62], 'img/covers/soc-extended.jpg':[50,50], 'img/entry/facade-split.jpg':[45,45], 'img/pf/hmp-render.jpg':[66,55], 'img/pf/cbr-1.jpg':[45,50],
+  'img/entry/interior.jpg':[50,58], 'img/covers/bdp-extended.jpg':[50,50], 'img/pf/bdp-stand.jpg':[50,45], 'img/pf/bdp-bed.jpg':[60,55], 'img/p/hall-model.jpg':[50,35],
+  'img/entry/city-model.jpg':[62,60], 'img/entry/aerial.jpg':[66,57]
+};
+/* renders whose subject is wide and low: they fill the cover instead of standing whole */
+const WIDE_ONLY = ['img/covers/tas-extended.jpg'];
+const fp = src => { const f = FOCUS[src]; return f ? f[0]+'% '+f[1]+'%' : '50% 50%'; };
+const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media};
+Object.entries(window.BCAPortfolio?.projects || {}).forEach(([code, entry])=>{
+  const p = PROJECTS.find(p=>p.code===code);
+  if(p) ['img','gallery','desc'].forEach(k=>{ if(entry[k]) p[k] = entry[k]; });
+});
+const escapeAttr = s => String(s || '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* Credits from Batuhan's portfolio, with BKA attribution and WA roles supplied by Batuhan. */
+const BKA_CREDITS = {
+  studio:'Bahadır Kul Architects', url:'https://bkaarchitecture.com/',
+  groups:[
+    ['Proje sahibi',['Bahadır Kul']],
+    ['Konsept Tasarım',['Bahadır Kul','Batuhan Çelik']],
+    ['Project Manager',['Hüseyin Yıldız']],
+    ['Mimarlar',['Ayşenur Çam','Nergis Ayça Karagöl','Gülse Şevval Gül']]
+  ]
+};
+const PROJECT_CREDITS = {
+  OPR:BKA_CREDITS, TAS:BKA_CREDITS, ALJ:BKA_CREDITS,
+  WA:{groups:[
+    ['Akademik Danışman',['Prof. Dr. M. Fatih Yılmaz']],
+    ['Mimarlar',['Batuhan Çelik','Hatice Aslı Ösoy','Ebrar Karaca']],
+    ['İnşaat Mühendisleri',['Mecit Demirbilek','Dilan Yılmaz','Zahid Genç']],
+    ['Mentorlar',['Şule Yıldırım','Hamza Özgün']]
+  ]},
+  ALT:{groups:[['Proje Ekibi',['Batuhan Çelik','Şule Yıldırım','Zahid Genç','Fatih Keskin','M. Fatih Yılmaz']]]},
+  BDP:{groups:[['Tasarım',['Batuhan Çelik']],['İş birliği',['Ballon de Paris']]]},
+  ABR:{groups:[['Buluş Sahibi',['Dr. Alper Çelik']],['Araştırma',['Ankara Üniversitesi']]]},
+  PCE:{groups:[['Kurucu',['Batuhan Çelik']],['Ürün Tasarımı ve Geliştirme',['Batuhan Çelik']]]}
+};
+function renderProjectCredits(p){
+  const credits=$('px-credits'),data=PROJECT_CREDITS[p.code]||{groups:[['Tasarım',['Batuhan Çelik']]]};
+  credits.hidden=false;credits.classList.remove('is-entering','is-leaving');
+  credits.innerHTML=(data.studio?'<a class="credits-brand" href="'+data.url+'" target="_blank" rel="noopener" aria-label="Bahadır Kul Architects — resmî sitesi"><span class="credits-logo"><img src="img/credits/bka-official-logo.png" width="748" height="574" alt="Bahadır Kul Architects logosu"></span><span>'+data.studio+'</span></a><p class="credits-attribution">Bu proje Bahadır Kul Architects’e aittir.</p>':'')+
+    '<dl>'+data.groups.map(([role,names])=>'<div class="credits-group"><dt>'+escapeAttr(role)+'</dt>'+names.map(name=>'<dd>'+escapeAttr(name)+'</dd>').join('')+'</div>').join('')+'</dl>';
+  placeProjectCredits();
+}
+function placeProjectCredits(){
+  const credits=$('px-credits'),entry=$('v-project').closest('.arch-entry');
+  if(entry&&matchMedia('(min-width:1100px)').matches)entry.append(credits);
+  else $('v-project').querySelector('.px-hero').after(credits);
+}
+function imageVariants(src, sizes){
+  const m = portfolioMedia[src];
+  if(!m) return '';
+  const variants = [...new Map(m.variants.map(v=>[v[1],v])).values()].sort((a,b)=>a[1]-b[1]);
+  return ' srcset="'+variants.map(v=>v[0]+' '+v[1]+'w').join(', ')+'" sizes="'+sizes+'" width="'+m.width+'" height="'+m.height+'" decoding="async"';
+}
+
+
+IMAGES.forEach(im=>{ const f = FOCUS[im.src]; if(f) im.focus = [f[0]/100, 1 - f[1]/100]; });
+const isPhone = innerWidth <= 760;
+const touchDevice = matchMedia('(hover:none) and (pointer:coarse)').matches;
+const N = isPhone ? 14000 : 80000;
+
+const TEAM = [
+  {n:'Batuhan Çelik', r:'Kurucu · Mimar · Developer', i:'BÇ', img:'img/pf/batuhan-celik-portrait.png', b:'Erzincan, 2001. Ondokuz Mayıs Üniversitesi Mimarlık. Bahadır Kul Architects’te tasarım ekibi lideri, EERI Seismic Design OMU Chapter kurucu üyesi. Mimarlık kadar dijital sanatla da ilgileniyor.', profile:window.BCAPortfolio?.profile},
+  {n:'Dr. Alper Çelik', r:'Civil Engineer · Academic Advisor', i:'AÇ', img:'img/pf/alper-celik-portrait.png', b:'İnşaat mühendisi ve akademik danışman. ArchBrick teknolojisinin buluş sahibi. Yapı mekaniği, sayısal modelleme ve deneysel doğrulama üzerine çalışıyor.'},
+  {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'},
+  {n:'[Ad Soyad]', r:'[Rol]', i:'—', b:'[Kısa biyografi]'}
+];
+$('people').innerHTML = TEAM.map((t,index)=>
+  '<button type="button" class="person" data-person="'+index+'" aria-haspopup="dialog" aria-controls="team-profile" aria-label="Profili aç: '+escapeAttr(t.n)+'"><div class="portrait'+(t.img?' photo':'')+'">'+(t.img?'<img src="'+t.img+'" alt="'+t.n+'">':'<span class="ini">'+t.i+'</span>')+'</div>'+
+  '<strong>'+t.n+'</strong><span class="role">'+t.r+'</span></button>').join('');
+const teamProfile=$('team-profile');let teamOpener=null,teamOverflow='',teamCloseTimer=0;
+function closeTeamProfile(immediate=false){
+  if(!teamProfile.open)return;
+  if(immediate||reduce){clearTimeout(teamCloseTimer);teamProfile.close();return;}
+  if(teamProfile.classList.contains('closing'))return;
+  teamProfile.classList.add('closing');teamCloseTimer=setTimeout(()=>teamProfile.close(),260);
+}
+$('people').addEventListener('click',e=>{
+  const button=e.target.closest('[data-person]');if(!button)return;
+  const person=TEAM[Number(button.dataset.person)];if(!person)return;
+  teamOpener=button;teamOverflow=document.body.style.overflow;
+  $('team-profile-name').textContent=person.n;$('team-profile-roles').textContent=person.r;
+  $('team-profile-bio').replaceChildren();const paragraph=document.createElement('p');paragraph.textContent=person.b;$('team-profile-bio').append(paragraph);
+  if(person.profile){
+    const resume=document.createElement('details');resume.className='team-resume';
+    const summary=document.createElement('summary');summary.textContent='Özgeçmiş ve deneyim';resume.append(summary);
+    const intro=document.createElement('div');intro.className='resume-intro';
+    person.profile.paragraphs.forEach(text=>{const p=document.createElement('p');p.textContent=text;intro.append(p);});resume.append(intro);
+    person.profile.sections.forEach(group=>{const section=document.createElement('section'),title=document.createElement('h3'),list=document.createElement('dl');title.textContent=group.title;
+      group.items.forEach(([label,text])=>{const item=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=text;item.append(dt,dd);list.append(item);});
+      section.append(title,list);resume.append(section);});
+    $('team-profile-bio').append(resume);
+  }
+  const photo=$('team-profile-photo');photo.replaceChildren();
+  if(person.img){const image=document.createElement('img');image.src=person.img;image.alt=person.n;photo.append(image);}else photo.textContent=person.i;
+  clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');teamProfile.showModal();document.body.style.overflow='hidden';teamProfile.scrollTop=0;
+});
+$('team-profile-close').addEventListener('click',()=>closeTeamProfile());
+teamProfile.addEventListener('click',e=>{if(e.target===teamProfile)closeTeamProfile();});
+teamProfile.addEventListener('cancel',e=>{e.preventDefault();closeTeamProfile();});
+teamProfile.addEventListener('close',()=>{clearTimeout(teamCloseTimer);teamProfile.classList.remove('closing');document.body.style.overflow=teamOverflow;if(teamOpener?.isConnected&&!teamOpener.closest('[hidden]'))teamOpener.focus({preventScroll:true});});
+addEventListener('hashchange',()=>closeTeamProfile(true));
+
+/* ---------- project extras: categories, location for the list, model ↔ render pairs ---------- */
+const EXTRA = {
+  OPR:{cats:['Kamusal','Kültür'], year:'2026', compare:['img/p/hall-model.jpg','img/p/hall-sunset.jpg']},
+  TAS:{cats:['Stadyum'], year:'2026', compare:['img/entry/city-model.jpg','img/entry/aerial.jpg']},
+  ALJ:{cats:['Stadyum'], year:'2026'},
+  WA: {cats:['Yarışma','Yüksek yapı'], year:'2025', compare:['img/p/tower-model.jpg','img/p/tower-render.jpg']},
+  ALT:{cats:['Yarışma','Yüksek yapı'], year:'2024'},
+  STC:{cats:['Kamusal'], year:'2023'},
+  SOC:{cats:['Konut'], year:'2022'},
+  DYF:{cats:['Konsept'], year:'2024'},
+  HMP:{cats:['Konsept'], year:'2024'},
+  CBR:{cats:['İç mekân','Konsept'], year:'2024'},
+  OVS:{cats:['İç mekân','Konsept'], year:'2024'},
+  ABR:{cats:[], year:'2025–2026'},
+  BDP:{cats:[], year:'2025'},
+  PCE:{cats:[], year:'2026'}
+};
+PROJECTS.forEach(p=>Object.assign(p, EXTRA[p.code] || {cats:[], year:'—'}));
+const factOf = (p, k) => (p.facts.find(f=>f[0]===k) || ['',''])[1];
+
+function cardHTML(k, ctx){
+  if(k.p != null){
+    const p = PROJECTS[k.p];
+    return '<a class="card" href="#'+(ctx || 'p')+'-'+p.code+'">'+
+      '<div class="thumb"><img src="'+p.img+'"'+imageVariants(p.img,'(max-width: 760px) 90vw, 45vw')+' alt="" loading="lazy" style="object-position:'+fp(p.img)+'">'+(p.badge?'<span class="badge">'+p.badge+'</span>':'')+'</div>'+
+      '<div class="meta"><span class="kind">'+(k.m || p.kind)+'</span><strong>'+p.name+'</strong><p>'+p.line+'</p></div></a>';
+  }
+  return '<div class="card" style="cursor:default"><div class="thumb ph">Görsel eklenecek'+(k.st?'<span class="status">'+k.st+'</span>':'')+'</div>'+
+    '<div class="meta"><span class="kind">'+k.c+'</span><strong>'+k.n+'</strong><p>'+k.l+'</p></div></div>';
+}
+
+/* ---------- architecture: vertical project flow ---------- */
+/* images settle into place as they enter the viewport */
+const revealIO = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealIO.unobserve(e.target); } }), {rootMargin:'0px 0px -8% 0px'});
+function reveal(root){ if(reduce) return; root.querySelectorAll('.thumb img, .pd-gallery img, .px-fig img').forEach(el=>{ el.classList.add('rv'); revealIO.observe(el); }); }
+const CATS = ['Tümü','Stadyum','Kamusal','Yarışma','Yüksek yapı','Konut','Konsept','İç mekân'];
+let cat = 'Tümü', archOpenCode = null, archAnimation = null, archScrollFrame = 0, archMotionId = 0, archGhosts = [], archPendingHologram = null, archHologramBridge = null;
+let archReturnTop = 80;
+const projectPane = $('v-project'), projectDock = document.createComment('Project detail home');
+projectPane.before(projectDock);
+$('filters').innerHTML = CATS.map(c=>'<button type="button" aria-pressed="'+(c===cat)+'">'+c+'</button>').join('');
+$('filters').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  closeArchProject({animate:false,restore:false});
+  if(location.hash.startsWith('#p-')) history.replaceState(history.state,'','#architecture');
+  cat = b.textContent; renderArch();
+});
+function renderArch(){
+  const idx = PROJECTS.map((_,i)=>i).filter(i=> !PROJECTS[i].studio && (cat === 'Tümü' || PROJECTS[i].cats.includes(cat)));
+  document.dispatchEvent(new Event('bca-architecture-change'));
+  [...$('filters').children].forEach(x=>x.setAttribute('aria-pressed',x.textContent===cat));
+  $('arch-count').textContent = String(idx.length).padStart(2,'0')+' PROJE';
+  $('arch-flow').innerHTML = idx.map((i,n)=>{const p=PROJECTS[i], loc=factOf(p,'Konum')||factOf(p,'Proje konumu');
+    return '<section class="arch-entry" id="arch-entry-'+p.code+'">'+
+      '<a class="arch-trigger card" id="arch-trigger-'+p.code+'" href="#p-'+p.code+'" aria-expanded="false" aria-controls="arch-panel-'+p.code+'" aria-label="'+escapeAttr(p.name)+' — proje detayları">'+
+      '<div class="meta"><span class="arch-index">'+String(n+1).padStart(2,'0')+' / '+p.year+'</span><h2>'+p.name+'</h2><span class="kind">'+p.kind+'</span>'+(loc?'<span class="arch-location">'+loc+'</span>':'')+'</div>'+
+      '<div class="thumb"><img src="'+p.img+'"'+imageVariants(p.img,'(max-width: 760px) 90vw, 700px')+' alt="" loading="lazy" style="object-position:'+fp(p.img)+'"></div><span class="arch-toggle-icon" aria-hidden="true">+</span></a>'+
+      '<div class="arch-panel" id="arch-panel-'+p.code+'" role="region" aria-label="'+escapeAttr(p.name)+' detayları" hidden><div class="arch-detail-bar"><span>'+p.name+'</span><button type="button" class="arch-close" data-arch-close>Projeyi kapat <span aria-hidden="true">↑</span></button></div><div class="arch-panel-content"></div><div class="arch-detail-foot"><button type="button" class="arch-close" data-arch-close>Projeyi kapat <span aria-hidden="true">↑</span></button></div></div></section>';
+  }).join('');
+  reveal($('arch-flow'));
+}
+renderArch();
+function cancelArchMotion(){
+  archMotionId++; cancelAnimationFrame(archScrollFrame);
+  if(archAnimation){archAnimation.cancel();archAnimation=null;}
+  if(archHologramBridge){archHologramBridge.dispose();archHologramBridge=null;}
+  archGhosts.forEach(el=>el.remove());archGhosts=[];
+  document.querySelectorAll('.arch-panel.is-morphing').forEach(el=>el.classList.remove('is-morphing'));
+}
+function releaseArchProject(){
+  cancelArchMotion();
+  if(!archOpenCode)return;
+  const entry=$('arch-entry-'+archOpenCode),panel=$('arch-panel-'+archOpenCode);
+  projectPane.querySelector('.px-hero').after($('px-credits'));
+  projectPane.hidden=true;projectPane.classList.remove('inline-project');projectDock.after(projectPane);
+  panel.hidden=true;panel.inert=false;panel.style.height='';panel.classList.remove('is-animating','is-opening','is-closing','has-hologram-bridge');
+  entry.classList.remove('is-open','is-closing');const trigger=entry.querySelector('.arch-trigger');trigger.hidden=false;trigger.setAttribute('aria-expanded','false');
+  archOpenCode=null;
+}
+function morphArchCover(panel,from,to,source,duration,closing=false){
+  const box=panel.getBoundingClientRect(),ghost=document.createElement('img');
+  ghost.className='arch-morph-cover';ghost.alt='';ghost.setAttribute('aria-hidden','true');ghost.src=source.currentSrc||source.src;
+  Object.assign(ghost.style,{left:(to.left-box.left-1)+'px',top:(to.top-box.top-1)+'px',width:to.width+'px',height:to.height+'px',objectPosition:source.style.objectPosition||'50% 50%'});
+  panel.append(ghost);archGhosts.push(ghost);panel.classList.add('is-morphing');
+  const transform='translate('+(from.left-to.left)+'px,'+(from.top-to.top)+'px) scale('+(from.width/to.width)+','+(from.height/to.height)+')';
+  ghost.animate([{transform,borderRadius:closing?'0px':'12px'},{transform:'none',borderRadius:closing?'12px':'0px'}],{duration,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
+  return ghost;
+}
+function openArchProject(i,{animate=true,align=true}={}){
+  const p=PROJECTS[i];
+  if(archOpenCode===p.code&&!$('arch-entry-'+p.code).classList.contains('is-closing'))return;
+  if(!$('arch-entry-'+p.code)){releaseArchProject();cat='Tümü';renderArch();}
+  const entry=$('arch-entry-'+p.code),before=entry.getBoundingClientRect().top;
+  if(archOpenCode){releaseArchProject();scrollTo({top:scrollY+entry.getBoundingClientRect().top-before,behavior:'instant'});}
+  cancelArchMotion();archOpenCode=p.code;
+  const panel=$('arch-panel-'+p.code),trigger=entry.querySelector('.arch-trigger');
+  const cover=trigger.querySelector('.thumb img'),from=cover.getBoundingClientRect(),rowHeight=entry.offsetHeight,meta=trigger.querySelector('.meta'),metaRect=meta.getBoundingClientRect();
+  archReturnTop=Math.max(80,Math.min(before,innerHeight*.3));
+  entry.classList.add('is-open');trigger.setAttribute('aria-expanded','true');trigger.hidden=true;panel.hidden=false;panel.inert=false;
+  panel.querySelector('.arch-panel-content').append(projectPane);projectPane.classList.add('inline-project');projectPane.hidden=false;
+  renderProject(i);
+  $('px-credits').classList.toggle('is-entering',animate&&!reduce);
+  if(animate)panel.querySelector('.arch-close').focus({preventScroll:true});
+  const bridge=archPendingHologram;archPendingHologram=null;
+  if(animate&&!reduce){
+    const token=archMotionId,height=panel.offsetHeight,startHeight=Math.max(0,rowHeight-(entry.offsetHeight-height)),duration=bridge?1280:720;panel.classList.add('is-animating','is-opening');
+    const to=$('px-hero-img').getBoundingClientRect(),ghost=morphArchCover(panel,from,to,cover,duration);
+    panel.classList.toggle('has-hologram-bridge',!!bridge);
+    if(bridge){archHologramBridge=bridge;bridge.mount(ghost,from,to,duration);panel.dataset.lastTransition='hologram-to-cover';panel.dataset.transitionPoints=String(bridge.count);panel.dataset.sourceReveal=bridge.reveal.toFixed(3);}
+    else panel.dataset.lastTransition='cover-expand';
+    const ghostMeta=meta.cloneNode(true),box=panel.getBoundingClientRect();ghostMeta.className='arch-morph-meta';ghostMeta.setAttribute('aria-hidden','true');
+    Object.assign(ghostMeta.style,{left:(metaRect.left-box.left)+'px',top:(metaRect.top-box.top)+'px',width:metaRect.width+'px'});panel.append(ghostMeta);archGhosts.push(ghostMeta);
+    ghostMeta.animate([{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-12px)'}],{duration:200,fill:'both'});
+    archAnimation=panel.animate([{height:startHeight+'px'},{height:height+'px'}],{duration,easing:'cubic-bezier(.22,1,.36,1)'});
+    archAnimation.onfinish=()=>{if(token!==archMotionId)return;cancelArchMotion();panel.classList.remove('is-animating','is-opening','has-hologram-bridge');};
+  }
+  else if(bridge)bridge.dispose();
+  const r=entry.getBoundingClientRect();
+  if(align&&(r.top<64||r.top>innerHeight*.4))scrollTo({top:scrollY+r.top-80,behavior:animate&&!reduce?'smooth':'instant'});
+}
+function closeArchProject({animate=true,restore=true}={}){
+  if(!archOpenCode)return;
+  const entry=$('arch-entry-'+archOpenCode),panel=$('arch-panel-'+archOpenCode),trigger=entry.querySelector('.arch-trigger');
+  const height=panel.getBoundingClientRect().height,startY=scrollY,targetY=Math.max(0,scrollY+entry.getBoundingClientRect().top-archReturnTop);
+  cancelArchMotion();
+  trigger.setAttribute('aria-expanded','false');entry.classList.add('is-closing');panel.inert=true;
+  $('px-credits').classList.remove('is-entering');$('px-credits').classList.add('is-leaving');
+  const finish=()=>{releaseArchProject();if(restore){scrollTo({top:targetY,behavior:'instant'});trigger.focus({preventScroll:true});}if(!reduce)trigger.querySelector('.meta').animate([{opacity:0},{opacity:1}],{duration:220});};
+  if(!animate||reduce){finish();return;}
+  const token=archMotionId;panel.classList.remove('is-opening');panel.classList.add('is-animating','is-closing');
+  trigger.hidden=false;Object.assign(trigger.style,{position:'absolute',left:'0',top:'0',width:'100%'});
+  const to=trigger.querySelector('.thumb img').getBoundingClientRect(),rowHeight=trigger.offsetHeight;
+  trigger.hidden=true;trigger.removeAttribute('style');
+  morphArchCover(panel,$('px-hero-img').getBoundingClientRect(),to,$('px-hero-img'),560,true);
+  const endHeight=Math.max(0,rowHeight-(entry.offsetHeight-panel.offsetHeight));
+  archAnimation=panel.animate([{height:height+'px'},{height:endHeight+'px'}],{duration:560,easing:'cubic-bezier(.4,0,.2,1)'});
+  if(restore){const t0=performance.now();const tick=now=>{if(token!==archMotionId)return;const t=Math.min(1,(now-t0)/560),k=t*t*(3-2*t);scrollTo({top:startY+(targetY-startY)*k,behavior:'instant'});if(t<1)archScrollFrame=requestAnimationFrame(tick);};archScrollFrame=requestAnimationFrame(tick);}
+  archAnimation.onfinish=()=>{if(token!==archMotionId)return;finish();};
+}
+$('arch-flow').addEventListener('click',e=>{
+  if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+  const trigger=e.target.closest('.arch-trigger'),close=e.target.closest('[data-arch-close]');
+  if(!trigger&&!close)return;
+  e.preventDefault();e.stopPropagation();
+  if(trigger&&trigger.getAttribute('aria-expanded')!=='true'&&!reduce){
+    if(archPendingHologram)archPendingHologram.dispose();
+    archPendingHologram=window.BCAHoloPreview?.take(trigger)||null;
+  }
+  location.hash=close||trigger.getAttribute('aria-expanded')==='true'?'architecture':trigger.getAttribute('href').slice(1);
+});
+$('arch-flow').addEventListener('keydown',e=>{
+  if(e.key===' '&&e.target.matches('.arch-trigger')){e.preventDefault();e.target.click();}
+  if(e.key==='Escape'&&archOpenCode&&$('lb').hidden){e.preventDefault();location.hash='architecture';}
+});
+addEventListener('resize',()=>{
+  placeProjectCredits();
+  if(!archOpenCode||!archAnimation)return;
+  const entry=$('arch-entry-'+archOpenCode),panel=$('arch-panel-'+archOpenCode);
+  if(entry.classList.contains('is-closing'))releaseArchProject();
+  else{cancelArchMotion();panel.classList.remove('is-animating','is-opening','has-hologram-bridge');}
+});
+
+/* ---------- studio page grids ---------- */
+$('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].map(k=>cardHTML(k,'s')).join('');
+$('grid-x').innerHTML = [{p:P('DYF'), m:'Cephe · Veri'}, {p:P('WA'), m:'Yapay zekâ destekli cephe'}].map(k=>cardHTML(k,'s')).join('');
+reveal($('grid-x'));
+$('grid-research').innerHTML=cardHTML({p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},'s');
+if(P('PCE')>=0) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
+
+/* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
+const DG = 'img/dg/';
+const SHEETS = {
+  PCE:window.BCAPace?.sheet,
+  ABR:{info:[0],concept:[1],detail:[2,3],cdg:[],ddg:[]},
+  TAS:{ info:[0], concept:[2], detail:[1],
+    extraFacts:[['Kapasite','55.000 seyirci'],['Arazi','690.364 m²'],['İnşaat alanı','90.379 m²']],
+    cdg:[
+      {src:'tas-concept.jpg', cap:'Tek bir sivri kemerden halkaya, halkadan stadyuma, stadyumdan kente.', wide:true},
+      {src:'tas-elev.jpg', cap:'Cephe, geleneksel Özbek mimarisinin anıtsal kemerlerini yeniden yorumluyor. Kemerlerin ritmik tekrarı bütünlüklü ve güçlü bir kimlik kuruyor.', wide:true}
+    ],
+    ddg:[
+      {src:'tas-site.jpg', t:'Vaziyet planı', cap:'690.364 m² alan · 69.500 m² taban alanı · 264.300 m² yeşil alan · 18.000 m² su öğesi · 82.761 m² yaya ve araç dolaşımı · 5.515 araçlık otopark. Stadyum, hareketin, peyzajın ve açık alanların bütünleştiği kapsamlı bir kamusal alanın odağında.'},
+      {src:'tas-land.jpg', t:'Peyzaj', cap:'Geniş yeşil alanlar ve antrenman sahaları, stadyumu maç günlerinin ötesinde yıl boyu yaşayan bir kamusal peyzaja dönüştürüyor.'},
+      {src:'tas-plan01.jpg', t:'Zemin ve 1. kat', cap:'Zemin kat stadyumun operasyon çekirdeği: oyuncu, hakem, medya, sağlık ve teknik birimler; VIP, protokol ve servis için ayrı dolaşım. 1. katta FIFA ofisleri, toplantı odaları, UEFA Kulübü ve VIP alanları.', wide:true},
+      {src:'tas-plan234.jpg', t:'2., 3. ve 4. kat', cap:'2. kat üst fuayeler, restoranlar ve skybox’larla ana kamusal konkur. 3. kat medya salonları ve satış alanlarıyla üst tribünlere hizmet ediyor. 4. kat mekanik ve elektrik sistemlerini barındırıyor.'},
+      {src:'tas-loop.jpg', t:'Kesintisiz döngü', cap:'Stadyumu saran döngü, peyzajı hareketi, rekreasyonu ve gündelik kent yaşamını birleştiren aktif bir kamusal alana çeviriyor.'},
+      {src:'tas-secA.jpg', t:'Kesit A-A', cap:'', wide:true},
+      {src:'tas-secB.jpg', t:'Kesit B-B', cap:'Hafif çelik çatı; kesintisiz görüş, bol gün ışığı ve konforlu bir maç günü deneyimi.', wide:true}
+    ]},
+  ALJ:{ info:[0], concept:[2], detail:[1],
+    cdg:[
+      {src:'alj-dunes.jpg', cap:'Kumul dokusundan yükselen kabuk, podyumun üzerinde süzülüyor.', wide:true},
+      {src:'alj-wind.jpg', cap:'Çöl kumulu, rüzgâr ve deniz: masterplan stadyumu yeni bir karma kullanım bölgesinin kalbine yerleştiriyor.'},
+      {src:'alj-sec.jpg', cap:'Stadyum kente bir bariyer gibi değil, yavaşça alçalarak bağlanıyor; parklar, meydanlar ve yaya promenatlarıyla kesintisiz bir yeşil aks kuruluyor.', wide:true}
+    ],
+    ddg:[
+      {src:'alj-site.jpg', t:'Vaziyet planı', cap:'Operasyon ve kamusal hareketler ayrılıyor. Servis, VIP, medya ve otopark yükseltilmiş podyumun altında; seyirciler stadyuma her yönden kesintisiz bir üst promenattan ulaşıyor.'},
+      {src:'alj-axo.jpg', t:'Kente bağlanma', cap:'Kamusal parklar, meydanlar ve yaya yolları kentsel dokuyu stadyuma bağlıyor.'},
+      {src:'alj-under.jpg', t:'Platform altı', cap:'Servis, VIP girişi, medya ve otopark.'},
+      {src:'alj-above.jpg', t:'Platform üstü', cap:'Seyirci promenatı ve kamusal meydanlar.'},
+      {src:'alj-plan01.jpg', t:'Zemin ve 1. kat', cap:'Zeminde oyuncular, medya, teknik servis, güvenlik ve bağımsız girişli ticari alanlar. 1. katta medya, VIP, ağırlama ve ticareti bağlayan ana seyirci konkuru.', wide:true},
+      {src:'alj-plan2.jpg', t:'2. kat', cap:'Restoranlar, yemek alanları, spor barları ve VIP salonları; maç olmayan günlerde de açık.'},
+      {src:'alj-plan3.jpg', t:'3. kat', cap:'Ağırlama, restoran, medya ve kamusal olanaklarla premium seyirci katı.'},
+      {src:'alj-green.jpg', t:'Yeşil ağ', cap:'Kesintisiz yeşil ağ stadyumu çevredeki kent işlevlerine bağlıyor; yürümeyi ve sosyal etkileşimi teşvik eden gölgeli alanlar oluşuyor.'},
+      {src:'alj-plaza.jpg', t:'Etkinlik meydanları', cap:'Esnek meydanlar festival, konser, taraftar alanı ve kamusal buluşmalara ev sahipliği yapıyor.'},
+      {src:'alj-flow.jpg', t:'Dolaşım', cap:'Yayalar gölgeli promenatlarla, araçlar alanın çevresinden; iki akış birbirine karışmıyor.', wide:true}
+    ]},
+  OPR:{ info:[0], concept:[1], detail:[],
+    extraFacts:[['Arazi','39.800 m²']],
+    cdg:[
+      {src:'opr-yurt.jpg', cap:'Bir araya gelmek: göçebe yurttan çağdaş operaya.'},
+      {src:'opr-section.jpg', cap:'Yurtun ışınsal strüktürü, direklerden asılan iki kanatlı bir çatıya dönüşüyor.', wide:true}
+    ],
+    ddg:[
+      {src:'opr-city.jpg', t:'Kent bağlamı', cap:'Proje Taşkent’in ana aksları üzerinde konumlanıyor.'},
+      {src:'opr-site.jpg', t:'Vaziyet planı', cap:'39.800 m² arazi. Alandan geçen mevcut su öğesi korunup peyzajın tanımlayıcı parçası yapıldı; dallanan yaya yolları alanı yalıtılmış bir nesne yerine aktif bir kamusal parka dönüştürüyor.'},
+      {src:'opr-flow.jpg', t:'Yaya aksı', cap:'Geniş ve davetkâr bir giriş, ziyaretçileri peyzaj ve su boyunca anıtsal operaya uzanan güçlü bir yaya aksına yönlendiriyor.', wide:true},
+      {src:'opr-prog.jpg', t:'Program', cap:'Opera, müze ve konser salonu tek bir peyzajda.', wide:true},
+      {src:'opr-roofsec.jpg', t:'Çatı strüktürü', cap:'', wide:true}
+    ]},
+  WA:{ info:[0], concept:[1], detail:[2,3],
+    cdg:[
+      {src:'wa-enso.jpg', cap:'Japon felsefesindeki “öz” kavramı ve insanla doğanın çatışmadan, uyum içinde var olması.'},
+      {src:'wa-band.jpg', cap:'Kuleyi çapraz kesen yeşil bant ve yükseltilmiş kent geçidi.'},
+      {src:'wa-ma.jpg', cap:'Japon “ma” kavramı: merkezdeki boşluk sergi, atölye, müzik, dans, meditasyon ve gösteriyi birbirine bağlıyor.'}
+    ],
+    ddg:[
+      {src:'wa-port.jpg', t:'Konum', cap:'Port Island, Kobe. 1960’larda limanın kapasitesini artırmak, turizmi ve ticareti geliştirmek için inşa edilen iki adadan biri.', wide:true},
+      {src:'wa-site.jpg', t:'Yerleşim', cap:'Kule, Kobe’nin simgesi Port Tower ile deniz arasında bir bağ kuruyor.'},
+      {src:'wa-plans1.jpg', t:'Kat planları', cap:'Kobe’deki kültür çeşitliliğine bir saygı: her katta farklı bir mutfak, en üstte Japon mutfağı.'},
+      {src:'wa-plans2.jpg', t:'Kat planları', cap:'Boşluğu çevreleyen dijital sergi alanları, yapay zekâ destekli sergiler, atölyeler ve tematik açık alanlar.'},
+      {src:'wa-panels.jpg', t:'İklime duyarlı cephe', cap:'Paneller kışın güneş ısısını toplayıp sera etkisiyle ısıtıyor, yazın ısıyı dağıtarak ferah bir iç ortam yaratıyor.'},
+      {src:'wa-module.jpg', t:'Modüler cephe', cap:'Yapay zekâ cepheyi ve mekanik sistemleri kendi analizlerine göre yönetiyor; çerçeve, cam ve LED aydınlatmalı modüller iç ile dış arasındaki sınırı bulanıklaştırıyor.'},
+      {src:'wa-frame.jpg', t:'Taşıyıcı sistem', cap:'Kule çapraz konumlanmış iki kule gibi çözüldü; her kule kolon ve çaprazlarla, kuleler perde elemanlar ve döşeme kirişleriyle birbirine bağlanıyor.'},
+      {src:'wa-lattice.jpg', t:'Çaprazlar', cap:'İç ve dış çaprazlar burulmayı önlüyor ve deprem yükünü perde duvarlarla birlikte taşıyor.'},
+      {src:'wa-models.jpg', t:'Strüktür modeli', cap:'', wide:true}
+    ]},
+  ALT:{ info:[0], concept:[1,2], detail:[],
+    cdg:[
+      {src:'alt-castle.jpg', cap:'Kahramanmaraş Kalesi: kentin kaybolan izleri.'},
+      {src:'alt-elements.jpg', cap:'Alt katlarda yeniden yorumlanan geleneksel öğeler: kemerler, pencereler, taş doku.', wide:true},
+      {src:'alt-arch.jpg', cap:'Altta geleneksel yapılar, üstte hareketli cam cepheler: kentin siluetine, dokusuna ve kültürüne dönüşen bir görünüm.'}
+    ],
+    ddg:[
+      {src:'alt-struct.jpg', t:'Taşıyıcı sistem', cap:'Atriyum çevresinde yatay ötelenmeleri sınırlayan betonarme perdeler, burulmayı sınırlayan çelik çaprazlar ve kritik katlarda güvenli yük aktarımı için ek düzlem içi çaprazlar.'},
+      {src:'alt-slabs.jpg', t:'Döşemeler', cap:'Simetrik ve sade taşıyıcı ızgara.'},
+      {src:'alt-grids.jpg', t:'Çapraz düzenleri', cap:'', wide:true},
+      {src:'alt-f0.jpg', t:'Zemin kat', cap:'Otel ve restoran girişleri, ticari alanlar.'},
+      {src:'alt-f1.jpg', t:'1.–5. katlar', cap:'Konaklama.'},
+      {src:'alt-f6.jpg', t:'6. kat', cap:'Otel yönetimi.'},
+      {src:'alt-f7.jpg', t:'7. kat', cap:'Kafe ve teras.'},
+      {src:'alt-f8.jpg', t:'8.–23. katlar', cap:'Konaklama.'},
+      {src:'alt-f24.jpg', t:'24. kat', cap:'Restoran.'}
+    ]},
+  SOC:{ info:[1], concept:[0], detail:[],
+    cdg:[
+      {src:'soc-circle.jpg', cap:'Komşuluk, mahalle yaşamı ve kapı önü sohbetleri.'},
+      {src:'soc-sun.jpg', cap:'V formu: güneyden en yüksek güneş verimi, kuzeyden kesintisiz deniz manzarası.', wide:true},
+      {src:'soc-v.jpg', cap:'Kütlenin oluşumu.', wide:true}
+    ],
+    ddg:[
+      {src:'soc-site.jpg', t:'Vaziyet planı', cap:''},
+      {src:'soc-plans.jpg', t:'Kat planları', cap:''},
+      {src:'soc-axo1.jpg', t:'Her katta yeşil', cap:'Her katta bırakılan yeşil alanlar karbondioksit oranını düşürüyor ve yaşam kalitesini artırıyor.'},
+      {src:'soc-axo2.jpg', t:'Kütle', cap:''},
+      {src:'soc-sec1.jpg', t:'Kesit', cap:''},
+      {src:'soc-sec2.jpg', t:'Kesit', cap:''}
+    ]},
+  STC:{ info:[0], concept:[2], detail:[1],
+    cdg:[
+      {src:'stc-lab.jpg', cap:'Bilim Ar-Ge laboratuvarları: fizik, kimya ve biyoloji; güneş ve rüzgârla yenilenebilir enerji üretimi.'},
+      {src:'stc-ai.jpg', cap:'Yazılım ve yapay zekâ ofisleri: teknolojinin toplumsal etkileri üzerine.'},
+      {src:'stc-game.jpg', cap:'Oyun tasarımı ve geliştirme: oyun, sanal gerçeklik ve VFX atölyeleri.'}
+    ],
+    ddg:[
+      {src:'stc-site.jpg', t:'Vaziyet planı', cap:'Yapı kuzeyde denizle, güneyde Millet Bahçesi ile güçlü bir ilişki kuruyor. Yükselen kütle ziyaretçileri denize yönlendirirken kıyıyla kesintisiz görsel bağlar kuruyor.'},
+      {src:'stc-long.jpg', t:'Uzun kesit', cap:'', wide:true},
+      {src:'stc-pl1.jpg', t:'Kat planı', cap:''},
+      {src:'stc-pl2.jpg', t:'Kat planı', cap:''},
+      {src:'stc-pl3.jpg', t:'Kat planı', cap:''},
+      {src:'stc-pl4.jpg', t:'Kat planı', cap:''},
+      {src:'stc-sec1.jpg', t:'Kesit', cap:'', wide:true},
+      {src:'stc-sec2.jpg', t:'Kesit', cap:'', wide:true}
+    ]},
+  DYF:{ info:[1], concept:[0], detail:[],
+    cdg:[ {src:'dyf-sketch2.jpg', cap:'Rüzgâr, güneş ışığı ve hava gerçek zamanlı veriye dönüşüyor; cephe doğaya dinamik olarak yanıt veriyor.'} ],
+    ddg:[
+      {src:'dyf-panels.jpg', t:'Panel dokusu', cap:'Yansıtıcı cam paneller ve dijital yüzeyler şeffaflık, yansıma ve dijital ifade arasında sürekli geçiş yapıyor.'}
+    ]},
+  HMP:{ info:[0], concept:[2], detail:[1],
+    cdg:[
+      {src:'hmp-open.jpg', cap:'Açık hâl: cephe panelleri güneşliğe ve kent mobilyasına dönüşüyor.'},
+      {src:'hmp-closed.jpg', cap:'Kapalı hâl: kenevir betonu modüller.'}
+    ],
+    ddg:[
+      {src:'hmp-plan.jpg', t:'Plan', cap:''},
+      {src:'hmp-sec.jpg', t:'Kesit', cap:'', wide:true},
+      {src:'hmp-node.jpg', t:'Bağlantı detayları', cap:'Kenevir dolgu, pleksi plaka ve su yalıtımıyla panel; çelik kolon ve kiriş bağlantıları.'},
+      {src:'hmp-beam.jpg', t:'Kiriş detayı', cap:''}
+    ]},
+  CBR:{ info:[0], concept:[1], detail:[], cdg:[], ddg:[] },
+  OVS:{ info:[0], concept:[], detail:[], cdg:[], ddg:[] },
+  BDP:{ info:[0], concept:[1,2], detail:[], cdg:[], ddg:[] }
+};
+/* Portfolio originals are curated separately from the presentation layout. */
+Object.entries(window.BCAPortfolio?.projects || {}).forEach(([code, entry])=>{
+  const p = PROJECTS.find(p=>p.code===code), s = SHEETS[code];
+  if(!p || !s) return;
+  ['img','gallery','desc'].forEach(k=>{ if(entry[k]) p[k] = entry[k]; });
+  if(entry.appendDescriptions) p.desc = [...p.desc, ...entry.appendDescriptions];
+  ['cdg','ddg','info','concept','detail','extraFacts','sourceMark'].forEach(k=>{ if(entry[k]) s[k] = entry[k]; });
+  ['cdg','ddg'].forEach(k=>(s[k] || []).forEach(d=>{
+    if(entry.captionOverrides?.[d.src]) d.cap=entry.captionOverrides[d.src];
+    const replacement = entry.replaceDrawings?.[d.src];
+    if(replacement) d.src = replacement;
+    if(entry.captionOverrides?.[d.src]) d.cap=entry.captionOverrides[d.src];
+  }));
+  if(entry.appendDetails) s.ddg = [...s.ddg, ...entry.appendDetails];
+});
+const drawingSource = d => /^(img|video)\//.test(d.src) ? d.src : DG+d.src;
+if(window.BCAStcDiagrams) SHEETS.STC.cdg=window.BCAStcDiagrams;
+/* ---------- project detail page: info → concept → details → images ---------- */
+const COORDS = { OPR:'41.31° K · 69.28° D', TAS:'41.30° K · 69.24° D', ALJ:'24.45° K · 54.38° D', WA:'34.69° K · 135.20° D',
+                 ALT:'37.58° K · 36.94° D', STC:'41.27° K · 36.35° D', SOC:'41.33° K · 36.27° D' };
+let projIdx = 0, lbSet = [], lbI = 0;
+const paras = (p, idx) => (idx || []).map(k=>p.desc[k]).filter(Boolean).map(t=>'<p>'+t+'</p>').join('');
+/* Only floor plans and sections open in the drawing viewer. */
+function drawingCanZoom(d){
+  if(d.motion) return false;
+  if(typeof d.zoom==='boolean') return d.zoom;
+  const title=(d.t||'').toLocaleLowerCase('tr');
+  return /kesit/u.test(title)||/(?:^|[\s.])kat(?:lar[ıi]?)?(?=$|[\s·,.])/u.test(title)||/^(?:plan|çatı ve tribün planı)$/u.test(title);
+}
+function dgHTML(d, n, prefix){
+  const t = d.t || '', c = d.cap || '';
+  const src = drawingSource(d);
+  const span = d.span || (d.wide ? 12 : 6);
+  const frame = ['square','portrait','panorama','plate','landscape'].includes(d.frame) ? d.frame : 'landscape';
+  const sizes = '(max-width: 760px) 90vw, '+(span===12?'1080px':span===4?'360px':'520px');
+  const companion=d.companion?'<img class="dg-companion" src="'+escapeAttr(d.companion.src)+'" alt="'+escapeAttr(d.companion.alt)+'" loading="lazy">':'';
+  const img=companion+'<img src="'+src+'"'+imageVariants(src,sizes)+' alt="'+escapeAttr(t||c)+'" loading="lazy">';
+  const mediaClass='dg-media'+(d.companion?' has-companion':'');
+  const symbol=d.symbol?'<img class="dg-symbol" src="'+escapeAttr(d.symbol.src)+'" alt="'+escapeAttr(d.symbol.alt)+'" loading="lazy">':'';
+  const visual=d.motion?'<div class="motion-frame"><alpha-motion embedded src="'+d.motion+'" poster="'+src+'" label="'+escapeAttr(t||c)+'"></alpha-motion></div>':drawingCanZoom(d)?'<button class="'+mediaClass+'" type="button" data-lb="'+n+'" aria-label="Büyüt: '+escapeAttr(t||c)+'">'+img+'</button>':'<div class="'+mediaClass+'">'+img+'</div>';
+  return '<figure class="dg span-'+span+' frame-'+frame+(span===12?' w':'')+(d.motion?' motion':'')+'">'+visual+
+    '<figcaption><span class="k">'+prefix+'.'+(n+1)+'</span>'+(t?'<b>'+t+symbol+'</b>':'<b>'+symbol+'</b>')+(c?'<span class="t">'+c+'</span>':'')+'</figcaption></figure>';
+}
+/* the drawing set is shown in groups, in the order an architect reads it */
+const DG_GROUPS = [
+  ['Vaziyet ve bağlam', /vaziyet|konum|yerleşim|bağlam|program|aks|peyzaj|dolaşım|döngü|yeşil|meydan|kente|platform/i],
+  ['Planlar', /kat|plan/i],
+  ['Kesit ve görünüş', /kesit|görünüş|çatı/i],
+  ['Strüktür ve cephe', /strüktür|taşıyıcı|çapraz|döşeme|cephe|panel|model|detay|kiriş|bağlantı/i]
+];
+function groupDetails(list){
+  const groups = new Map();
+  list.forEach(d=>{
+    const name=d.group || DG_GROUPS.find(g=>g[1].test(d.t || ''))?.[0] || 'Diyagramlar';
+    if(!groups.has(name)) groups.set(name,{name,items:[]});
+    groups.get(name).items.push(d);
+  });
+  return [...groups.values()];
+}
+function renderProject(i){
+  projIdx = i; const p = PROJECTS[i], S = SHEETS[p.code] || {info:[0], concept:[], detail:[], cdg:[], ddg:[]};
+  $('v-project').dataset.project=p.code;
+  renderProjectCredits(p);
+  $('px-bar').classList.remove('solid'); $('px-hero-img').style.transform = '';
+  /* cover */
+  const hero = $('px-hero-img'), heroSec = hero.parentElement;
+  heroSec.classList.toggle('extended-cover', p.img.startsWith('img/covers/'));
+  heroSec.classList.toggle('product-cover',p.code==='ABR'||p.code==='PCE');
+  heroSec.classList.toggle('pace-cover',p.code==='PCE');
+  hero.src = p.img; hero.alt = p.name; hero.style.objectPosition = fp(p.img);
+  const heroMedia=portfolioMedia[p.img];
+  if(heroMedia){hero.srcset=heroMedia.variants.map(v=>v[0]+' '+v[1]+'w').join(', ');hero.sizes='100vw';}
+  else {hero.removeAttribute('srcset');hero.removeAttribute('sizes');}
+  $('px-hero-bg').src = heroMedia ? heroMedia.variants[Math.min(1,heroMedia.variants.length-1)][0] : p.img;
+  const fitHero = ()=>{ const ia = hero.naturalWidth / hero.naturalHeight, va = heroSec.clientWidth / Math.max(1,heroSec.clientHeight);
+    const tall = p.code !== 'PCE' && !!ia && va > 1.05 && ia < va*0.72 && !WIDE_ONLY.includes(p.img); heroSec.classList.toggle('tall', tall); $('px-bar').classList.toggle('ink', (tall || p.code === 'ABR' || p.code === 'PCE') && DOC.dataset.tone === 'light'); };
+  heroSec.classList.remove('tall'); hero.onload = fitHero; if(hero.complete && hero.naturalWidth) fitHero();
+  heroSec._fit = fitHero;
+
+  $('px-kind').textContent = p.kind + (p.year && p.year !== '—' ? ' · ' + p.year : '');
+  $('pd-title').textContent = p.name;
+  const facts = p.facts.concat(S.extraFacts || []);
+  const key = facts.filter(f=>f[0] !== 'Sorumluluklar').slice(0, 4);
+  $('px-hud').innerHTML = (p.badge ? '<div><dt>Öne çıkan</dt><dd>'+p.badge+'</dd></div>' : '') + key.map(f=>'<div><dt>'+f[0]+'</dt><dd>'+f[1]+'</dd></div>').join('');
+  const loc = factOf(p,'Konum') || factOf(p,'Proje konumu'), role = factOf(p,'Rol') || factOf(p,'Yarışma') || factOf(p,'Tür');
+  const s1 = $('px-spot1'), s2 = $('px-spot2');
+  s1.hidden = !(COORDS[p.code] || loc); s1.querySelector('span').textContent = [loc, COORDS[p.code]].filter(Boolean).join(' · ');
+  s2.hidden = !role; s2.querySelector('span').textContent = role;
+  Object.assign(s1.style, {left:'34%', top:'30%'}); Object.assign(s2.style, {left:'14%', top:'52%'});
+  /* 01 info */
+  $('px-lead').textContent = p.line;
+  $('px-facts').innerHTML = facts.map(f=>'<div><dt>'+f[0]+'</dt><dd>'+f[1]+'</dd></div>').join('');
+  $('px-info-text').innerHTML = paras(p, S.info);
+  if(p.links?.length) $('px-info-text').insertAdjacentHTML('beforeend','<div class="project-links">'+p.links.map(link=>'<a href="'+escapeAttr(link.url)+'" target="_blank" rel="noopener">'+escapeAttr(link.label)+' <span aria-hidden="true">↗</span></a>').join('')+'</div>');
+  /* 02 concept */
+  $('px-concept-text').innerHTML = paras(p, S.concept);
+  $('px-concept-text').classList.toggle('is-long',(S.concept||[]).reduce((sum,i)=>sum+(p.desc[i]||'').length,0)>1100);
+  if(S.sourceMark) $('px-concept-text').insertAdjacentHTML('beforeend','<figure class="px-source-mark"><img src="'+escapeAttr(S.sourceMark.src)+'" alt="'+escapeAttr(S.sourceMark.alt)+'" loading="lazy">'+(S.sourceMark.caption?'<figcaption>'+escapeAttr(S.sourceMark.caption)+'</figcaption>':'')+'</figure>');
+  /* Keep the authored sequence: a wide diagram must not jump ahead of its premise. */
+  S._corder = (S.cdg||[]).map(d=>({...d}));
+  if(S._corder.length===1) Object.assign(S._corder[0],{span:12,wide:true});
+  $('px-concept-dg').innerHTML = S._corder.map((d,n)=>dgHTML(d, n, '02')).join('');
+  $('px-cg').classList.toggle('solo', !(S.cdg||[]).length);
+  $('px-concept-dg').hidden = !(S.cdg||[]).length;
+  $('px-concept').hidden = !(S.cdg||[]).length && !(S.concept||[]).length;
+  /* 03 details: related drawings share a group, proportion and caption baseline. */
+  const dd = S.ddg || [], groups = groupDetails(dd);
+  S._dorder = [].concat(...groups.map(g=>g.items));
+  $('px-detail-text').innerHTML = paras(p, S.detail);
+  $('px-detail-head').hidden = !$('px-detail-text').childElementCount;
+  let k = 0;
+  $('px-detail-dg').innerHTML = groups.map(g=>'<div class="dg-group"><div class="dg-gh"><b>'+g.name+'</b><span>'+String(g.items.length).padStart(2,'0')+'</span></div><div class="dg-grid">'+
+    g.items.map(d=>dgHTML(d, k++, '03')).join('')+'</div></div>').join('');
+  $('px-detail-dg').hidden = !dd.length;
+  $('px-detail').hidden = !dd.length && $('px-detail-head').hidden;
+  /* section numbers follow what is shown */
+  let n = 1; ['px-lead-anchor','px-concept','px-detail','px-images'].forEach(id=>{ const el = $(id); if(!el.hidden) el.querySelector('.px-label .n').textContent = String(n++).padStart(2,'0'); });
+  /* 04 images */
+  /* Legacy comparison thumbnails are not part of the reviewed project gallery. */
+  const imgs = [p.img].concat(p.gallery || []).filter((src,k,a)=>a.indexOf(src) === k && !/section/.test(src));
+  p._imgs = imgs;
+  $('px-tiles').innerHTML = imgs.map((src,k)=>{const cap=portfolioMedia[src]?.caption || p.name;return '<button type="button" data-img="'+k+'" aria-label="Büyüt: '+escapeAttr(cap)+'" title="'+escapeAttr(cap)+'"><img src="'+src+'"'+imageVariants(src,'(max-width: 760px) 45vw, 280px')+' alt="'+escapeAttr(cap)+'" loading="lazy" style="object-position:'+fp(src)+'"></button>';}).join('');
+  $('px-img-count').textContent = imgs.length + ' görsel';
+  $('px-images').querySelector('.project-gallery-note')?.remove();
+  if(p.galleryNote){const note=document.createElement('p');note.className='project-gallery-note';note.textContent=p.galleryNote;$('px-tiles').after(note);}
+  $('px-evidence').hidden=p.code!=='ABR';
+  const pubs=$('px-publications');pubs.hidden=!p.publications;
+  pubs.innerHTML=p.publications ? '<div class="px-label"><span class="track">Bilimsel yayınlar</span></div><p class="pub-intro">ArchBrick üzerine yayımlanan iki araştırma. Bulgular, çalışmalarda belirtilen malzeme, model ve yükleme koşulları için değerlendirilmelidir.</p><div class="publication-grid">'+p.publications.map(q=>'<a class="publication" href="https://doi.org/'+q.doi+'" target="_blank" rel="noopener"><span class="track">'+q.journal+'</span><h3>'+q.title+'</h3><p>'+q.authors+'</p><p>'+q.summary+'</p><span class="publication-link">Makaleyi incele ↗</span></a>').join('')+'</div><div class="archbrick-links"><a href="https://archbrick.com.tr/" target="_blank" rel="noopener">ArchBrick resmî sitesi ↗</a><a href="https://www.instagram.com/archbrickdesign/" target="_blank" rel="noopener">Instagram ↗</a><a href="https://kurumsaliletisim.ankara.edu.tr/2026/08/14/ankara-universitesinden-yigma-yapilarin-deprem-dayanimina-yenilikci-cozum/" target="_blank" rel="noopener">Üniversite · Buluş ve lisanslama ↗</a></div><p class="archbrick-note">Kapak, gerçek prototip fotoğrafları referans alınarak yapay zekâ ile hazırlanmış temsili stüdyo görselidir. Galerideki üretim ve deney fotoğrafları ArchBrick kaynaklarından sunulmuştur. Patent başvurusu hak sahipliği Ankara Üniversitesine, buluş sahipliği Dr. Alper Çelik’e aittir.</p>' : '';
+
+  /* next */
+  const st = projCtx === 's', STUDIO_SET = ['ABR','PCE','BDP','DYF','WA'];
+  const list = st ? STUDIO_SET.map(c=>PROJECTS[P(c)]) : PROJECTS.filter(q=>!q.studio), nx = list[(list.indexOf(p) + 1) % list.length] || list[0];
+  $('pd-next').setAttribute('href', '#'+projCtx+'-'+nx.code);
+  $('px-ctx').textContent = st ? 'Studio' : 'Architecture';
+  $('px-back').setAttribute('href', st ? '#studio' : '#architecture'); $('px-back').textContent = st ? '‹ Studio' : '‹ Tüm projeler';
+  $('px-other').setAttribute('href', st ? '#architecture' : '#studio'); $('px-other').textContent = st ? 'Architecture ›' : 'Studio ›'; $('pd-next-name').textContent = nx.name; $('pd-next-img').src = nx.img; $('pd-next-img').style.objectPosition = fp(nx.img);
+}
+
+/* lightbox: images or diagrams, step through with buttons, arrows or a swipe */
+const lb = $('lb'), lbImg = $('lb-img'), lbMotion=$('lb-motion');
+let lbHideTimer=0,lbSwapTimer=0;
+function lbShow(k, dir){
+  clearTimeout(lbSwapTimer);
+  lbI = (k + lbSet.length) % lbSet.length; const it = lbSet[lbI];
+  const swap = ()=>{ lbMotion.replaceChildren();lbMotion.hidden=!it.motion;lbImg.hidden=!!it.motion;
+    if(it.motion){const motion=document.createElement('alpha-motion');motion.setAttribute('src',it.motion);motion.setAttribute('poster',it.src);motion.setAttribute('label',it.cap||'Diyagram');motion.setAttribute('expanded','');lbMotion.append(motion);}
+    else {lbImg.src = it.src;lbImg.alt = it.cap || '';}
+    lbImg.classList.toggle('white', !!it.white); $('lb-cap').textContent = it.cap || ''; $('lb-count').textContent = String(lbI+1).padStart(2,'0') + ' / ' + String(lbSet.length).padStart(2,'0'); };
+  if(dir && !reduce){ lbImg.style.setProperty('--dir', dir); lbImg.classList.add('out'); lbSwapTimer=setTimeout(()=>{ swap(); lbImg.style.setProperty('--dir', -dir); requestAnimationFrame(()=>lbImg.classList.remove('out')); }, 220); }
+  else swap();
+}
+function lbOpen(set, k){
+  clearTimeout(lbHideTimer);clearTimeout(lbSwapTimer);lbImg.classList.remove('out');
+  lbSet = set; lb.hidden = false; document.body.style.overflow = 'hidden';
+  document.dispatchEvent(new CustomEvent('bca-motion-overlay',{detail:true}));
+  lbShow(k, 0); requestAnimationFrame(()=>lb.classList.add('on')); $('lb-close').focus();
+}
+function lbClose(){
+  if(lb.hidden) return;
+  clearTimeout(lbSwapTimer);clearTimeout(lbHideTimer);lbImg.classList.remove('out');
+  lbMotion.replaceChildren();
+  document.dispatchEvent(new CustomEvent('bca-motion-overlay',{detail:false}));
+  lb.classList.remove('on'); document.body.style.overflow = '';
+  lbHideTimer=setTimeout(()=>{ lb.hidden = true; }, reduce ? 0 : 300);
+}
+$('px-tiles').addEventListener('click', e=>{ const b = e.target.closest('[data-img]'); if(!b) return; const p = PROJECTS[projIdx];
+  lbOpen(p._imgs.map(src=>({src, cap:portfolioMedia[src]?.caption || p.name})), +b.dataset.img); });
+['px-concept-dg','px-detail-dg'].forEach(id=>{const openDiagram=e=>{
+  const b = e.target.closest('[data-lb]'); if(!b) return; const S = SHEETS[PROJECTS[projIdx].code] || {};
+  const list=id === 'px-concept-dg' ? (S._corder || S.cdg) : (S._dorder || S.ddg),selected=list[+b.dataset.lb];
+  if(!selected||!drawingCanZoom(selected))return;
+  const drawings=list.filter(drawingCanZoom),set=drawings.map(d=>({src:drawingSource(d),cap:[d.t,d.cap].filter(Boolean).join(' · '),white:true}));
+  lbOpen(set,drawings.indexOf(selected));
+};$(id).addEventListener('click',openDiagram);});
+$('lb-prev').addEventListener('click', ()=>lbShow(lbI - 1, -1));
+$('lb-next').addEventListener('click', ()=>lbShow(lbI + 1, 1));
+$('lb-close').addEventListener('click', lbClose);
+lb.addEventListener('click', e=>{ if(e.target === lb || e.target.classList.contains('lb-fig')) lbClose(); });
+document.addEventListener('keydown', e=>{
+  if(lb.hidden) return;
+  if(e.key === 'Escape') lbClose();
+  else if(e.key === 'ArrowRight') lbShow(lbI + 1, 1);
+  else if(e.key === 'ArrowLeft') lbShow(lbI - 1, -1);
+});
+(function(){ let x0 = null;
+  lb.addEventListener('touchstart', e=>{ x0 = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e=>{ if(x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if(Math.abs(dx) > 50) lbShow(lbI + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); });
+})();
+addEventListener('hashchange', lbClose);
+
+/* hero drifts slower than the page; the bar turns solid once the hero is behind */
+addEventListener('resize', ()=>{ const h = $('px-hero-img').parentElement; if(h._fit) h._fit(); });
+addEventListener('scroll', ()=>{
+  if(DOC.dataset.view !== 'project') return;
+  const y = scrollY, h = innerHeight;
+  $('px-bar').classList.toggle('solid', y > h*0.8);
+  if(!reduce && innerWidth > 760 && y < h*1.2) $('px-hero-img').style.transform = 'translateY('+(y*0.35)+'px) scale('+(1 + y/h*0.06)+')';
+}, {passive:true});
+$('px-down').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); $('px-lead-anchor').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); });
+
+/* ---------- views: home, architecture, project, studio ---------- */
+let homeActive = true, studioActive = false;
+const viewOf = h => (h === 'architecture' || h === 'studio') ? h : (/^[ps]-/.test(h) ? 'project' : 'home');
+let projCtx = 'p';
+function route(){
+  const h = location.hash.slice(1),previous=DOC.dataset.view;
+  let view = viewOf(h),i=view==='project'?P(h.slice(2)):-1;
+  const inline=h.startsWith('p-')&&i>=0&&!PROJECTS[i].studio;
+  if(view==='project'){projCtx=h[0];if(i<0)view=projCtx==='s'?'studio':'architecture';}
+  if(inline)view='architecture';
+  if(!inline&&view!=='architecture')closeArchProject({animate:false,restore:false});
+  DOC.dataset.tone = view === 'project' && projCtx === 's' ? 'light' : '';
+  ['home','architecture','studio'].forEach(v=>{ $('v-'+v).hidden = v !== view; });
+  DOC.dataset.view = view;
+  homeActive = view === 'home'; studioActive = view === 'studio';
+  if(inline){openArchProject(i,{animate:previous==='architecture'});return;}
+  if(view==='architecture'){
+    if(archOpenCode)closeArchProject();else projectPane.hidden=true;
+    if(previous!=='architecture')scrollTo({top:0,behavior:'instant'});
+    return;
+  }
+  projectPane.hidden=view!=='project';
+  if(view==='project')renderProject(i);
+  if(view !== 'home'){ scrollTo({top:0,behavior:'instant'}); return; }
+  const el = h && h !== 'home' ? document.getElementById(h) : null;
+  if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}));
+  else if(h === 'home') scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+}
+addEventListener('hashchange', route); route();
+
+/* links between pages pass through a particle transition in the Studio language:
+   points stream in from outside the screen as the destination colour floods in,
+   gather into the page name with a loose cloud around it, then fly to the page's own heading and dissolve into it */
+const DEST = { architecture:['#000000','#F5F5F7','Architecture'], studio:['#F5F5F7','#1D1D1F','Studio'], home:['#FFFFFF','#1D1D1F','Welcome'], project:['#000000','#F5F5F7','Architecture'] };
+const DEST_EL = { architecture:'#v-architecture .page-head h1', studio:'#v-studio .page-head h1', home:'#welcome h1', project:'#pd-title' };
+const fx = document.createElement('canvas');
+fx.setAttribute('aria-hidden','true');
+Object.assign(fx.style, {position:'fixed', inset:'0', width:'100%', height:'100%', zIndex:'100', pointerEvents:'none', display:'none'});
+document.body.appendChild(fx);
+const fctx = fx.getContext('2d');
+let navBusy = false;
+
+function imagePalette(){
+  try{
+    const L = loaded[imgIdx]; if(!L || !L.data) return [];
+    const out = [];
+    for(let i=0;i<40;i++){ const o = (Math.floor(Math.random()*L.w*L.h))*4; out.push(`rgb(${L.data[o]},${L.data[o+1]},${L.data[o+2]})`); }
+    return out;
+  }catch(e){ return []; }
+}
+function textPoints(label, W, H, color){
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d'), size = Math.min(W*0.11, 120);
+  x.fillStyle = '#000'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = `300 ${size}px Jost, Futura, "Avenir Next", sans-serif`;
+  x.fillText(label, W/2, H/2);
+  const d = x.getImageData(0,0,W,H).data, pts = [], step = Math.max(3, Math.round(size/26));
+  for(let y=0;y<H;y+=step) for(let xx=0;xx<W;xx+=step){ if(d[(y*W+xx)*4+3] > 128) pts.push({tx:xx, ty:y, sx:Math.random()*W, sy:Math.random()*H, r:Math.random()}); }
+  return pts;
+}
+const ease = t => t<0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+
+function rgbOf(str){ const m = str.match(/\d+/g); return m ? m.slice(0,3).map(Number) : [128,128,128]; }
+function navigate(h, ox, oy){
+  if(navBusy) return;
+  if(reduce || touchDevice){ location.hash = h; return; }
+  navBusy = true;
+  const view = viewOf(h), lightProj = view === 'project' && h[0] === 's', [bg, fg] = lightProj ? DEST.studio : DEST[view], darkDest = view === 'architecture' || (view === 'project' && !lightProj);
+  const label = view === 'project' ? ((PROJECTS[P(h.slice(2))] || {}).name || 'Architecture') : DEST[view][2];
+  const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio||1, 2);
+  fx.width = W*dpr; fx.height = H*dpr; fctx.setTransform(dpr,0,0,dpr,0,0); fx.style.display = 'block';
+  if(ox == null){ ox = W/2; oy = H/2; }
+
+  /* colours come from the image on the home stage, like the Studio forms */
+  const fgc = rgbOf(fg.replace('#','').match(/../g).map(x=>parseInt(x,16)).join(','));
+  let pal = imagePalette().map(rgbOf);
+  if(!pal.length) pal = [fgc];
+  pal = pal.map(c=>{
+    const l = (0.299*c[0] + 0.587*c[1] + 0.114*c[2])/255;
+    const sat = c.map(v=>Math.max(0, Math.min(255, l*255 + (v - l*255)*1.45)));
+    return darkDest ? sat.map(v=>l < 0.3 ? v + (255-v)*0.45 : v) : sat.map(v=>v*(l > 0.7 ? 0.7 : 0.9));
+  });
+
+  const targets = textPoints(label, W, H);
+  const n = Math.round(Math.min(isPhone ? 4500 : 9000, W*H/120));
+  const PTS = [];
+  for(let i=0;i<n;i++){
+    const tg = targets.length ? targets[i % targets.length] : {tx:W/2, ty:H/2};
+    const amb = Math.random() < 0.32, a = Math.random()*Math.PI*2, rad = amb ? 30 + Math.pow(Math.random(),0.7)*Math.min(W,H)*0.32 : 0;
+    const c = Math.random() < (amb ? 0.85 : 0.45) ? pal[Math.floor(Math.random()*pal.length)] : fgc;
+    PTS.push({
+      sx: Math.random()*W, sy: Math.random()*H,                 /* scatter point the flow carries it to */
+      tx: tg.tx + Math.cos(a)*rad + (amb?0:(Math.random()-0.5)*2), ty: tg.ty + Math.sin(a)*rad*0.6,
+      gx: tg.tx, gy: tg.ty, ba: Math.random()*Math.PI*2, bR: Math.hypot(W,H)*0.6 + Math.random()*260,  /* start outside the screen */
+      r: Math.random(), amb, col: `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`,
+      sz: amb ? 0.8 + Math.random()*1.2 : 1.2 + Math.random()*1.4, ex: Math.cos(a), ey: Math.sin(a)
+    });
+  }
+  PTS.sort((p,q)=> p.col < q.col ? -1 : 1);
+
+  const flow = (x, y, t, amp)=>{
+    const ang = Math.sin(x*0.004 + t*0.0007)*2.2 + Math.cos(y*0.005 - t*0.0006)*2.2;
+    return [Math.cos(ang)*amp, Math.sin(ang)*amp];
+  };
+  const SWAP = 1000, OUT0 = 1750, END = 3000;
+  let swapped = false, landing = null; const t0 = performance.now();
+  function draw(now){ try{ drawInner(now); }catch(err){ fx.style.display = 'none'; navBusy = false; if(!swapped){ location.hash = h; } } }
+  function drawInner(now){
+    const t = now - t0;
+    if(!swapped && t >= SWAP){
+      swapped = true;
+      if(view === 'home') $('welcome').classList.remove('gone');
+      if(location.hash.slice(1) === h) route(); else location.hash = h;
+    }
+    /* once the new page is laid out, find where its heading sits and map the word onto it */
+    if(!landing && t >= OUT0 - 60){
+      landing = {ok:false};
+      const el = document.querySelector(DEST_EL[view]);
+      if(el && targets.length){
+        const rg = document.createRange(); rg.selectNodeContents(el); const r = rg.getBoundingClientRect();
+        let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
+        for(const q of targets){ if(q.tx<a)a=q.tx; if(q.tx>b)b=q.tx; if(q.ty<c)c=q.ty; if(q.ty>d)d=q.ty; }
+        if(r.width > 4 && r.bottom > 0 && r.top < H) landing = {ok:true, sx:a, sw:Math.max(1,b-a), sy:c, sh:Math.max(1,d-c), r};
+      }
+    }
+    fctx.clearRect(0,0,W,H);
+    /* the destination colour floods in behind the particles, then drains away */
+    const cover = t < OUT0 ? ease(clamp01((t - 150) / 800)) : 1 - ease(clamp01((t - OUT0 - 200) / 750));
+    fctx.globalAlpha = cover; fctx.fillStyle = bg; fctx.fillRect(0,0,W,H);
+    let last = '';
+    for(const p of PTS){
+      let x, y, al, sz = p.sz;
+      /* inward from outside the screen, swirling, into the page name */
+      const k2 = ease(clamp01((t - p.r*420) / 1150));
+      const ang0 = p.ba + (1 - k2)*1.1;                                  /* a slight spiral on the way in */
+      const sx = W/2 + Math.cos(ang0)*p.bR, sy = H/2 + Math.sin(ang0)*p.bR;
+      x = sx + (p.tx - sx)*k2; y = sy + (p.ty - sy)*k2;
+      /* then fly to where the word sits on the new page and dissolve into it */
+      const k3 = ease(clamp01((t - OUT0 - p.r*240) / 900));
+      if(k3 > 0){
+        let dx, dy;
+        if(landing && landing.ok){ const L = landing; dx = L.r.left + (p.gx - L.sx)/L.sw*L.r.width; dy = L.r.top + (p.gy - L.sy)/L.sh*L.r.height; }
+        else { dx = W/2; dy = H/2; }
+        x += (dx - x)*k3; y += (dy - y)*k3;
+        sz *= 1 - k3*0.5;
+      }
+      const sw = Math.sin(k2*Math.PI)*1.1 + (p.amb ? 0.25 : 0)*(1 - k3);
+      const f = flow(x, y, t + p.r*900, 34*sw);
+      x += f[0]; y += f[1];
+      al = Math.min(1, k2*2.2) * (1 - clamp01((k3 - 0.55)/0.45)) * (p.amb ? 0.55 : 0.95);
+      if(al <= 0.01) continue;
+      if(p.col !== last){ fctx.fillStyle = p.col; last = p.col; }
+      fctx.globalAlpha = al;
+      fctx.fillRect(x - sz/2, y - sz/2, sz, sz);
+    }
+    fctx.globalAlpha = 1;
+    if(t < END) requestAnimationFrame(draw);
+    else { fx.style.display = 'none'; navBusy = false; }
+  }
+  requestAnimationFrame(draw);
+}
+document.addEventListener('click', e=>{
+  const a = e.target.closest('a[href^="#"]');
+  if(e.defaultPrevented || !a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const h = a.getAttribute('href').slice(1), cur = DOC.dataset.view, dv = viewOf(h);
+  if(dv === 'home' && cur === 'home') return;              /* anchors within the home page scroll natively */
+  e.preventDefault();
+  if(h === location.hash.slice(1)) return;
+  if(cur==='architecture'&&(h==='architecture'||h.startsWith('p-'))){location.hash=h;return;}
+  navigate(h, e.clientX || null, e.clientY || null);
+});
+
+/* ---------- welcome veil: lifts on hover (or tap), returns after the pointer leaves ---------- */
+const stage = $('stage'), veil = $('welcome');
+let veilTimer = null;
+const lift = ()=>{ clearTimeout(veilTimer); veil.classList.add('gone'); };
+stage.addEventListener('pointerenter', e=>{ if(e.pointerType === 'mouse' && innerWidth > 760) lift(); });
+stage.addEventListener('pointerleave', e=>{ if(e.pointerType !== 'mouse' || innerWidth <= 760) return; veilTimer = setTimeout(()=>{ veil.classList.remove('gone'); target = 0; }, 1400); });
+veil.addEventListener('click', lift);
+stage.addEventListener('focusin', lift);
+
+/* ---------- blend between the two sides follows the pointer ---------- */
+let mode = 'architecture', target = 0, prog = 0, lastU = 0.5, formIdx = 0, imgIdx = 0;
+function syncMobileHome(){
+ if(innerWidth>760 || !homeActive || reduce) return;
+ const wrap=stage.parentElement,rect=wrap.getBoundingClientRect();
+ const travel=Math.max(1,wrap.offsetHeight-stage.offsetHeight);
+ const progress=Math.max(0,Math.min(1,-rect.top/travel));
+ target=Math.max(0,Math.min(1,(progress-.06)/.75));
+ if(progress>.015){clearTimeout(veilTimer);veil.classList.add('gone');}
+}
+addEventListener('scroll',syncMobileHome,{passive:true});
+addEventListener('resize',syncMobileHome);
+
+function hudText(){}
+const smooth = (a,b,x)=>{ const t = Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); };
+stage.addEventListener('pointermove', e=>{
+  if(e.pointerType === 'touch' || innerWidth <= 760) return;
+  const r = stage.getBoundingClientRect();
+  lastU = (e.clientX - r.left) / r.width;
+  if(!veil.classList.contains('gone')) return;
+  target = smooth(0.3, 0.75, lastU);
+  if(reduce) prog = target;
+});
+const sideA = $('side-a'), sideS = $('side-s'), stageLogo = $('stage-logo');
+sideA.addEventListener('pointerenter', ()=>{ if(innerWidth > 760) target = 0; });
+sideS.addEventListener('pointerenter', ()=>{ if(innerWidth > 760) target = 1; });
+const COL = { bgA:[11,11,12], bgS:[251,251,253], fgA:[245,245,247], fgS:[29,29,31] };
+const mixc = (a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+function syncPage(){
+  mode = target > 0.5 ? 'studio' : 'architecture';
+  const k = smooth(0.35, 0.95, prog);
+  stage.style.setProperty('--sbg', `rgb(${mixc(COL.bgA,COL.bgS,k)})`);
+  stage.style.setProperty('--sfg', `rgb(${mixc(COL.fgA,COL.fgS,k)})`);
+  stageLogo.style.color = veil.classList.contains('gone') ? '' : '#1D1D1F';
+  sideA.style.opacity = (1 - 0.6*prog).toFixed(3);
+  sideS.style.opacity = (0.4 + 0.6*prog).toFixed(3);
+}
+let stageVisible = true;
+new IntersectionObserver(es=>{ stageVisible = es[0].isIntersecting; }).observe(stage);
+
+/* ---------- three.js ---------- */
+if(!window.THREE){ return; }
+const canvas = $('scene');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,isPhone ? 1.5 : 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30,1,0.1,100);
+camera.position.set(0,0,14);
+const DIST = 14, PH = 2*DIST*Math.tan(15*Math.PI/180);
+let PW = PH;
+
+const GLSL_NOISE = `
+  float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+  float n2(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.0-2.0*f);
+    return mix(mix(h21(i),h21(i+vec2(1.0,0.0)),u.x), mix(h21(i+vec2(0.0,1.0)),h21(i+vec2(1.0,1.0)),u.x), u.y); }
+  float fbm2(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<5;i++){ s+=a*n2(p); p*=2.02; a*=0.5; } return s; }`;
+
+/* image plane: cover-fit, darkens toward the right, liquefies with progress, crossfades between images */
+const blank = new THREE.DataTexture(new Uint8Array([10,10,11,255]),1,1,THREE.RGBAFormat); blank.needsUpdate = true;
+const imgMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{ uA:{value:blank}, uB:{value:blank}, uCovA:{value:new THREE.Vector2(1,1)}, uCovB:{value:new THREE.Vector2(1,1)},
+             uFocA:{value:new THREE.Vector2(0.5,0.5)}, uFocB:{value:new THREE.Vector2(0.5,0.5)},
+             uMix:{value:0}, uProg:{value:0}, uTime:{value:0}, uMouse:{value:new THREE.Vector2(-5,-5)} },
+  vertexShader:`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader: GLSL_NOISE + `
+    uniform sampler2D uA, uB; uniform vec2 uCovA, uCovB, uFocA, uFocB, uMouse; uniform float uMix, uProg, uTime;
+    varying vec2 vUv;
+    vec2 coverA(vec2 uv){ return clamp((uv-0.5)*uCovA + uFocA, 0.001, 0.999); }
+    vec2 coverB(vec2 uv){ return clamp((uv-0.5)*uCovB + uFocB, 0.001, 0.999); }
+    void main(){
+      float flow = smoothstep(0.0, 0.7, uProg);
+      vec2 q = vUv*vec2(2.6,1.7);
+      vec2 n = vec2(fbm2(q + vec2(uTime*0.06,0.0)), fbm2(q + vec2(5.2, -uTime*0.05))) - 0.5;
+      float side = clamp(vUv.x*0.7 + flow*0.8, 0.0, 1.0);
+      float amt = flow * side;
+      vec2 md = vUv - uMouse; float dm = length(md*vec2(1.7,1.0));
+      vec2 rip = md * 0.010 * exp(-dm*8.0) * sin(dm*50.0 - uTime*3.0) * (1.0-flow);
+      float mm = sin(uMix*3.14159);
+      vec2 uv = vUv + n*(amt*0.34 + mm*0.07) + rip;
+      vec3 ca = texture2D(uA, coverA(uv)).rgb;
+      ca.r = texture2D(uA, coverA(uv + n*amt*0.035)).r;
+      ca.b = texture2D(uA, coverA(uv - n*amt*0.035)).b;
+      vec3 cb = texture2D(uB, coverB(uv)).rgb;
+      float tm = smoothstep(0.0, 1.0, clamp(uMix*1.45 - fbm2(vUv*3.0+2.0)*0.45, 0.0, 1.0));
+      vec3 col = mix(ca, cb, tm);
+      col *= mix(1.0, 0.58, smoothstep(0.3, 1.0, vUv.x));
+      col *= mix(1.0, 0.55, smoothstep(0.70, 1.0, vUv.y));
+      col *= mix(1.0, 0.62, smoothstep(0.30, 0.0, vUv.y));
+      float a = 1.0 - smoothstep(0.42, 0.9, uProg);
+      gl_FragColor = vec4(col, a);
+    }`
+});
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(1,1), imgMat); plane.position.z = -0.02; scene.add(plane);
+
+/* ---------- studio forms (each N points) ---------- */
+const R = Math.random, TAU = Math.PI*2;
+
+/* per-form placement: the form grows past the frame on one side, the other side stays empty for the text */
+const LAYOUT = [   /* all forms sit to the right and grow past the frame; the left stays open for the text */
+  {x: 3.3, y: 0.3,  s: 1.45},  /* butterfly */
+  {x: 3.4, y:-0.1,  s: 1.5},   /* peony */
+  {x: 3.6, y: 0.1,  s: 1.15},  /* cosmos */
+  {x: 3.2, y: 0.1,  s: 1.05},  /* black hole */
+  {x: 3.5, y: 0.9,  s: 1.2},   /* jellyfish */
+  {x: 3.5, y: 0.2,  s: 0.92}   /* bouquet */
+];
+/* the same point anatomy as Studio (studio-forms.js); motion is computed per point on the GPU */
+const FORM_DATA = BCAStudioForms.names.map((_,i)=>BCAStudioForms.make(i, N));
+const SHAPES = FORM_DATA.map(f=>f.positions);
+
+/* particle buffers */
+const aImg = new Float32Array(N*3), aCol = new Float32Array(N*3), aRnd = new Float32Array(N*3), aSeed = new Float32Array(N), aUv = new Float32Array(N*2);
+const cols = Math.ceil(Math.sqrt(N*1.8)), rows = Math.ceil(N/cols);
+for(let i=0;i<N;i++){
+  aUv[i*2] = ((i%cols) + R())/cols; aUv[i*2+1] = (Math.floor(i/cols) + R())/rows;
+  const a = R()*TAU, b = Math.acos(2*R()-1), m = 0.4+R();
+  aRnd[i*3]=Math.sin(b)*Math.cos(a)*m; aRnd[i*3+1]=Math.cos(b)*m; aRnd[i*3+2]=Math.sin(b)*Math.sin(a)*m;
+  aSeed[i] = R();
+}
+const pg = new THREE.BufferGeometry();
+pg.setAttribute('position', new THREE.BufferAttribute(aImg,3));
+pg.setAttribute('aCol', new THREE.BufferAttribute(aCol,3));
+pg.setAttribute('aRand', new THREE.BufferAttribute(aRnd,3));
+pg.setAttribute('aSeed', new THREE.BufferAttribute(aSeed,1));
+/* only two forms are ever blended, so two slots are refilled as the cycle moves on */
+pg.setAttribute('aSA', new THREE.BufferAttribute(FORM_DATA[0].positions.slice(),3));
+pg.setAttribute('aDA', new THREE.BufferAttribute(FORM_DATA[0].details.slice(),4));
+pg.setAttribute('aSB', new THREE.BufferAttribute(FORM_DATA[1].positions.slice(),3));
+pg.setAttribute('aDB', new THREE.BufferAttribute(FORM_DATA[1].details.slice(),4));
+let slotA = 0, slotB = 1;
+function fillSlots(a, b){
+  if(a !== slotA){ pg.attributes.aSA.array.set(FORM_DATA[a].positions); pg.attributes.aDA.array.set(FORM_DATA[a].details); pg.attributes.aSA.needsUpdate = pg.attributes.aDA.needsUpdate = true; slotA = a; }
+  if(b !== slotB){ pg.attributes.aSB.array.set(FORM_DATA[b].positions); pg.attributes.aDB.array.set(FORM_DATA[b].details); pg.attributes.aSB.needsUpdate = pg.attributes.aDB.needsUpdate = true; slotB = b; }
+}
+const pMat = new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false,
+  uniforms:{ uTime:{value:0}, uProg:{value:0}, uPix:{value:renderer.getPixelRatio()}, uHalfW:{value:6}, uHalfH:{value:PH/2},
+             uWa:{value:1}, uWb:{value:0}, uKa:{value:0}, uKb:{value:1}, uMotion:{value:0}, uMorph:{value:0}, uRot:{value:0}, uOffX:{value:0}, uScale:{value:1}, uPos:{value:new THREE.Vector3()},
+             uMouse:{value:new THREE.Vector3(99,99,0)}, uInk:{value:new THREE.Color(0x2340E6)}, uDeep:{value:new THREE.Color(0x15151B)} },
+  vertexShader:`
+    attribute vec3 aCol, aRand, aSA, aSB; attribute vec4 aDA, aDB; attribute float aSeed;
+    uniform float uTime, uMotion, uProg, uPix, uHalfW, uHalfH, uWa, uWb, uKa, uKb, uMorph, uRot, uOffX, uScale; uniform vec3 uMouse, uPos;
+    varying vec3 vCol; varying float vA; varying float vK;
+    ${BCAStudioForms.glsl}
+    float particleHash(vec3 p){ return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453); }
+    void main(){
+      vec3 shape = vec3(0.0);
+      float glow = 0.0;
+      if(uWa > 0.0){ shape += bcaLife(aSA, aDA, uKa, uMotion) * uWa; glow += bcaGlow * uWa; }
+      if(uWb > 0.0){ shape += bcaLife(aSB, aDB, uKb, uMotion) * uWb; glow += bcaGlow * uWb; }
+      /* ~30% of points form a drifting cloud that hugs the form */
+      float r1=particleHash(aRand+vec3(1.3,2.7,3.1));
+      float r2=particleHash(aRand+vec3(8.1,4.3,2.6));
+      float r3=particleHash(aRand+vec3(5.9,7.2,9.4));
+      float amb = step(0.84,r3);
+      vec3 drift = vec3(sin(uTime*0.23 + aSeed*40.0), cos(uTime*0.19 + aSeed*23.0), sin(uTime*0.17 + aSeed*11.0));
+      shape += amb * (aRand*(.8+2.2*r2)+drift*.8);
+      shape += aRand * uMorph * 0.9;
+      shape += vec3(sin(uTime*.5+aSeed*6.28), cos(uTime*.4+aSeed*9.0), sin(uTime*.3+aSeed*3.0)) * 0.025;
+      float c = cos(uRot), s = sin(uRot);
+      shape.xz = mat2(c,-s,s,c) * shape.xz;
+      shape = shape*uScale + uPos;
+
+      float ux = position.x/uHalfW*0.5 + 0.5;
+      float delay = (1.0-ux)*0.4 + aSeed*0.15;
+      float k = smoothstep(delay, delay+0.45, uProg);
+      float mid = sin(k*3.14159);
+      vec3 swirl = vec3(sin(position.y*1.2 + uTime*0.8 + aSeed*6.0), cos(position.x*0.9 - uTime*0.7 + aSeed*4.0), sin(aSeed*12.0 + uTime*0.5)) * mid * 1.3;
+      /* Independent seeds form loose, uneven plumes instead of parallel bands. */
+      float angle=6.283185*r2;
+      float radius=sqrt(-2.0*log(max(.001,r1)));
+      vec2 gaussian=radius*vec2(cos(angle),sin(angle));
+      float plume=floor(r3*19.0);
+      float phase=uTime*.18+plume*2.39996;
+      float anchor=sin(plume*4.17)*uHalfW*.7;
+      vec3 origin=vec3(anchor+gaussian.x*uHalfW*.16,-uHalfH-.25+gaussian.y*.72,(r2-.5)*1.4);
+      vec3 source=mix(position,origin,amb);
+      vec3 p=mix(source,shape,k)+swirl*(1.0+amb*.7);
+      p.xy+=amb*mid*vec2(sin(phase+gaussian.y)*.65,cos(phase*.71+gaussian.x)*.8);
+
+      vec4 wp = modelMatrix * vec4(p,1.0);
+      vec2 d = wp.xy - uMouse.xy; float dist = length(d);
+      float f = smoothstep(1.3, 0.0, dist) * k;
+      wp.xy += d/(dist+0.001) * f * 0.7;
+      wp.z += f*0.4;
+      vec4 mv = viewMatrix * wp;
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = mix(2.6, (0.9 + aSeed*1.3) * mix(1.0, 0.7, amb), k) * uPix * (14.0 / -mv.z);
+      /* the form keeps the colours of the image it came from: a touch more saturated and deepened so it reads on the light ground */
+      float lum = dot(aCol, vec3(0.299,0.587,0.114));
+      vec3 rich = clamp(mix(vec3(lum), aCol, 1.45), 0.0, 1.0) * (lum > 0.7 ? 0.72 : 0.9);
+      vCol = mix(aCol, rich, smoothstep(0.35, 0.95, k));
+      vA = smoothstep(0.03, 0.3, uProg) * mix(0.95, (0.45 + 0.5*aSeed) * mix(1.0, 0.6, amb), k) + f*0.3;
+      /* Wisps fade below the stage, keeping body copy clear. */
+      float spill=smoothstep(-uHalfH-1.8,-uHalfH+.2,p.y);
+      vA*=spill*mix(1.0,.38,amb)*mix(1.0,clamp(.45+.55*glow,.3,1.6),k*(1.0-amb));
+      vK = k;
+    }`,
+  fragmentShader:`
+    varying vec3 vCol; varying float vA; varying float vK;
+    void main(){
+      float r = length(gl_PointCoord - 0.5); if(r > 0.5) discard;
+      gl_FragColor = vec4(vCol, vA * smoothstep(0.5, mix(0.35,0.1,vK), r));
+    }`
+});
+const cloud = new THREE.Points(pg, pMat); cloud.frustumCulled = false;
+/* Particles render over the viewport; the image stays clipped to its stage. */
+const particleLayer = document.createElement('canvas');
+particleLayer.setAttribute('aria-hidden','true');
+Object.assign(particleLayer.style,{position:'fixed',inset:'0',width:'100%',height:'100%',pointerEvents:'none',zIndex:'3',display:'none'});
+document.body.appendChild(particleLayer);
+const particleRenderer = new THREE.WebGLRenderer({canvas:particleLayer,alpha:true,antialias:false});
+particleRenderer.setPixelRatio(Math.min(devicePixelRatio||1,isPhone?1.25:1.5));
+particleRenderer.setClearColor(0,0);
+const particleScene = new THREE.Scene(), particleCamera = new THREE.PerspectiveCamera(30,1,.1,100);
+particleCamera.position.z=14;particleScene.add(cloud);
+let particleWidth=0,particleHeight=0;
+function renderFreeParticles(){
+ const rect=stage.getBoundingClientRect(),vw=innerWidth,vh=innerHeight,unit=PH/Math.max(1,H);
+ if(vw!==particleWidth||vh!==particleHeight){particleRenderer.setSize(vw,vh,false);particleWidth=vw;particleHeight=vh;}
+ particleCamera.aspect=vw/vh;particleCamera.fov=2*Math.atan(unit*vh/(2*DIST))*180/Math.PI;particleCamera.updateProjectionMatrix();
+ cloud.position.set((rect.left+rect.width/2-vw/2)*unit,(vh/2-rect.top-rect.height/2)*unit,0);
+ particleLayer.style.display=prog>.025&&veil.classList.contains('gone')?'block':'none';
+ particleLayer.style.opacity=String(Math.min(1,Math.max(0,(rect.bottom+80)/(vh*.55))));
+ particleRenderer.render(particleScene,particleCamera);
+}
+
+/* images: textures + pixel data for particle colours */
+const loaded = [];
+function loadImage(i){
+  return new Promise(res=>{
+    const im = new Image();
+    im.onload = ()=>{
+      const tex = new THREE.Texture(im); tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
+      const cv = document.createElement('canvas'), w = 256, h = Math.round(256*im.height/im.width);
+      cv.width = w; cv.height = h; const cx = cv.getContext('2d'); cx.drawImage(im,0,0,w,h);
+      let data = null; try{ data = cx.getImageData(0,0,w,h).data; }catch(e){}
+      loaded[i] = {tex, aspect: im.width/im.height, data, w, h}; res();
+    };
+    im.onerror = ()=>res();
+    im.src = IMAGES[i].src;
+  });
+}
+function coverOf(i){ const L = loaded[i]; if(!L) return new THREE.Vector2(1,1); const pa = PW/PH, ia = L.aspect; return pa > ia ? new THREE.Vector2(1, ia/pa) : new THREE.Vector2(pa/ia, 1); }
+function focusOf(i){
+  const c = coverOf(i), f = IMAGES[i].focus || [0.5,0.5];
+  return new THREE.Vector2(Math.min(1-c.x/2, Math.max(c.x/2, f[0])), Math.min(1-c.y/2, Math.max(c.y/2, f[1])));
+}
+/* image uv → screen uv for the current crop */
+function imgToScreen(i, p){ const c = coverOf(i), f = focusOf(i); return [(p[0]-f.x)/c.x + 0.5, (p[1]-f.y)/c.y + 0.5]; }
+const sm = (a,b,x)=>{ const t = Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); };
+function paintParticles(i){
+  const L = loaded[i], cov = coverOf(i), foc = focusOf(i);
+  for(let k=0;k<N;k++){
+    const u = aUv[k*2], v = aUv[k*2+1];
+    aImg[k*3] = (u-0.5)*PW; aImg[k*3+1] = (v-0.5)*PH; aImg[k*3+2] = 0.01;
+    let r=0.1,g=0.1,b=0.11;
+    if(L && L.data){
+      const tu = (u-0.5)*cov.x+foc.x, tv = (v-0.5)*cov.y+foc.y;
+      const px = Math.min(L.w-1, Math.max(0, Math.floor(tu*L.w))), py = Math.min(L.h-1, Math.max(0, Math.floor((1-tv)*L.h)));
+      const o = (py*L.w+px)*4; r = L.data[o]/255; g = L.data[o+1]/255; b = L.data[o+2]/255;
+      const dk = (1 - 0.42*sm(0.3,1,u)) * (1 - 0.45*sm(0.7,1,v)) * (1 - 0.38*sm(0.3,0,v));
+      r*=dk; g*=dk; b*=dk;
+    }
+    aCol[k*3]=r; aCol[k*3+1]=g; aCol[k*3+2]=b;
+  }
+  pg.attributes.position.needsUpdate = true; pg.attributes.aCol.needsUpdate = true;
+}
+function showImage(i){
+  if(!loaded[i]) return;
+  imgMat.uniforms.uA.value = loaded[i].tex; imgMat.uniforms.uCovA.value = coverOf(i); imgMat.uniforms.uFocA.value = focusOf(i);
+  imgMat.uniforms.uMix.value = 0; paintParticles(i);
+}
+loadImage(0).then(()=>{ showImage(0); IMAGES.forEach((_,i)=>{ if(i) loadImage(i); }); });
+
+/* sizing */
+let W=1,H=1;
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  renderer.setSize(W,H,false);
+  camera.aspect = W/H; camera.updateProjectionMatrix();
+  PW = PH*camera.aspect;
+  plane.scale.set(PW, PH, 1);
+  pMat.uniforms.uHalfW.value = PW/2;
+  pMat.uniforms.uOffX.value = W > 1100 ? 0.4 : 0;
+  if(loaded[imgIdx]){ imgMat.uniforms.uCovA.value = coverOf(imgIdx); imgMat.uniforms.uFocA.value = focusOf(imgIdx); paintParticles(imgIdx); }
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+/* input */
+const ndc = new THREE.Vector2(9,9), mouseX = {v:0};
+const ray = new THREE.Raycaster(), zplane = new THREE.Plane(new THREE.Vector3(0,0,1),0), hit = new THREE.Vector3();
+let drag = null, dragRot = 0, dragVel = 0;
+canvas.addEventListener('pointermove', e=>{
+  const r = canvas.getBoundingClientRect();
+  const u = (e.clientX-r.left)/r.width, v = 1 - (e.clientY-r.top)/r.height;
+  ndc.set(u*2-1, v*2-1); mouseX.v = u*2-1;
+  imgMat.uniforms.uMouse.value.set(u, v);
+  if(drag!==null){ const dx = e.clientX - drag; drag = e.clientX; dragVel = dx*0.006; dragRot += dragVel; }
+});
+canvas.addEventListener('pointerleave', ()=>{ ndc.set(9,9); imgMat.uniforms.uMouse.value.set(-5,-5); });
+canvas.addEventListener('pointerdown', e=>{ if(e.pointerType==='touch') return; drag = e.clientX; canvas.classList.add('drag'); canvas.setPointerCapture(e.pointerId); });
+const end = ()=>{ drag = null; canvas.classList.remove('drag'); };
+canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+
+/* timing: welcome images cycle continuously; forms change every 4.6 s */
+const IMAGE_HOLD = 2.8, IMAGE_FADE = 1.0;
+const HOLD = BCAStudioForms.HOLD, MORPH = BCAStudioForms.MORPH, CYCLE = HOLD + MORPH;
+let imgTimer = 0, mixing = -1, morphClock = 0, rot = 0;
+const clock = new THREE.Clock(), tmp = new THREE.Vector3();
+function frame(){
+  if(document.hidden || !homeActive || !stageVisible){ particleLayer.style.display='none'; clock.getDelta(); requestAnimationFrame(frame); return; }
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  prog += (target - prog) * (reduce ? 1 : 0.06);
+  if(Math.abs(target-prog) < 0.001) prog = target;
+  syncMobileHome();
+  syncPage();
+
+  /* Keep image rotation running across the image-to-particle interaction. */
+  if(!reduce && IMAGES.length > 1){
+    if(mixing < 0){ imgTimer += dt; const nx = (imgIdx+1)%IMAGES.length;
+      if(imgTimer > IMAGE_HOLD && loaded[nx]){ imgMat.uniforms.uB.value = loaded[nx].tex; imgMat.uniforms.uCovB.value = coverOf(nx); imgMat.uniforms.uFocB.value = focusOf(nx); mixing = 0; } }
+    else { mixing += dt/IMAGE_FADE; imgMat.uniforms.uMix.value = Math.min(1, mixing);
+      if(mixing >= 1){ imgIdx = (imgIdx+1)%IMAGES.length; showImage(imgIdx); mixing = -1; imgTimer = 0; if(mode==='architecture') hudText(); } }
+  }
+
+  /* form morph cycle */
+  /* the shared clock (studio-forms.js) keeps this stage in step with Studio */
+  const FS = BCAStudioForms.state(), ci = FS.a, nx = FS.b, bl = sm(0, 1, FS.m);
+  pMat.uniforms.uMotion.value = FS.t;
+  fillSlots(ci, nx);
+  pMat.uniforms.uKa.value = ci; pMat.uniforms.uKb.value = nx;
+  pMat.uniforms.uWa.value = 1-bl; pMat.uniforms.uWb.value = bl;
+  pMat.uniforms.uMorph.value = Math.sin(bl*Math.PI);
+  /* placement: grow to one side, keep the other empty; text moves to the empty side */
+  const La = LAYOUT[ci], Lb = LAYOUT[nx], narrow = W < 900, fit = Math.min(1, PW/12.5);
+  const lxv = narrow ? 0 : (La.x + (Lb.x-La.x)*bl)*fit, lyv = (La.y + (Lb.y-La.y)*bl) + (narrow ? 0.8 : 0);
+  pMat.uniforms.uScale.value = (La.s + (Lb.s-La.s)*bl) * (narrow ? 0.7 : 1);
+  pMat.uniforms.uPos.value.set(lxv, lyv, 0);
+  const shown = bl < 0.5 ? ci : nx;
+  if(shown !== formIdx){ formIdx = shown; if(mode==='studio') hudText(); }
+
+  if(drag===null){ dragRot += dragVel; dragVel *= 0.94; }
+  rot += (dragRot + mouseX.v*0.25 - rot) * 0.05;
+  pMat.uniforms.uRot.value = rot;
+
+  if(ndc.x < 5){ ray.setFromCamera(ndc, camera); if(ray.ray.intersectPlane(zplane, hit)) pMat.uniforms.uMouse.value.copy(hit); }
+  else pMat.uniforms.uMouse.value.set(99,99,0);
+  pMat.uniforms.uTime.value = t; pMat.uniforms.uProg.value = prog;
+  imgMat.uniforms.uTime.value = t; imgMat.uniforms.uProg.value = prog;
+
+  renderer.render(scene, camera);
+  renderFreeParticles();
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* Reference-led, actual XYZ model previews. A single renderer is reused across cards. */
+(function hologram(){
+  document.documentElement.dataset.holoController=window.BCAHolograms?'ready':'library-missing';
+  if(reduce || touchDevice || !window.BCAHolograms) return;
+  const lib=window.BCAHolograms,T=window.THREE;
+  const scene=new T.Scene(),depthScene=new T.Scene(),camera=new T.PerspectiveCamera(36,1,.05,100);
+  camera.position.set(4.2,2.7,5.6);camera.lookAt(0,0,0);
+  scene.add(new T.AmbientLight(0x9ae6ff,.85));
+  const key=new T.DirectionalLight(0xb8f5ff,1.7);key.position.set(3,6,5);scene.add(key);
+  const rim=new T.DirectionalLight(0x057eac,1.4);rim.position.set(-4,2,-4);scene.add(rim);
+  const stage=new T.Group();scene.add(stage);
+  const ringGeo=new T.BufferGeometry().setFromPoints(Array.from({length:129},(_,i)=>new T.Vector3(1.7*Math.cos(i*Math.PI/64),-1.84,1.7*Math.sin(i*Math.PI/64))));
+  const ring=new T.Line(ringGeo,new T.LineBasicMaterial({color:0x1e778e,transparent:true,opacity:.5}));// Ground ring is intentionally omitted: all visible hologram elements are particles.
+  let active=null,raf=0,renderer=null;
+  function stop(){cancelAnimationFrame(raf);if(!active)return;active.thumb.classList.remove('holo-on');renderer.domElement.remove();stage.remove(active.model);depthScene.remove(active.depth);active=null;}
+  function frame(now){
+    if(!active)return;
+    const t=(now-active.start)/1000;
+    active.opacity+=(active.target-active.opacity)*.1;
+    if(active.target===0&&active.opacity<.015){stop();return;}
+    renderer.domElement.style.opacity=active.opacity;
+    // Full orbit exposes side and rear faces. Mouse provides an additional inspection angle.
+    active.model.rotation.y=t*.40+active.mx*1.1;
+    active.model.rotation.x=active.my*.28;
+    active.model.material.uniforms.uTime.value=t;
+    active.model.material.uniforms.uReveal.value=Math.min(1,t*.6);
+    active.model.material.uniforms.uPointScale.value=renderer.getPixelRatio();
+    active.depth.rotation.copy(active.model.rotation);renderer.autoClear=false;renderer.clear();if(t>1.6)renderer.render(depthScene,camera);renderer.render(scene,camera);raf=requestAnimationFrame(frame);
+  }
+  function enter(card){
+    if(document.querySelector('.arch-panel.is-animating'))return;
+    if(active?.card===card){active.target=1;return;}
+    stop();const code=card.getAttribute('href').split('-').pop(),m=lib.particles(code);if(!m)return;
+    const thumb=card.querySelector('.thumb');if(!thumb)return;
+    try{renderer=lib.getRenderer();}catch(e){return;}
+    renderer.setSize(thumb.clientWidth,thumb.clientHeight,false);camera.aspect=thumb.clientWidth/thumb.clientHeight;camera.updateProjectionMatrix();
+    renderer.domElement.dataset.model=code;renderer.domElement.dataset.geometry='xyz-surface-particles';renderer.domElement.style.opacity='0';
+    thumb.appendChild(renderer.domElement);thumb.classList.add('holo-on');stage.add(m);
+    const depth=lib.depthModel(code);depthScene.add(depth);
+    active={card,thumb,model:m,depth,start:performance.now(),mx:0,my:0,opacity:0,target:1};raf=requestAnimationFrame(frame);
+  }
+  document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const c=e.target.closest('a.card');if(c)enter(c);});
+  document.addEventListener('pointerout',e=>{const c=e.target.closest('a.card');if(c&&active?.card===c&&!c.contains(e.relatedTarget))active.target=0;});
+  document.addEventListener('pointermove',e=>{if(!active)return;const r=active.thumb.getBoundingClientRect();active.mx=(e.clientX-r.left)/r.width-.5;active.my=(e.clientY-r.top)/r.height-.5;});
+  document.addEventListener('focusin',e=>{const c=e.target.closest('a.card');if(c)enter(c);});
+  document.addEventListener('focusout',e=>{if(active?.card===e.target.closest('a.card'))active.target=0;});
+  document.addEventListener('bca-architecture-change',stop);
+  window.BCAHoloPreview={take(card){
+    if(active?.card!==card||active.opacity<.015||!window.BCAHologramTransition)return null;
+    let bridge=null;
+    try{bridge=window.BCAHologramTransition.create({THREE:T,model:active.model,camera,image:card.querySelector('.thumb img'),renderer,opacity:active.opacity});}catch(error){console.warn('Cover transition fallback',error);}
+    stop();return bridge;
+  }};
+  addEventListener('hashchange',stop);addEventListener('resize',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+})();
+})();
+</script>
+
+<script src="studio-particles.js?v=20261102-sync"></script>
+</body></html>
