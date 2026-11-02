@@ -1952,7 +1952,7 @@ stage.addEventListener('pointermove', e=>{
   const r = stage.getBoundingClientRect();
   lastU = (e.clientX - r.left) / r.width;
   if(!veil.classList.contains('gone')) return;
-  target = smooth(0.3, 0.75, lastU);
+  target = smooth(0.2, 0.8, lastU);
   if(reduce) prog = target;
 });
 const sideA = $('side-a'), sideS = $('side-s'), stageLogo = $('stage-logo');
@@ -1962,7 +1962,7 @@ const COL = { bgA:[11,11,12], bgS:[251,251,253], fgA:[245,245,247], fgS:[29,29,3
 const mixc = (a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
 function syncPage(){
   mode = target > 0.5 ? 'studio' : 'architecture';
-  const k = smooth(0.35, 0.95, prog);
+  const k = smooth(0.3, 0.92, prog);
   stage.style.setProperty('--sbg', `rgb(${mixc(COL.bgA,COL.bgS,k)})`);
   stage.style.setProperty('--sfg', `rgb(${mixc(COL.fgA,COL.fgS,k)})`);
   stageLogo.style.color = veil.classList.contains('gone') ? '' : '#1D1D1F';
@@ -2018,10 +2018,24 @@ const imgMat = new THREE.ShaderMaterial({
       vec3 cb = texture2D(uB, coverB(uv)).rgb;
       float tm = smoothstep(0.0, 1.0, clamp(uMix*1.45 - fbm2(vUv*3.0+2.0)*0.45, 0.0, 1.0));
       vec3 col = mix(ca, cb, tm);
-      col *= mix(1.0, 0.58, smoothstep(0.3, 1.0, vUv.x));
-      col *= mix(1.0, 0.55, smoothstep(0.70, 1.0, vUv.y));
-      col *= mix(1.0, 0.62, smoothstep(0.30, 0.0, vUv.y));
-      float a = 1.0 - smoothstep(0.42, 0.9, uProg);
+      /* toward the middle the image goes soft and pale before it hands over to the Studio forms */
+      float ghost = smoothstep(0.1, 0.72, uProg);
+      if(ghost > 0.001){
+        vec2 bl = vec2(0.0035, 0.006) * ghost;
+        vec3 soft = texture2D(uA, coverA(uv + bl)).rgb + texture2D(uA, coverA(uv - bl)).rgb
+                  + texture2D(uA, coverA(uv + vec2(bl.x, -bl.y))).rgb + texture2D(uA, coverA(uv + vec2(-bl.x, bl.y))).rgb;
+        soft *= 0.25;
+        vec3 softB = texture2D(uB, coverB(uv + bl)).rgb*0.5 + texture2D(uB, coverB(uv - bl)).rgb*0.5;
+        col = mix(col, mix(soft, softB, tm), ghost*0.85);
+        float lum = dot(col, vec3(0.299,0.587,0.114));
+        col = mix(col, vec3(lum), ghost*0.45);
+        col = mix(col, vec3(0.97,0.97,0.98), ghost*0.3 + smoothstep(0.45, 0.85, uProg)*0.4);
+      }
+      float vig = 1.0 - ghost*0.7;
+      col *= mix(1.0, mix(1.0, 0.58, vig), smoothstep(0.3, 1.0, vUv.x));
+      col *= mix(1.0, mix(1.0, 0.55, vig), smoothstep(0.70, 1.0, vUv.y));
+      col *= mix(1.0, mix(1.0, 0.62, vig), smoothstep(0.30, 0.0, vUv.y));
+      float a = (1.0 - smoothstep(0.38, 0.88, uProg)) * (1.0 - 0.22*ghost);
       gl_FragColor = vec4(col, a);
     }`
 });
