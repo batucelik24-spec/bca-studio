@@ -1850,7 +1850,7 @@ SITE.refresh = function(content){
    points stream in from outside the screen as the destination colour floods in,
    gather into the page name with a loose cloud around it, then fly to the page's own heading and dissolve into it */
 const DEST = { architecture:['#000000','#F5F5F7','Mimarlık'], studio:['#F5F5F7','#1D1D1F','Stüdyo'], home:['#FFFFFF','#1D1D1F','Merhaba'], project:['#000000','#F5F5F7','Mimarlık'] };
-const DEST_EL = { architecture:'#v-architecture .page-head h1', studio:'#v-studio .page-head h1', home:'#welcome h1', project:'#pd-title' };
+const DEST_EL = { architecture:'#v-architecture .page-head h1', studio:'#v-studio .page-head h1', home:'#stage-logo', project:'#pd-title' };
 const fx = document.createElement('canvas');
 fx.setAttribute('aria-hidden','true');
 Object.assign(fx.style, {position:'fixed', inset:'0', width:'100%', height:'100%', zIndex:'100', pointerEvents:'none', display:'none'});
@@ -1865,6 +1865,20 @@ function imagePalette(){
     for(let i=0;i<40;i++){ const o = (Math.floor(Math.random()*L.w*L.h))*4; out.push(`rgb(${L.data[o]},${L.data[o+1]},${L.data[o+2]})`); }
     return out;
   }catch(e){ return []; }
+}
+/* the BCA mark, drawn once from the page's own logo symbol, for the transition back home */
+const logoImg = new Image();
+(function(){ const sym = document.getElementById('bca-logo'); if(!sym) return;
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+sym.getAttribute('viewBox')+'" style="color:#000">'+sym.innerHTML.replace(/currentColor/g,'#000')+'</svg>';
+  logoImg.src = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); })();
+function logoPoints(W, H){
+  if(!logoImg.complete || !logoImg.naturalWidth) return [];
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d'), h = Math.min(H*0.38, 340), w = h*773/972;
+  x.drawImage(logoImg, W/2 - w/2, H/2 - h/2, w, h);
+  const d = x.getImageData(0,0,W,H).data, pts = [], step = Math.max(3, Math.round(h/95));
+  for(let y=0;y<H;y+=step) for(let xx=0;xx<W;xx+=step){ if(d[(y*W+xx)*4+3] > 128) pts.push({tx:xx, ty:y, sx:Math.random()*W, sy:Math.random()*H, r:Math.random()}); }
+  return pts;
 }
 function textPoints(label, W, H, color){
   const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -1900,7 +1914,8 @@ function navigate(h, ox, oy){
     return darkDest ? sat.map(v=>l < 0.3 ? v + (255-v)*0.45 : v) : sat.map(v=>v*(l > 0.7 ? 0.7 : 0.9));
   });
 
-  const targets = textPoints(label, W, H);
+  let targets = view === 'home' ? logoPoints(W, H) : [];
+  if(!targets.length) targets = textPoints(view === 'home' ? 'BCA' : label, W, H);
   const n = Math.round(Math.min(isPhone ? 4500 : 9000, W*H/120));
   const PTS = [];
   for(let i=0;i<n;i++){
@@ -1936,7 +1951,7 @@ function navigate(h, ox, oy){
       landing = {ok:false};
       const el = document.querySelector(DEST_EL[view]);
       if(el && targets.length){
-        const rg = document.createRange(); rg.selectNodeContents(el); const r = rg.getBoundingClientRect();
+        let r; if(view === 'home') r = el.getBoundingClientRect(); else { const rg = document.createRange(); rg.selectNodeContents(el); r = rg.getBoundingClientRect(); }
         let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
         for(const q of targets){ if(q.tx<a)a=q.tx; if(q.tx>b)b=q.tx; if(q.ty<c)c=q.ty; if(q.ty>d)d=q.ty; }
         if(r.width > 4 && r.bottom > 0 && r.top < H) landing = {ok:true, sx:a, sw:Math.max(1,b-a), sy:c, sh:Math.max(1,d-c), r};
