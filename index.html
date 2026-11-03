@@ -2009,8 +2009,17 @@ document.addEventListener('click', e=>{
 const stage = $('stage'), veil = $('welcome');
 let veilTimer = null;
 const lift = ()=>{ clearTimeout(veilTimer); veil.classList.add('gone'); };
-stage.addEventListener('pointerenter', e=>{ if(e.pointerType === 'mouse' && innerWidth > 760) lift(); });
-stage.addEventListener('pointerleave', e=>{ if(e.pointerType !== 'mouse' || innerWidth <= 760) return; veilTimer = setTimeout(()=>{ veil.classList.remove('gone'); target = 0; }, 1400); });
+/* on first load the greetings get a few turns before the pointer can open the stage */
+const VEIL_HOLD = 4200, veilFrom = performance.now();
+let pointerIn = false, veilWait = 0;
+const hoverLift = ()=>{
+  const left = VEIL_HOLD - (performance.now() - veilFrom);
+  if(left <= 0) return lift();
+  clearTimeout(veilWait); veilWait = setTimeout(()=>{ if(pointerIn) lift(); }, left);
+};
+stage.addEventListener('pointerenter', e=>{ if(e.pointerType === 'mouse' && innerWidth > 760){ pointerIn = true; hoverLift(); } });
+stage.addEventListener('pointermove', e=>{ if(e.pointerType === 'mouse' && innerWidth > 760 && !pointerIn){ pointerIn = true; hoverLift(); } });
+stage.addEventListener('pointerleave', e=>{ if(e.pointerType !== 'mouse' || innerWidth <= 760) return; pointerIn = false; clearTimeout(veilWait); veilTimer = setTimeout(()=>{ veil.classList.remove('gone'); target = 0; }, 1400); });
 veil.addEventListener('click', lift);
 /* "Merhaba" in many languages: each word rises in from below and leaves upward */
 (function hello(){
