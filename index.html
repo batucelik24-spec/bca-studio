@@ -1899,7 +1899,8 @@ function navigate(h, ox, oy){
   if(reduce || touchDevice){ location.hash = h; return; }
   navBusy = true;
   const view = viewOf(h), lightProj = view === 'project' && h[0] === 's', [bg, fg] = lightProj ? DEST.studio : DEST[view], darkDest = view === 'architecture' || (view === 'project' && !lightProj);
-  const label = view === 'project' ? ((PROJECTS[P(h.slice(2))] || {}).name || 'Mimarlık') : DEST[view][2];
+  const rawLabel = view === 'project' ? ((PROJECTS[P(h.slice(2))] || {}).name || 'Mimarlık') : DEST[view][2];
+  const label = window.BCA_I18N ? BCA_I18N.t(rawLabel) : rawLabel;   /* the word drawn in points follows the page language */
   const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio||1, 2);
   fx.width = W*dpr; fx.height = H*dpr; fctx.setTransform(dpr,0,0,dpr,0,0); fx.style.display = 'block';
   if(ox == null){ ox = W/2; oy = H/2; }
