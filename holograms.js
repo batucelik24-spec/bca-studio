@@ -1,521 +1,140 @@
-/* BCA — reference-led schematic 3D reconstructions, not construction models.
- * Every object below has XYZ surfaces. No photograph, alpha silhouette or
- * luminance depth is used by the renderer. Reference notes: holograms-notes.md.
- */
-(function () {
+/* Project-specific XYZ reconstructions, rendered only as particles. */
+(function(){
   'use strict';
-  const T = window.THREE;
-  document.documentElement.dataset.holoLibrary=T?'ready':'three-missing';
-  if (!T) return;
-  const TAU = Math.PI * 2, V = (x,y,z) => new T.Vector3(x,y,z);
-  const surface = new T.MeshPhongMaterial({color:0x135969,emissive:0x042733,shininess:65,side:T.DoubleSide});
-  const glass = new T.MeshPhongMaterial({color:0x125364,emissive:0x031c25,transparent:true,opacity:.28,depthWrite:false,side:T.DoubleSide});
-  const bright = new T.MeshPhongMaterial({color:0x48d7e5,emissive:0x104655,shininess:80});
-  const edge = new T.LineBasicMaterial({color:0x62e6ff,transparent:true,opacity:.72});
-  const fine = new T.LineBasicMaterial({color:0x42c9e2,transparent:true,opacity:.36});
-  function mesh(g,geo,mat=surface,edges=true) {
-    const m = new T.Mesh(geo,mat);g.add(m);
-    if(edges) m.add(new T.LineSegments(new T.EdgesGeometry(geo,25),edge));
-    return m;
-  }
-  function box(g,x,y,z,w,h,d,mat=surface) {const m=mesh(g,new T.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);return m;}
-  function line(g,pts,mat=edge,closed=false) {const l=new (closed?T.LineLoop:T.Line)(new T.BufferGeometry().setFromPoints(pts.map(p=>Array.isArray(p)?V(...p):p)),mat);g.add(l);return l;}
-  function beam(g,a,b,r=.018,mat=bright) {a=V(...a);b=V(...b);const m=mesh(g,new T.CylinderGeometry(r,r,a.distanceTo(b),5),mat,false);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(V(0,1,0),b.sub(a).normalize());return m;}
-  function cylinder(g,x,y,z,r,h,mat=surface,segments=48) {const m=mesh(g,new T.CylinderGeometry(r,r,h,segments),mat);m.position.set(x,y,z);return m;}
-  function panel(g,pts,thick=.05) {const s=new T.Shape();pts.forEach((p,i)=>i?s.lineTo(...p):s.moveTo(...p));s.closePath();return mesh(g,new T.ExtrudeGeometry(s,{depth:thick,bevelEnabled:false,curveSegments:24}));}
-  function gridSurface(g,fn,nu=32,nv=16,mat=surface) {
-    const pos=[],idx=[];
-    for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++)pos.push(...fn(i/nu,j/nv));
-    for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){const a=j*(nu+1)+i,b=a+1,c=a+nu+1;idx.push(a,c,b,b,c,c+1);}
-    const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();mesh(g,geo,mat,false);
-    for(let j=0;j<=nv;j+=2)line(g,Array.from({length:nu+1},(_,i)=>fn(i/nu,j/nv)),fine);
-    for(let i=0;i<=nu;i+=2)line(g,Array.from({length:nv+1},(_,j)=>fn(i/nu,j/nv)),fine);
-  }
-  function ellipse(g,a,b,y,mat=edge) {line(g,Array.from({length:128},(_,i)=>[a*Math.cos(i*TAU/128),y,b*Math.sin(i*TAU/128)]),mat,true);}
-  function rectRing(g,w,d,y) {line(g,[[-w/2,y,-d/2],[w/2,y,-d/2],[w/2,y,d/2],[-w/2,y,d/2]],edge,true);}
-  const makers={};
-
-  makers.AUL=function(g){
-    // Ankara University laboratory rig: the supplied overall, reverse and detail
-    // renders define the frame, two loading axes, wall specimen and measuring frame.
-    // A schematic XYZ reconstruction, sampled by the existing point-cloud renderer.
-    const steelColumn=(x,y,z,h,w=.35,d=.42)=>{
-      box(g,x,y,z,.055,h,d);
-      for(const side of [-1,1])box(g,x+side*w/2,y,z,.045,h,d);
-      for(let yy=y-h/2+.18;yy<y+h/2;yy+=.46)box(g,x,yy,z,w,.035,d);
-    };
-    const steelBeam=(x,y,z,w,h=.38,d=.42)=>{
-      box(g,x,y,z,w,h,.045);
-      for(const side of [-1,1])box(g,x,y+side*h/2,z,w,.045,d);
-      for(let xx=x-w/2+.18;xx<x+w/2;xx+=.52)box(g,xx,y,z,.035,h,d);
-    };
-    steelBeam(0,.18,0,4.8,.36,.5);
-    steelBeam(0,3.32,0,4.55,.42,.5);
-    for(const x of [-2.22,2.22]){
-      steelColumn(x,1.89,0,3.4);
-      box(g,x,-.02,0,.58,.06,1.52);
-      for(const z of [-.69,.69])box(g,x,.05,z,.58,.14,.045);
-      box(g,x,.39,0,.62,.055,.62);
-      box(g,x,3.33,0,.09,.66,.58);
-      for(const yy of [.42,3.07,3.58])for(const z of [-.23,.23]){
-        cylinder(g,x+.18,yy,z,.025,.07,bright,6);
-        cylinder(g,x-.18,yy,z,.025,.07,bright,6);
-      }
-      const inward=x<0?1:-1;
-      const gusset=panel(g,[[x,2.98],[x+inward*.43,2.98],[x,2.65]],.035);
-      gusset.position.z=.22;
-    }
-    // Concrete plinth, layered wall and load spreader, with a clear gap to the head.
-    box(g,.12,.49,0,1.62,.23,.57);
-    for(let layer=0;layer<25;layer++)box(g,.12,.64+layer*.057,0,1.48,.05,.26,glass);
-    for(const x of [-.53,.77]){
-      beam(g,[x,.59,.25],[x,.35,.25],.025);
-      cylinder(g,x,.61,.25,.042,.045,bright,6);
-    }
-    steelBeam(.12,2.19,0,1.65,.19,.35);
-    for(let i=0;i<14;i++){
-      const roller=cylinder(g,-.62+i*.115,2.075,0,.022,.32,bright,10);
-      roller.rotation.x=Math.PI/2;
-    }
-    // Vertical ram through the upper beam and horizontal actuator tied to the column.
-    cylinder(g,.12,3.51,0,.105,.52,bright,20);
-    cylinder(g,.12,2.92,0,.06,.5,bright,16);
-    cylinder(g,.12,2.57,0,.095,.17,surface,20);
-    beam(g,[.12,2.48,0],[.12,2.3,0],.04);
-    box(g,-2.22,2.01,0,.10,.49,.68);
-    beam(g,[-2.14,2.01,0],[-1.65,2.01,0],.12);
-    beam(g,[-1.65,2.01,0],[-.66,2.01,0],.042);
-    for(const x of [-1.99,-1.5])box(g,x,2.01,0,.04,.31,.31);
-    for(const y of [1.88,2.14])for(const z of [-.13,.13])beam(g,[-2,y,z],[-1.48,y,z],.014);
-    box(g,-.68,2.01,0,.08,.16,.26);
-    // Independent displacement frame, side gauges and crossed specimen gauges.
-    steelColumn(1.35,1.21,.10,1.55,.17,.24);
-    box(g,1.35,.46,.1,.39,.05,.45);
-    for(const y of [.72,1.82]){
-      beam(g,[.9,y,.21],[1.35,y,.21],.009);
-      box(g,1.09,y,.21,.19,.04,.04,bright);
-    }
-    for(const x of [-.53,.77]){
-      beam(g,[x,.63,.19],[x,1.01,.19],.009);
-      box(g,x,.86,.19,.04,.18,.045,bright);
-    }
-    line(g,[[-.49,.77,.15],[.72,1.92,.15]],fine);
-    line(g,[[.72,.77,.15],[-.49,1.92,.15]],fine);
-    // Camera and three lighting stands occupy the space in front of the specimen.
-    const tripod=(x,z,h)=>{
-      beam(g,[x,.06,z],[x,h,z],.014);
-      for(let leg=0;leg<3;leg++){
-        const a=leg*TAU/3;
-        beam(g,[x,h*.42,z],[x+.22*Math.cos(a),.02,z+.22*Math.sin(a)],.009);
-      }
-    };
-    tripod(0,.93,1.12);box(g,0,1.14,.93,.16,.105,.09,bright);
-    for(const [x,z,h] of [[-.76,.81,1.4],[.71,.84,1.25],[-.38,1.02,1.12]]){
-      tripod(x,z,h);
-      const disk=cylinder(g,x,h+.11,z,.115,.014,glass,24);disk.rotation.x=Math.PI/2;
-    }
-    box(g,-2.89,.48,.12,.46,.96,.42);
-    box(g,-2.89,.99,.17,.56,.045,.5);
-    box(g,-2.89,1.11,.12,.29,.21,.025,glass);
-    line(g,[[-1.8,1.85,.02],[-1.95,.3,.15],[-2.5,.03,.36],[-2.89,.2,.36]],fine);
-  };
-
-  makers.HUB=function(g){
-    // MİM 402 plans, elevations and plaza/corner renders: a gently curved civic
-    // bar, four occupied levels, screened bays, terrace voids and public stairs.
-    // Geometry is sampled by the existing point-cloud / top-down scan renderer.
-    const curve=x=>.22-.036*x*x, floor=.44, depth=.72;
-    for(let level=0;level<=4;level++){
-      const y=level*floor;
-      gridSurface(g,(u,v)=>{const x=(u-.5)*6;return [x,y,curve(x)+(v-.5)*(depth+.12)];},40,2);
-    }
-    for(let bay=0;bay<=12;bay++){
-      const x=-3+bay*.5;
-      for(const side of [-1,1])cylinder(g,x,.86,curve(x)+side*depth*.39,.024,1.72,bright,8);
-    }
-    for(let level=1;level<4;level++){
-      for(let bay=0;bay<30;bay++){
-        const x=-2.9+bay*.2, terrace=(bay+level*3)%10<3;
-        if(terrace){
-          // Set-back glazing and open terrace: preserve the void in the front screen.
-          if(bay%3===0)box(g,x,(level+.5)*floor,curve(x)+.10,.18,.38,.015,glass);
-          continue;
-        }
-        for(const side of [-1,1]){
-          const z=curve(x)+side*(depth/2+.015);
-          box(g,x,(level+.5)*floor,z,.188,.39,.015,glass);
-          for(let rib=0;rib<3;rib++)beam(g,[x-.06+rib*.06,level*floor+.025,z],[x-.06+rib*.06,(level+1)*floor-.025,z],.005);
-        }
-      }
-    }
-    // The council chamber sits within the bar; the round conference volume is separate.
-    cylinder(g,1.45,.67,curve(1.45),.28,.95,glass,36);
-    cylinder(g,-2.6,.34,-1.3,.57,.68,glass,48);
-    for(const y of [.02,.34,.68]){
-      line(g,Array.from({length:64},(_,i)=>[-2.6+.59*Math.cos(i*TAU/64),y,-1.3+.59*Math.sin(i*TAU/64)]),edge,true);
-    }
-    // Broad stepped public approach and an elevated route returning to the bar.
-    for(let step=0;step<14;step++)box(g,-.9+step*.035,(step+1)*floor/28,-1.55+step*.063,.62,.022,.068,bright);
-    gridSurface(g,(u,v)=>[-.44+u*1.8,floor*.5+u*floor*.5,-.76+(v-.5)*.21],24,2,bright);
-    line(g,[[-1.2,.02,-1.8],[-1.2,.02,-.5],[1.6,.02,-.5],[2.8,.02,-1.7]],edge);
-    line(g,[[-3.6,-.04,-2.0],[3.4,-.04,-2.0],[3.4,-.04,.85],[-3.6,-.04,.85]],fine,true);
-  };
-
-  makers.PCE=function(g){
-    // The interface is presented on a phone: sample its frame, screen and controls in XYZ.
-    const w=1.65,h=3.4,r=.22,s=new T.Shape();
-    s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);
-    s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);
-    s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);
-    const frame=mesh(g,new T.ExtrudeGeometry(s,{depth:.13,bevelEnabled:true,bevelSize:.035,bevelThickness:.025,bevelSegments:3,curveSegments:16}));frame.position.z=-.065;
-    box(g,0,0,.09,1.47,3.12,.012,glass);
-    box(g,0,1.37,.12,.47,.11,.025,bright);
-    box(g,0,-1.35,.12,.48,.026,.016,bright);
-    box(g,-.84,.67,0,.045,.32,.07,bright);box(g,.84,.48,0,.045,.46,.07,bright);
-    box(g,-.34,.65,.12,.58,.14,.014,bright);box(g,0,-.76,.12,1.2,.28,.018,bright);
-    for(let j=0;j<3;j++)box(g,0,-.18-j*.17,.12,1.15,.025,.018,bright);
-  };
-
-  makers.BDP=function(g){
-    // Six cylindrical speaker chambers, 3 across × 2 high, black end grilles, on a single pole with a round foot.
-    for(let row=0;row<2;row++)for(let col=0;col<3;col++){
-      const x=(col-1)*.84,y=(row-.5)*.84;
-      const m=mesh(g,new T.CylinderGeometry(.42,.42,2.0,64),surface);m.rotation.x=Math.PI/2;m.position.set(x,y,0);
-      for(const z of [-1.0,1.0]){
-        const disk=mesh(g,new T.CircleGeometry(.4,48),glass,false);disk.position.set(x,y,z);
-        const ring=mesh(g,new T.TorusGeometry(.4,.02,6,64),bright,false);ring.position.set(x,y,z);
-        for(let k=-5;k<=5;k++){const xx=k*.066,yy=Math.sqrt(.36*.36-xx*xx);line(g,[[x+xx,y-yy,z],[x+xx,y+yy,z]],fine);}
-      }
-    }
-    cylinder(g,0,-2.35,0,.07,3.1,bright,16);                          // pole
-    cylinder(g,0,-3.9,0,.85,.06,surface,64);                          // round foot
-    box(g,0,-.95,0,.5,.12,.5);                                        // mount
-  };
-
-  makers.ABR=function(g){
-    // Open through-cells. One ellipse intersected by the central cross, plus perimeter cells.
-    const depth=1.25,t=.045;
-    for(const y of [-.93,-.56,0,.56,.93])box(g,0,y,0,3.08,t,depth);
-    for(const x of [-1.52,1.52])box(g,x,0,0,t,1.9,depth);
-    for(const x of [-1.02,1.02])box(g,x,0,0,t,1.86,depth);
-    box(g,0,0,0,t,1.86,depth);
-    for(const x of [-.51,.51])for(const y of [-.745,.745])box(g,x,y,0,t,.37,depth);
-    // Extruded elliptical annulus: hollow all the way to the back face.
-    const s=new T.Shape();s.absellipse(0,0,1.055,.57,0,TAU,false,0);
-    const hole=new T.Path();hole.absellipse(0,0,1.012,.527,0,TAU,true,0);s.holes.push(hole);
-    const ring=mesh(g,new T.ExtrudeGeometry(s,{depth,bevelEnabled:false,curveSegments:80}));ring.position.z=-depth/2;
-    for(const x of [-1.55,1.55])for(let z=-.55;z<=.55;z+=.105)beam(g,[x,-.91,z],[x,.91,z],.007,bright);
-  };
-
-  makers.WA=function(g){
-    const h=5.7,fh=h/19,w=1.25;
-    for(let i=0;i<=19;i++){
-      const y=i*fh;
-      if(i>=4&&i<=6){
-        // Opposite triangular plates leave the documented diagonal urban passage open.
-        for(const sign of [-1,1]){const slab=panel(g,[[sign*.625,-.625],[sign*.625,sign*.625],[-sign*.28,-sign*.625]],.035);slab.rotation.x=-Math.PI/2;slab.position.y=y;}
-      }else box(g,0,y,0,w,.028,w);
-    }
-    for(const x of [-.625,.625])for(const z of [-.625,.625])beam(g,[x,0,z],[x,h,z],.028);
-    for(let side=0;side<4;side++){
-      const wall=new T.Group();wall.rotation.y=side*Math.PI/2;g.add(wall);
-      for(let bay=0;bay<3;bay++){
-        const x=-.625+bay*w/3;
-        beam(wall,[x,0,.64],[x,h,.64],.011);
-        for(let i=0;i<18;i+=3){const lo=i*fh,hi=Math.min(h,(i+3)*fh);beam(wall,[x,lo,.65],[x+w/3,hi,.65],.016);beam(wall,[x+w/3,lo,.65],[x,hi,.65],.016);}
-      }
-      // Perforated diagonal facade band represented by its real segmented frame.
-      for(let i=0;i<19;i++){const x=.49*Math.sin((i/19)*TAU+side*1.5);box(wall,x,(i+.5)*fh,.66,.20,fh*.88,.025,glass);}
-    }
-    for(const y of [3*fh,7*fh])box(g,0,y,0,1.63,.055,1.63);
-    box(g,0,-.12,0,1.75,.14,1.75);
-  };
-
-  function archOutline(g,width,height,x,y,z,pointed=false){
-    const pts=[[x-width/2,y,z],[x-width/2,y+height*.55,z]];
-    for(let i=0;i<=24;i++){const t=i/24*Math.PI;pts.push([x-width/2*Math.cos(t),y+height*.55+height*.45*(pointed?1-Math.abs(Math.cos(t)):Math.sin(t)),z]);}
-    pts.push([x+width/2,y,z]);line(g,pts,edge);
-    for(let i=1;i<pts.length;i++)beam(g,pts[i-1],pts[i],.018);
-  }
-  makers.ALT=function(g){
-    const fh=.235,h=24*fh;
-    for(let i=0;i<=24;i++)box(g,0,i*fh,0,i<7?1.4:1.27,.025,i<7?1.15:1.02);
-    for(let side=0;side<4;side++){
-      const wall=new T.Group();wall.rotation.y=side*Math.PI/2;g.add(wall);
-      for(const x of [-.64,0,.64])beam(wall,[x,0,.55],[x,h,.55],.018);
-      for(let i=7;i<21;i++)for(let j=0;j<6;j++)box(wall,-.54+j*.215,(i+.5)*fh,.525,.014,fh,.025,bright);
-      for(let i=0;i<20;i+=4){beam(wall,[-.64,i*fh,.535],[.64,(i+4)*fh,.535],.017);beam(wall,[.64,i*fh,.535],[-.64,(i+4)*fh,.535],.017);}
-      for(const x of [-.36,.36])archOutline(wall,.59,.72,x,20.8*fh,.56);
-      for(let i=0;i<3;i++)for(const x of [-.48,0,.48])archOutline(wall,.3,fh*.85,x,i*fh,.59);
-    }
-    box(g,0,h+.05,0,1.38,.1,1.13);box(g,0,-.1,0,1.65,.15,1.4);
-  };
-
-  function superPoint(t,a,b,n=3){return [a*Math.sign(Math.cos(t))*Math.pow(Math.abs(Math.cos(t)),2/n),b*Math.sign(Math.sin(t))*Math.pow(Math.abs(Math.sin(t)),2/n)];}
-  function stadium(g,kind){
-    const tas=kind==='TAS',n=tas?3.4:2.6,a=2.5,b=1.95;
-    // Open bowl: terraces follow the actual rounded-rectangular plan, not a filled disc.
-    for(let tier=0;tier<15;tier++){
-      const r=.49+tier*.026,y=.12+tier*.047;
-      gridSurface(g,(u,v)=>{const p=superPoint(u*TAU,a,b,n);return [p[0]*(r+v*.024),y,p[1]*(r+v*.024)];},96,1);
-    }
-    box(g,0,.04,0,2.15,.035,1.3,glass);rectRing(g,2.1,1.26,.065);line(g,[[0,.066,-.63],[0,.066,.63]],edge);ellipse(g,.20,.20,.07);
-    // Roof annulus with true central opening and an asymmetric wind-shaped Al-Jazira edge.
-    gridSurface(g,(u,v)=>{const t=u*TAU,r=.53+v*.48,p=superPoint(t,a,b,n),wave=tas?0:.07*Math.sin(t*3+.8);return [p[0]*r,1.02+.12*Math.sin(v*Math.PI)+wave,p[1]*r];},128,10);
-    if(tas){
-      // Pointed portals repeat around the full perimeter, including the back elevation.
-      const count=56;
-      for(let i=0;i<count;i++){
-        const t=i/count*TAU,p=superPoint(t,a,b,n),next=superPoint((i+.15)/count*TAU,a,b,n);
-        const bay=new T.Group();bay.position.set(p[0],.06,p[1]);bay.rotation.y=Math.atan2(next[0]-p[0],next[1]-p[1])+Math.PI/2;g.add(bay);
-        archOutline(bay,.21,.89,0,0,0,true);box(bay,-.13,.49,0,.045,.98,.09);
-      }
-    }else{
-      // Continuous layered facade bands and fine radial fins seen in model and axonometric.
-      for(const y of [.18,.40,.67,.89])gridSurface(g,(u,v)=>{const t=u*TAU,p=superPoint(t,a*(.97+.018*Math.sin(t*3)),b,n);return [p[0],y+v*.075+.075*Math.sin(t*3+.8),p[1]];},128,1);
-      for(let i=0;i<104;i++){const t=i/104*TAU,p=superPoint(t,a,b,n);beam(g,[p[0]*.96,.28,p[1]*.96],[p[0],1.04+.07*Math.sin(t*3+.8),p[1]],.012);}
-    }
-    const base=cylinder(g,0,-.04,0,2.5,.07,glass);base.scale.z=.79;
-  }
-  makers.TAS=g=>stadium(g,'TAS');makers.ALJ=g=>stadium(g,'ALJ');
-
-  makers.OPR=function(g){
-    // Two tent-like roof wings. Each rises to a single sharp peak on its inner edge at mid-depth and falls
-    // concavely to low eaves on every other side; the wings are split by a daylight slot that widens upward.
-    // Two oval auditoria sit under the wings; lattice glass walls line the slot.
-    const Lx=2.9,Lz=1.7,Hp=2.25,eave=.32,pw=4.5;
-    for(const side of [-1,1]){
-      const roof=(u,v,off=0)=>{
-        const a=(v-.5)*Math.PI,ca=Math.cos(a),sa=Math.sin(a);
-        const ex=Math.sign(ca)*Math.pow(Math.abs(ca),2/pw),ez=Math.sign(sa)*Math.pow(Math.abs(sa),2/pw);
-        const rho=u,lean=.10*(1-rho);
-        const x=side*(.12+lean+Lx*ex*rho),z=Lz*ez*rho;
-        const y=eave+(Hp-eave)*Math.pow(1-rho,1.6)+.05*Math.pow(Math.max(0,rho-.82)/.18,2)+off;
-        return [x,y,z];
-      };
-      gridSurface(g,(u,v)=>roof(u,v),28,40);
-      gridSurface(g,(u,v)=>roof(u,v,-.05),20,28);
-      gridSurface(g,(v,k)=>roof(1,v,-.05*k),40,1);                    // eave edge thickness
-      // oval auditorium under each wing
-      const hall=cylinder(g,side*1.25,.42,0,.62,.72,glass,64);hall.scale.z=1.45;
-      ellipse(g,.62,.62*1.45,.78);
-      // lattice glass wall following the slot, from the floor up to the roof's inner edge
-      const wall=(u,v)=>{const p=roof(u*.0+.02,.02+v*.96);return [side*.16,v<0?0:u*p[1]*.96,p[2]];};
-      gridSurface(g,(u,v)=>{const p=roof(.02,.04+u*.92);return [side*(.16+.05*Math.sin(u*Math.PI)),v*p[1]*.95,p[2]];},18,10,glass);
-      for(let i=0;i<=8;i++){const p=roof(.02,.04+i/8*.92);beam(g,[side*.17,0,p[2]],[side*.17,p[1]*.95,p[2]],.012);}
-      for(let i=0;i<=10;i++){const p=roof(1,i/10);beam(g,[p[0],.06,p[2]],[p[0],p[1],p[2]],.014);}   // eave columns
-    }
-    box(g,0,0,0,6.4,.08,4.1);                                        // podium
-    box(g,0,.06,0,.2,.03,3.6,bright);                                // slot axis
-  };
-
-  makers.STC=function(g){
-    // Separate tapered research wings, connecting concourse, central circular auditorium.
-    box(g,0,.12,0,4.7,.12,3.7,glass);
-    const wing=(x,z,angle,len,rise)=>{
-      const w=new T.Group();w.position.set(x,0,z);w.rotation.y=angle;g.add(w);
-      box(w,0,.26,0,len,.35,.68,glass);
-      const shape=[[-len/2,.42],[-len/2-.30,.93],[-len/2-.14,rise],[len/2,rise*.69],[len/2,.48]];
-      const side=panel(w,shape,.07);side.position.z=-.51;
-      const back=panel(w,shape,.07);back.position.z=.44;
-      // Sloped solid roof joins both elevations in depth.
-      gridSurface(w,(u,v)=>[-len/2-.14+u*(len+.14),rise*(1-u*.31),-.51+v*1.02],20,6);
-      for(let i=0;i<7;i++){const xx=-len/2+i*len/6;beam(w,[xx,.49,.52],[xx,rise*(1-(i/6)*.31),.52],.013);}
-      // Branching diagonal facade structure, based on curved-window studies.
-      for(const sign of [-1,1])for(let i=0;i<4;i++)beam(w,[-len/2+.12,.5,sign*.535],[-len/2+.42+i*.3,rise*(.92-i*.10),sign*.535],.032);
-    };
-    wing(-1.15,.9,-.3,2.45,1.35);wing(1.1,-.9,.3,2.7,1.7);
-    box(g,0,.36,0,1.45,.3,.8,glass);cylinder(g,.9,.38,1,.52,.46);ellipse(g,.52,.52,.62);
-    for(let i=0;i<16;i++){const t=i*TAU/16;beam(g,[.9+.5*Math.cos(t),.18,1+.5*Math.sin(t)],[.9+.5*Math.cos(t),.63,1+.5*Math.sin(t)],.012);}
-  };
-
-  makers.SOC=function(g){
-    // Eleven-storey block on a podium: a tower of framed bay windows on the right, a wing on the left whose
-    // glazed terraces step back as it rises, and a cantilevered glazed band bridging both near the top.
-    const fh=.29,n=11;
-    box(g,0,-.16,0,3.1,.32,2.1);                                     // podium / garage plinth
-    for(let i=0;i<=n;i++){
-      const y=i*fh;
-      box(g,.72,y,0,1.5,.035,1.7);                                     // tower slabs
-      if(i<n)for(let k=0;k<4;k++){
-        if((i+k)%2===0||i>7){box(g,.16+k*.37,y+.14,.9,.28,.22,.12,glass);}
-        const fx=.16+k*.37;line(g,[[fx-.15,y+.02,.97],[fx+.15,y+.02,.97],[fx+.15,y+.27,.97],[fx-.15,y+.27,.97]],edge,true);
-        const fz=-.6+k*.4;line(g,[[1.5,y+.02,fz-.15],[1.5,y+.02,fz+.15],[1.5,y+.27,fz+.15],[1.5,y+.27,fz-.15]],edge,true);
-        if((i+k)%2===1)box(g,1.53,y+.14,fz,.1,.22,.28,glass);
-      }
-      if(i<=7){                                                      // left wing: terraces step back upward
-        const x0=-1.45+i*.07,w=-x0;
-        box(g,x0+w/2,y,.05,w,.035,1.55);
-        box(g,x0+w/2+.08,y+.14,-.05,w-.16,.25,1.25,glass);
-        line(g,[[x0,y+.11,.8],[0,y+.11,.8]],edge);line(g,[[x0,y+.11,-.7],[x0,y+.11,.8]],edge);
-        for(let j=0;j<6;j++)beam(g,[x0+j*w/5,y,.8],[x0+j*w/5,y+.11,.8],.005);
-      }
-    }
-    // cantilevered glazed band across floors 7–8, fins all round
-    box(g,-.05,2.32,.1,2.3,.04,1.7);box(g,-.05,2.9,.1,2.3,.04,1.7);
-    box(g,-.05,2.61,.1,2.2,.54,1.6,glass);
-    for(let j=0;j<=16;j++){const x=-1.2+j*2.3/16;beam(g,[x,2.32,.95],[x,2.9,.95],.008);}
-    box(g,1.0,3.35,-.35,.9,.9,.9);                                   // stair/lift crown
-  };
-
-  makers.DYF=function(g){
-    // Actual suspended pivot panels, each with thickness and an independent yaw.
-    box(g,0,1.2,-.28,3.6,2.6,.1,glass);
-    for(let col=0;col<14;col++){
-      const x=-1.69+col*.26;beam(g,[x,-.1,.05],[x,2.7,.05],.009);
-      for(let row=0;row<9;row++){
-        const pivot=new T.Group();pivot.position.set(x,.1+row*.29,.1);pivot.rotation.y=Math.sin(col*.65+row*.45)*.9;g.add(pivot);
-        box(pivot,0,0,0,.235,.255,.045,(row+col)%3===0?glass:surface);
-        if(!g.userData.panels)g.userData.panels=[];g.userData.panels.push({pivot,phase:col*.65+row*.45});
-      }
-    }
-    for(const y of [-.03,2.7])box(g,0,y,.03,3.75,.06,.25);
-  };
-
-  makers.HMP=function(g){
-    // Modular kiosk with open service front, folded canopy, hinged side wall.
-    box(g,0,.02,0,2.9,.08,1.9);box(g,0,1.95,0,2.9,.08,1.9);
-    for(const x of [-1.45,1.45])for(const z of [-.95,.95])beam(g,[x,0,z],[x,2,z],.025);
-    for(let i=0;i<6;i++)for(let j=0;j<4;j++)box(g,-1.2+i*.48,.27+j*.48,-.94,.46,.46,.07);
-    for(const x of [-1.45,1.45])for(let i=0;i<4;i++)for(let j=0;j<4;j++)box(g,x,.27+j*.48,-.72+i*.48,.06,.46,.46);
-    box(g,0,.58,.84,2.3,.12,.53);box(g,0,.31,.88,2.3,.51,.1,glass);
-    const canopy=new T.Group();canopy.position.set(0,1.7,.95);canopy.rotation.x=-.12;g.add(canopy);
-    for(let i=0;i<6;i++)for(let j=0;j<3;j++)box(canopy,-1.2+i*.48,0,.24+j*.48,.46,.055,.46,glass);
-    for(const x of [-1.35,1.35])beam(g,[x,.92,.95],[x,1.68,2.3],.012);
-    const hinge=new T.Group();hinge.position.set(1.48,0,-.92);hinge.rotation.y=-.65;g.add(hinge);
-    for(let i=0;i<4;i++)for(let j=0;j<4;j++)box(hinge,.24+i*.48,.27+j*.48,0,.46,.46,.06,glass);
-  };
-
-  makers.CBR=function(g){
-    // Sinuous island bar, rippled perimeter screen, checker cube stools.
-    const curve=new T.CatmullRomCurve3([V(-1.7,.85,.5),V(-1,.85,-.65),V(.2,.85,-.75),V(1.4,.85,-.1),V(.7,.85,.65),V(-.2,.85,.3)],false,'catmullrom',.5);
-    const pts=curve.getPoints(100);
-    const outline=[];for(let i=0;i<pts.length;i++){const dir=curve.getTangent(i/100);outline.push([pts[i].x+dir.z*.25,pts[i].z-dir.x*.25]);}
-    for(let i=pts.length-1;i>=0;i--){const dir=curve.getTangent(i/100);outline.push([pts[i].x-dir.z*.25,pts[i].z+dir.x*.25]);}
-    const counter=panel(g,outline,.75);counter.rotation.x=Math.PI/2;counter.position.y=.87;
-    line(g,pts,edge);const plinth=cylinder(g,0,.04,0,2.25,.08);plinth.scale.z=.82;
-    for(const [x,z] of [[-1.25,1.0],[-.35,1.25],[.65,1.2],[1.55,.75]]){
-      box(g,x,.25,z,.4,.4,.4,glass);for(let i=0;i<4;i++)for(let j=0;j<4;j++)if((i+j)%2===0)box(g,x-.15+i*.1,.455,z-.15+j*.1,.1,.008,.1,bright);
-    }
-    for(let i=0;i<64;i++){const t=.2+i/63*Math.PI*1.45,x=2.25*Math.cos(t),z=1.8*Math.sin(t);beam(g,[x,.1,z],[x,2.15+.08*Math.sin(t*4),z],.008);}
-  };
-
-  makers.OVS=function(g){
-    // Cutaway room: blue wall rhythm, red coffered ceiling and central cube installation.
-    box(g,0,0,0,4.4,.12,3.4);
-    box(g,0,1.15,-1.65,4.4,2.3,.06,glass);box(g,-2.17,1.15,0,.06,2.3,3.3,glass);
-    for(let i=0;i<11;i++)beam(g,[-2.1+i*.42,0,-1.60],[-2.1+i*.42,2.3,-1.6],.012);
-    // Ceiling frame kept open as a cutaway so the interior remains readable on rotation.
-    for(const z of [-1.5,0,1.5])box(g,0,2.35,z,4.4,.15,.12);
-    for(const x of [-2.1,0,2.1])box(g,x,2.35,0,.12,.15,3.1);
-    for(const [x,z,h] of [[-.7,0,.6],[0,-.35,.75],[.6,.1,.56],[-.25,.6,.38],[.85,-.5,.62],[-1,.6,.22],[1,.7,.2]])box(g,x,h/2+.09,z,.48,h,.48);
-    // The headphones are the designed display object, without reconstructing the photographic peacock.
-    const band=mesh(g,new T.TorusGeometry(.18,.017,6,36,Math.PI),bright,false);band.position.set(0,1.03,-.35);
-    for(const x of [-.18,.18])box(g,x,.99,-.35,.06,.14,.09,bright);
-  };
-
-  makers.HKK=function(g){
-    // Withdrawn room: two curtained drums, a round rug, ring lamps overhead and a back screen with the ink tree.
-    box(g,0,0,0,4.4,.1,3.6);
-    box(g,0,1.2,-1.75,4.4,2.4,.06,glass);
-    box(g,0,1.15,-1.68,1.0,1.4,.03,bright);
-    for(const [x,z] of [[-1.45,-.75],[1.45,-.75]]){
-      cylinder(g,x,1.0,z,.55,2.0);
-      for(let i=0;i<28;i++){const a=i/28*Math.PI*2,r=.57+.03*Math.sin(i*2.3);beam(g,[x+r*Math.cos(a),.12,z+r*Math.sin(a)],[x+r*Math.cos(a),2.0,z+r*Math.sin(a)],.006);}
-    }
-    const rug=cylinder(g,0,.07,.25,1.05,.03);rug.scale.z=.55;
-    for(const [y,r,x] of [[2.25,.62,-.35],[2.1,.45,.45],[2.35,.35,.1]]){const ring=mesh(g,new T.TorusGeometry(r,.014,6,48),bright,false);ring.rotation.x=Math.PI/2;ring.position.set(x,y,.1);}
-    for(const [x,z,w] of [[-1.5,1.1,.9],[1.3,1.25,1.0]]){box(g,x,.42,z,w,.06,.22);for(const dx of [-w/2+.08,w/2-.08])beam(g,[x+dx,.1,z],[x+dx,.42,z],.02);}
-    for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2,r=.2+Math.random()*.5;beam(g,[1.9,.2,1.3],[1.9+r*Math.cos(a)*.6,.9+Math.random()*1.2,1.3+r*Math.sin(a)*.6],.004);}
-  };
-
-  const cache=new Map();
+  const T=window.THREE,library=window.BCAHologramModels;
+  if(!T||!library)return;
+  const {makers,views}=library,cache=new Map(),particleCache=new Map(),depthCache=new Map();
   function model(code){
     if(cache.has(code))return cache.get(code);
     if(!makers[code])return null;
     const g=new T.Group();makers[code](g);g.updateMatrixWorld(true);
     const bb=new T.Box3().setFromObject(g),center=bb.getCenter(new T.Vector3()),size=bb.getSize(new T.Vector3());
-    const scale=3.2/Math.max(size.x,size.y,size.z);
-    const pivot=new T.Group();g.position.copy(center).multiplyScalar(-scale);g.scale.setScalar(scale);pivot.add(g);
-    pivot.userData={sourceModel:g,extent:[size.x,size.y,size.z],code};cache.set(code,pivot);return pivot;
+    const scale=3.2/Math.max(size.x,size.y,size.z),root=new T.Group();
+    g.position.copy(center).multiplyScalar(-scale);g.scale.setScalar(scale);root.add(g);root.updateMatrixWorld(true);
+    root.userData={sourceModel:g,extent:size.toArray(),code};cache.set(code,root);return root;
   }
-  let renderer;
-  function getRenderer(){if(!renderer){renderer=new T.WebGLRenderer({alpha:false,antialias:true,powerPreference:'low-power'});renderer.setClearColor(0x020b12);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.domElement.className='holo';renderer.domElement.setAttribute('aria-hidden','true');}return renderer;}
-  const particleCache=new Map();
-  function particles(code){
-    if(particleCache.has(code))return particleCache.get(code);
-    const root=model(code);if(!root)return null;root.rotation.set(0,0,0);root.updateMatrixWorld(true);
-    // Area-weighted sampling of actual XYZ triangles, on front, back and inner walls.
-    // This replaces raster sampling completely; rotations reveal distinct surfaces.
-    const triangles=[],weights=[];let total=0;
-    root.traverse(o=>{if(!o.isMesh)return;const geo=o.geometry,p=geo.attributes.position,idx=geo.index;
-      const n=idx?idx.count:p.count;
-      for(let i=0;i<n;i+=3){const a=new T.Vector3().fromBufferAttribute(p,idx?idx.getX(i):i).applyMatrix4(o.matrixWorld),b=new T.Vector3().fromBufferAttribute(p,idx?idx.getX(i+1):i+1).applyMatrix4(o.matrixWorld),c=new T.Vector3().fromBufferAttribute(p,idx?idx.getX(i+2):i+2).applyMatrix4(o.matrixWorld);
-        const normal=b.clone().sub(a).cross(c.clone().sub(a)),area=normal.length()*.5;if(area<1e-9)continue;normal.normalize();total+=area;triangles.push({a,b,c,normal});weights.push(total);
+  function properties(o){
+    let density=o.material?.userData?.density??1,occludes=o.material?.userData?.occludes!==false;
+    for(let p=o;p;p=p.parent){density*=p.userData.density??1;if(p.userData.occludes===false)occludes=false;}
+    return {density,occludes};
+  }
+  function eachTriangle(root,visit){
+    root.traverse(o=>{if(!o.isMesh)return;const geo=o.geometry,p=geo.attributes.position,idx=geo.index,n=idx?idx.count:p.count,props=properties(o);
+      for(let i=0;i<n;i+=3){
+        const vertex=j=>new T.Vector3().fromBufferAttribute(p,idx?idx.getX(j):j).applyMatrix4(o.matrixWorld);
+        const a=vertex(i),b=vertex(i+1),c=vertex(i+2),normal=b.clone().sub(a).cross(c.clone().sub(a)),area=normal.length()*.5;
+        if(area>1e-9)visit({a,b,c,normal:normal.normalize(),area,...props});
       }
     });
-    let seed=code.split('').reduce((s,c)=>s+c.charCodeAt(0),321);
+  }
+  let renderer;
+  function getRenderer(){
+    if(!renderer){renderer=new T.WebGLRenderer({alpha:false,antialias:true,powerPreference:'low-power'});renderer.setClearColor(0x020b12);renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.domElement.className='holo';renderer.domElement.setAttribute('aria-hidden','true');}
+    return renderer;
+  }
+  // An authored view makes each project's characteristic face readable immediately.
+  // Fit its actual bounds, including tall towers and wide laboratory assemblies.
+  function configureCamera(code,camera,aspect){
+    const [yaw,elevation]=views[code]||[.45,.35],direction=new T.Vector3(Math.sin(yaw)*Math.cos(elevation),Math.sin(elevation),Math.cos(yaw)*Math.cos(elevation));
+    camera.aspect=aspect;camera.position.copy(direction);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
+    const right=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0),up=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,1),root=model(code),tan=Math.tan(camera.fov*Math.PI/360);
+    let distance=0;
+    // Project real vertices: a box around an L plan invents tall corners above
+    // empty courtyards and needlessly shrinks the whole building.
+    const p=new T.Vector3();
+    root.traverse(o=>{const points=o.geometry?.attributes.position;if(!points)return;
+      for(let i=0;i<points.count;i++){
+        p.fromBufferAttribute(points,i).applyMatrix4(o.matrixWorld);const depth=p.dot(direction);
+        distance=Math.max(distance,depth+Math.abs(p.dot(right))/(tan*aspect)*1.16,depth+Math.abs(p.dot(up))/tan*1.16);
+      }
+    });
+    camera.position.copy(direction).multiplyScalar(distance);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);camera.updateProjectionMatrix();
+  }
+  function particles(code){
+    if(particleCache.has(code))return particleCache.get(code);
+    const root=model(code);if(!root)return null;root.updateMatrixWorld(true);
+    const triangles=[],weights=[];let total=0;
+    eachTriangle(root,tri=>{if(tri.density<=0)return;total+=tri.area*tri.density;triangles.push(tri);weights.push(total);});
+    let seed=code.split('').reduce((s,c)=>Math.imul(s,31)+c.charCodeAt(0),321)>>>0;
     const random=()=>{seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;};
+    const pick=(arr,cumulative,max)=>{const r=random()*max;let lo=0,hi=cumulative.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cumulative[m]<r)lo=m+1;else hi=m;}return arr[lo];};
+    const onTriangle=tri=>{const u=Math.sqrt(random()),v=random();return tri.a.clone().multiplyScalar(1-u).addScaledVector(tri.b,u*(1-v)).addScaledVector(tri.c,u*v);};
     const positions=[],normals=[],seeds=[],ambient=[],features=[];
-    const count=innerWidth<760?12500:23000;
+    const add=(p,n,loose=0,feature=0)=>{positions.push(p.x,p.y,p.z);normals.push(n.x,n.y,n.z);seeds.push(random());ambient.push(loose);features.push(feature);};
+    const compact=innerWidth<760,slender=code==='WA'||code==='ALT',count=(compact?13000:26000)*(slender?.58:1);
+    // Weight semantic parts, not just their surface area: a large plinth must not
+    // steal the samples needed to describe a roof, mechanism or designed product.
     for(let i=0;i<count;i++){
-      const r=random()*total;let lo=0,hi=weights.length-1;while(lo<hi){const mid=(lo+hi)>>1;if(weights[mid]<r)lo=mid+1;else hi=mid;}
-      const tri=triangles[lo],u=Math.sqrt(random()),v=random();const p=tri.a.clone().multiplyScalar(1-u).addScaledVector(tri.b,u*(1-v)).addScaledVector(tri.c,u*v);
-      // Loose rather than crisp: every sample drifts a little off its surface, and some drift well clear of it.
-      const g1=(random()+random()+random()-1.5)*.04,g2=(random()+random()+random()-1.5)*.04,g3=(random()+random()+random()-1.5)*.04;
-      p.x+=g1;p.y+=g2;p.z+=g3;p.addScaledVector(tri.normal,(random()-.5)*.06);
-      if(random()<.14){const t=random()*TAU,c=random()*2-1,sn=Math.sqrt(1-c*c),k=.08+.38*random()*random();p.x+=k*sn*Math.cos(t);p.y+=k*c;p.z+=k*sn*Math.sin(t);}
-      positions.push(p.x,p.y,p.z);normals.push(tri.normal.x,tri.normal.y,tri.normal.z);seeds.push(random());ambient.push(0);features.push(0);
+      const tri=pick(triangles,weights,total),p=onTriangle(tri);
+      p.x+=(random()-.5)*.003;p.y+=(random()-.5)*.003;p.z+=(random()-.5)*.003;add(p,tri.normal);
     }
     const segments=[],lengths=[];let length=0;
-    root.traverse(o=>{if(!o.isLine)return;const p=o.geometry.attributes.position;const add=(i,j)=>{const a=new T.Vector3().fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld),b=new T.Vector3().fromBufferAttribute(p,j).applyMatrix4(o.matrixWorld),len=a.distanceTo(b);if(len<1e-8)return;length+=len;segments.push({a,b});lengths.push(length);};
-      if(o.isLineSegments){for(let i=0;i<p.count-1;i+=2)add(i,i+1);}else{for(let i=0;i<p.count-1;i++)add(i,i+1);if(o.isLineLoop)add(p.count-1,0);}
+    root.traverse(o=>{if(!o.isLine)return;const p=o.geometry.attributes.position,weight=properties(o).density;
+      const segment=(i,j)=>{const a=new T.Vector3().fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld),b=new T.Vector3().fromBufferAttribute(p,j).applyMatrix4(o.matrixWorld),len=a.distanceTo(b)*weight;if(len<1e-8)return;length+=len;segments.push({a,b});lengths.push(length);};
+      if(o.isLineSegments){for(let i=0;i<p.count-1;i+=2)segment(i,i+1);}else{for(let i=0;i<p.count-1;i++)segment(i,i+1);if(o.isLineLoop)segment(p.count-1,0);}
     });
-    if(segments.length)for(let i=0;i<3200;i++){
-      const r=random()*length;let lo=0,hi=lengths.length-1;while(lo<hi){const m=(lo+hi)>>1;if(lengths[m]<r)lo=m+1;else hi=m;}
-      const s=segments[lo],p=s.a.clone().lerp(s.b,random());p.x+=(random()-.5)*.05;p.y+=(random()-.5)*.05;p.z+=(random()-.5)*.05;positions.push(p.x,p.y,p.z);normals.push(0,0,1);seeds.push(random());ambient.push(0);features.push(1);
+    if(segments.length)for(let i=0;i<(compact?5000:12000)*(slender?.65:1);i++){const s=pick(segments,lengths,length);add(s.a.clone().lerp(s.b,random()),new T.Vector3(0,0,1),0,1);}
+    // Loose satellites follow the silhouette, with irregular density and falloff.
+    // The core geometry remains legible rather than dissolving into an even box.
+    for(let i=0;i<(compact?1900:4800);i++){
+      const tri=pick(triangles,weights,total),p=onTriangle(tri),t=random()*Math.PI*2,c=random()*2-1,s=Math.sqrt(1-c*c),r=.045+Math.pow(random(),1.7)*.65;
+      p.add(new T.Vector3(s*Math.cos(t),c,s*Math.sin(t)).multiplyScalar(r));add(p,tri.normal,1);
     }
-    // Sparse, irregular satellite clouds, rather than an evenly filled box around the object.
-    for(let i=0;i<4500;i++){
-      const t=random()*TAU,cost=random()*2-1,sint=Math.sqrt(1-cost*cost),radius=1.25+Math.pow(random(),1.6)*1.5;
-      positions.push(radius*sint*Math.cos(t),radius*cost*.8,radius*sint*Math.sin(t));normals.push(0,1,0);seeds.push(random());ambient.push(1);features.push(0);
+    const geo=new T.BufferGeometry();
+    function updateGeometry(){
+      geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('aNormal',new T.Float32BufferAttribute(normals,3));geo.setAttribute('aSeed',new T.Float32BufferAttribute(seeds,1));geo.setAttribute('aAmbient',new T.Float32BufferAttribute(ambient,1));geo.setAttribute('aFeature',new T.Float32BufferAttribute(features,1));geo.computeBoundingSphere();
     }
-    const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('aNormal',new T.Float32BufferAttribute(normals,3));geo.setAttribute('aSeed',new T.Float32BufferAttribute(seeds,1));geo.setAttribute('aAmbient',new T.Float32BufferAttribute(ambient,1));geo.setAttribute('aFeature',new T.Float32BufferAttribute(features,1));
+    updateGeometry();
     const material=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,
-      uniforms:{uTime:{value:0},uReveal:{value:0},uPointScale:{value:1}},
-      vertexShader:`attribute vec3 aNormal;attribute float aSeed,aAmbient,aFeature;uniform float uTime,uReveal,uPointScale;varying float vLight,vAmbient,vSeed,vScan,vFeature;
+      uniforms:{uTime:{value:0},uReveal:{value:0},uPointScale:{value:1},uDensityScale:{value:slender?.78:1}},
+      vertexShader:`attribute vec3 aNormal;attribute float aSeed,aAmbient,aFeature;uniform float uTime,uReveal,uPointScale,uDensityScale;varying float vLight,vAmbient,vSeed,vScan,vFeature;
         void main(){vAmbient=aAmbient;vSeed=aSeed;vFeature=aFeature;
-          vec3 p=position;float travel=mod(uTime*.75,5.2);float scanY=2.6-travel;
-          vScan=exp(-pow((p.y-scanY)/.105,2.));
-          float delay=(1.7-p.y)/3.4*.38;float form=smoothstep(delay,delay+.6,uReveal);
-          vec3 cloud=p+vec3(sin(aSeed*91.),cos(aSeed*53.),sin(aSeed*37.))*1.25;
-          p=mix(cloud,p,form);
-          if(aAmbient>.5){p+=vec3(sin(uTime*.31+aSeed*37.),cos(uTime*.27+aSeed*29.),sin(uTime*.23+aSeed*61.))*.14;}
-          vec3 n=normalize(normalMatrix*aNormal);vLight=.3+.7*abs(dot(n,normalize(vec3(.4,.6,1.))));
-          vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;
-          gl_PointSize=clamp((aAmbient>.5?8.:13.+aSeed*5.+aFeature*3.+vScan*8.)*uPointScale/(-mv.z),.65,4.4);
+          vec3 p=position;float scanY=1.8-mod(uTime*2.1,6.2);vScan=exp(-pow((p.y-scanY)/.09,2.));
+          float delay=clamp((1.7-p.y)/3.4,0.,1.)*.65;float form=smoothstep(delay,delay+.32,uReveal);
+          p=mix(p+vec3(sin(aSeed*91.),cos(aSeed*53.),sin(aSeed*37.))*1.25,p,form);
+          if(aAmbient>.5)p+=vec3(sin(uTime*.31+aSeed*37.),cos(uTime*.27+aSeed*29.),sin(uTime*.23+aSeed*61.))*.07;
+          vLight=.42+.58*abs(dot(normalize(normalMatrix*aNormal),normalize(vec3(.4,.6,1.))));
+          vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_Position.z-=.000012*gl_Position.w;
+          gl_PointSize=clamp((aAmbient>.5?5.5:10.+aSeed*2.+aFeature*5.+vScan*5.)*uPointScale*uDensityScale/(-mv.z),.75,3.1);
         }`,
       fragmentShader:`varying float vLight,vAmbient,vSeed,vScan,vFeature;
-        void main(){float r=length(gl_PointCoord-.5);if(r>.5)discard;float soft=1.-smoothstep(.18,.5,r);
-          float alpha=(vAmbient>.5?.12+.13*vSeed:.30+.40*vLight+vFeature*.18)*soft;
-          vec3 color=mix(vec3(.20,.70,.88),vec3(.62,.97,1.),vLight*.55+vScan*.45);
-          gl_FragColor=vec4(color,alpha*(1.+vScan*1.5));
+        void main(){float r=length(gl_PointCoord-.5);if(r>.5)discard;float soft=1.-smoothstep(.17,.5,r);
+          float alpha=(vAmbient>.5?.075+.12*vSeed:.40+.36*vLight+.16*vFeature)*soft;
+          vec3 color=mix(vec3(.24,.68,.84),vec3(.66,.97,1.),vLight*.53+vScan*.47);
+          gl_FragColor=vec4(color,alpha*(1.+vScan*1.4));
         }`
     });
-    const points=new T.Points(geo,material);points.userData={code,extent:root.userData.extent,pointCount:count,geometryType:'sampled_xyz_surfaces'};particleCache.set(code,points);return points;
+    const points=new T.Points(geo,material);points.userData={code,extent:root.userData.extent,pointCount:positions.length/3,geometryType:'reference_xyz_surfaces'};
+    particleCache.set(code,points);
+    const source=root.userData.sourceModel,screen=source.userData.screen;
+    // PACE is a digital product. Its real UI belongs on a planar phone screen;
+    // inventing extrusion depth from the screenshot would misrepresent it.
+    if(screen)points.userData.screenReady=new Promise(resolve=>{
+      const img=new Image();img.onload=()=>{
+        try{
+          const canvas=document.createElement('canvas');canvas.width=280;canvas.height=Math.round(280*img.naturalHeight/img.naturalWidth);
+          const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,canvas.width,canvas.height);const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+          for(let y=0;y<canvas.height;y+=2)for(let x=0;x<canvas.width;x+=2){const i=(y*canvas.width+x)*4,contrast=1-(.2126*data[i]+.7152*data[i+1]+.0722*data[i+2])/255;if(contrast<.18||random()>Math.min(.92,contrast*1.7))continue;
+            const p=new T.Vector3((x/canvas.width-.5)*screen.width,(.5-y/canvas.height)*screen.height,screen.z).applyMatrix4(source.matrixWorld);add(p,new T.Vector3(0,0,1),0,1);
+          }
+          updateGeometry();points.userData.pointCount=positions.length/3;points.userData.screenSource=screen.src;
+        }catch(error){console.warn('Hologram screen texture unavailable',error);}
+        resolve();
+      };img.onerror=resolve;img.src=screen.src;
+    });
+    return points;
   }
-  const depthCache=new Map();
   function depthModel(code){
     if(depthCache.has(code))return depthCache.get(code);
-    const root=model(code);root.rotation.set(0,0,0);root.updateMatrixWorld(true);const xyz=[];
-    root.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position,idx=o.geometry.index,n=idx?idx.count:p.count;
-      for(let i=0;i<n;i++){const v=new T.Vector3().fromBufferAttribute(p,idx?idx.getX(i):i).applyMatrix4(o.matrixWorld);xyz.push(v.x,v.y,v.z);}
-    });
+    const root=model(code);if(!root)return null;root.updateMatrixWorld(true);const xyz=[];
+    eachTriangle(root,tri=>{if(tri.occludes)for(const p of [tri.a,tri.b,tri.c])xyz.push(p.x,p.y,p.z);});
     const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(xyz,3));
-    // Invisible depth pre-pass suppresses points behind the nearest real surface.
-    // It writes no color: there are no visible solid faces in the hologram.
-    const m=new T.Mesh(geo,new T.MeshBasicMaterial({colorWrite:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:2,polygonOffsetUnits:2}));
-    depthCache.set(code,m);return m;
+    // Only invisible depth is drawn. Reveal it alongside the downward scan, and
+    // leave glazing open so courts, voids and interior mechanisms remain visible.
+    const material=new T.ShaderMaterial({colorWrite:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:2,polygonOffsetUnits:2,uniforms:{uReveal:{value:0}},
+      vertexShader:`varying float vY;void main(){vY=position.y;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader:`uniform float uReveal;varying float vY;void main(){float d=clamp((1.7-vY)/3.4,0.,1.)*.65;if(smoothstep(d,d+.32,uReveal)<.94)discard;gl_FragColor=vec4(0.);}`});
+    const depth=new T.Mesh(geo,material);depthCache.set(code,depth);return depth;
   }
-  window.BCAHolograms={codes:Object.keys(makers),model,particles,depthModel,getRenderer};
+  window.BCAHolograms={codes:Object.keys(makers),model,particles,depthModel,getRenderer,configureCamera};
 })();

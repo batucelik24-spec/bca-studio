@@ -316,7 +316,7 @@ dialog#proj.closing::backdrop{animation:fadeout .26s ease forwards}
 
 /* hologram on card hover */
 .thumb .holo{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.thumb.holo-on::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(127,233,255,.07) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.35))}
+.thumb.holo-on::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 62%,rgba(0,0,0,.25))}
 .thumb .badge,.thumb .status{z-index:3}
 
 .portrait.photo{background:#fff}
@@ -993,8 +993,9 @@ html{overflow-wrap:break-word}
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="holograms.js?v=20261105-lab"></script>
-<script src="hologram-transition.js?v=20261102"></script>
+<script src="hologram-models.js?v=20261105-reference"></script>
+<script src="holograms.js?v=20261105-reference"></script>
+<script src="hologram-transition.js?v=20261105-reference"></script>
 <link rel="stylesheet" href="pace.css?v=20261102">
 <link rel="stylesheet" href="studio-particles.css?v=20261102-cycle">
 <script src="pace-data.js?v=20261102"></script>
@@ -2479,14 +2480,8 @@ requestAnimationFrame(frame);
   if(reduce || touchDevice || !window.BCAHolograms) return;
   const lib=window.BCAHolograms,T=window.THREE;
   const scene=new T.Scene(),depthScene=new T.Scene(),camera=new T.PerspectiveCamera(36,1,.05,100);
-  camera.position.set(4.2,2.7,5.6);camera.lookAt(0,0,0);
-  scene.add(new T.AmbientLight(0x9ae6ff,.85));
-  const key=new T.DirectionalLight(0xb8f5ff,1.7);key.position.set(3,6,5);scene.add(key);
-  const rim=new T.DirectionalLight(0x057eac,1.4);rim.position.set(-4,2,-4);scene.add(rim);
   const stage=new T.Group();scene.add(stage);
-  const ringGeo=new T.BufferGeometry().setFromPoints(Array.from({length:129},(_,i)=>new T.Vector3(1.7*Math.cos(i*Math.PI/64),-1.84,1.7*Math.sin(i*Math.PI/64))));
-  const ring=new T.Line(ringGeo,new T.LineBasicMaterial({color:0x1e778e,transparent:true,opacity:.5}));// Ground ring is intentionally omitted: all visible hologram elements are particles.
-  let active=null,raf=0,renderer=null;
+  let active=null,raf=0,renderer=null,previewInput='pointer';
   function stop(){cancelAnimationFrame(raf);if(!active)return;active.thumb.classList.remove('holo-on');renderer.domElement.remove();stage.remove(active.model);depthScene.remove(active.depth);active=null;}
   function frame(now){
     if(!active)return;
@@ -2494,13 +2489,18 @@ requestAnimationFrame(frame);
     active.opacity+=(active.target-active.opacity)*.1;
     if(active.target===0&&active.opacity<.015){stop();return;}
     renderer.domElement.style.opacity=active.opacity;
-    // Full orbit exposes side and rear faces. Mouse provides an additional inspection angle.
-    active.model.rotation.y=t*.40+active.mx*1.1;
-    active.model.rotation.x=active.my*.28;
+    // Keep the identifying face in view; gentle orbit and pointer movement expose
+    // genuine side surfaces without repeatedly losing the project's silhouette.
+    active.rx+=((Math.sin(t*.45)*.19+active.mx*1.2)-active.rx)*.075;
+    active.ry+=(active.my*.20-active.ry)*.075;
+    active.model.rotation.y=active.rx;
+    active.model.rotation.x=active.ry;
     active.model.material.uniforms.uTime.value=t;
     active.model.material.uniforms.uReveal.value=Math.min(1,t*.6);
     active.model.material.uniforms.uPointScale.value=renderer.getPixelRatio();
-    active.depth.rotation.copy(active.model.rotation);renderer.autoClear=false;renderer.clear();if(t>1.6)renderer.render(depthScene,camera);renderer.render(scene,camera);raf=requestAnimationFrame(frame);
+    active.depth.rotation.copy(active.model.rotation);
+    active.depth.material.uniforms.uReveal.value=active.model.material.uniforms.uReveal.value;
+    renderer.autoClear=false;renderer.clear();renderer.render(depthScene,camera);renderer.render(scene,camera);raf=requestAnimationFrame(frame);
   }
   function enter(card){
     if(document.querySelector('.arch-panel.is-animating'))return;
@@ -2508,22 +2508,30 @@ requestAnimationFrame(frame);
     stop();const code=card.getAttribute('href').split('-').pop(),m=lib.particles(code);if(!m)return;
     const thumb=card.querySelector('.thumb');if(!thumb)return;
     try{renderer=lib.getRenderer();}catch(e){return;}
-    renderer.setSize(thumb.clientWidth,thumb.clientHeight,false);camera.aspect=thumb.clientWidth/thumb.clientHeight;camera.updateProjectionMatrix();
+    renderer.setSize(thumb.clientWidth,thumb.clientHeight,false);lib.configureCamera(code,camera,thumb.clientWidth/thumb.clientHeight);
     renderer.domElement.dataset.model=code;renderer.domElement.dataset.geometry='xyz-surface-particles';renderer.domElement.style.opacity='0';
     thumb.appendChild(renderer.domElement);thumb.classList.add('holo-on');stage.add(m);
     const depth=lib.depthModel(code);depthScene.add(depth);
-    active={card,thumb,model:m,depth,start:performance.now(),mx:0,my:0,opacity:0,target:1};raf=requestAnimationFrame(frame);
+    m.rotation.set(0,0,0);
+    active={card,thumb,model:m,depth,start:performance.now(),mx:0,my:0,rx:0,ry:0,opacity:0,target:1};raf=requestAnimationFrame(frame);
   }
-  document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const c=e.target.closest('a.card');if(c)enter(c);});
-  document.addEventListener('pointerout',e=>{const c=e.target.closest('a.card');if(c&&active?.card===c&&!c.contains(e.relatedTarget))active.target=0;});
-  document.addEventListener('pointermove',e=>{if(!active)return;const r=active.thumb.getBoundingClientRect();active.mx=(e.clientX-r.left)/r.width-.5;active.my=(e.clientY-r.top)/r.height-.5;});
-  document.addEventListener('focusin',e=>{const c=e.target.closest('a.card');if(c)enter(c);});
-  document.addEventListener('focusout',e=>{if(active?.card===e.target.closest('a.card'))active.target=0;});
+  // Scrolling and animated layout changes also dispatch pointerover/out. Keep
+  // keyboard selection until the user actually moves the pointer again.
+  document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse'||previewInput==='focus')return;const c=e.target.closest('a.card');if(c)enter(c);});
+  document.addEventListener('pointerout',e=>{if(previewInput==='focus')return;const c=e.target.closest('a.card');if(c&&active?.card===c&&!c.contains(e.relatedTarget))active.target=0;});
+  document.addEventListener('pointermove',e=>{
+    if(e.pointerType!=='mouse')return;
+    if(e.movementX||e.movementY){previewInput='pointer';const c=e.target.closest('a.card');if(c)enter(c);else if(active)active.target=0;}
+    if(!active||previewInput==='focus')return;
+    const r=active.thumb.getBoundingClientRect();active.mx=Math.max(-.5,Math.min(.5,(e.clientX-r.left)/r.width-.5));active.my=Math.max(-.5,Math.min(.5,(e.clientY-r.top)/r.height-.5));
+  });
+  document.addEventListener('focusin',e=>{const c=e.target.closest('a.card');if(c){previewInput='focus';enter(c);}});
+  document.addEventListener('focusout',e=>{const c=e.target.closest('a.card');if(c&&!c.contains(e.relatedTarget)){previewInput='pointer';if(active?.card===c)active.target=c.matches(':hover')?1:0;}});
   document.addEventListener('bca-architecture-change',stop);
   window.BCAHoloPreview={take(card){
     if(active?.card!==card||active.opacity<.015||!window.BCAHologramTransition)return null;
     let bridge=null;
-    try{bridge=window.BCAHologramTransition.create({THREE:T,model:active.model,camera,image:card.querySelector('.thumb img'),renderer,opacity:active.opacity});}catch(error){console.warn('Cover transition fallback',error);}
+    try{bridge=window.BCAHologramTransition.create({THREE:T,model:active.model,depth:active.depth,camera,image:card.querySelector('.thumb img'),renderer,opacity:active.opacity});}catch(error){console.warn('Cover transition fallback',error);}
     stop();return bridge;
   }};
   addEventListener('hashchange',stop);addEventListener('resize',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
