@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-05T14:29:00.204Z",
+ "updated": "2026-11-05T14:32:43.826Z",
  "projects": {
   "OVS": {
    "desc": [
@@ -399,6 +399,29 @@ window.BCA_CONTENT = {
       "style": {
        "height": "844px"
       }
+     }
+    },
+    "orders": {}
+   },
+   "p-HUB": {
+    "nodes": {
+     "el:/section3/div1/div0/figure2/img0": {
+      "style": {
+       "height": "177px",
+       "width": "146px",
+       "marginLeft": "1px",
+       "marginTop": "0px"
+      },
+      "alt": ""
+     },
+     "el:/section3/div1/div0/p1": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/section3/div1/div0/figure2/figcaption1": {
+      "hidden": true
      }
     },
     "orders": {}
