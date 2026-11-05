@@ -728,6 +728,7 @@ html{overflow-wrap:break-word}
 @media(max-width:760px){.arch-evidence{padding-block:40px}.evidence-result,.evidence-figures{grid-template-columns:1fr;gap:24px}.evidence-result{padding:24px}.evidence-figures .evidence-media{height:260px}.evidence-metrics{gap:14px}.evidence-metrics dt{font-size:12px}.evidence-metrics dd{font-size:32px}}
 </style>
 <link rel="stylesheet" href="architecture-flow.css?v=20261102-credit">
+<link rel="stylesheet" href="urban-hub.css?v=20261105">
 
 </head>
 <body>
@@ -981,11 +982,12 @@ html{overflow-wrap:break-word}
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="holograms.js?v=20261102-hkk"></script>
+<script src="holograms.js?v=20261105-hub"></script>
 <script src="hologram-transition.js?v=20261102"></script>
 <link rel="stylesheet" href="pace.css?v=20261102">
 <link rel="stylesheet" href="studio-particles.css?v=20261102-cycle">
 <script src="pace-data.js?v=20261102"></script>
+<script src="urban-hub-data.js?v=20261105"></script>
 <script src="portfolio-data.js?v=20261102-hkk"></script>
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
@@ -1113,9 +1115,11 @@ const PROJECTS = [
 ];
 PROJECTS.push({"code": "ABR", "studio": true, "name": "ArchBrick", "img": "img/archbrick/archbrick-studio-group.png", "kind": "Malzeme tasarımı · Ar-Ge", "badge": "Geometri odaklı tasarım", "gallery": ["img/archbrick/archbrick-prototype.png", "img/archbrick/archbrick-mould.png", "img/archbrick/archbrick-production.jpg", "img/archbrick/archbrick-lab.png"], "facts": [["Buluş sahibi", "Dr. Alper Çelik"], ["Araştırma", "Ankara Üniversitesi"], ["Patent başvurusu", "2024/021852"], ["Başvuru hak sahibi", "Ankara Üniversitesi"], ["Marka başvurusu", "2025/101842"]], "line": "Bir tuğlanın içindeki geometriyi yeniden düşünmek.", "desc": ["ArchBrick, Dr. Alper Çelik tarafından geliştirilen, iç boşluk geometrisini kemer formuyla yeniden ele alan bir duvar elemanı teknolojisi. Dış boyutları korurken yükün malzeme içinde nasıl aktarıldığına odaklanıyor. Stüdyo’da deneysel yöntem ve malzeme tasarımının bir örneği olarak yer alıyor.", "Biyomimikriden ve kemerlerin yük aktarma mantığından beslenen yaklaşım, yalnızca boşluk oranını değil; boşlukların biçimini, konumunu ve bağlantılarını araştırıyor. Merkezdeki tek oval kemer halkası ve onu kesen bölmeler, tasarımın ayırt edici kesitini oluşturuyor.", "Geliştirme süreci; sayısal analiz, kalıp tasarımı, prototip üretim ve laboratuvar doğrulamasını bir araya getiriyor. ArchBrick’in resmî sitesine göre ArchBrick-M için Tokat ve Erzincan’daki iki fabrikada yaklaşık 8.000 birim üretilmiş; bölme duvar ürünleri ve ArchBlock için araştırmalar sürüyor.", "ArchBrick-M taşıyıcı yığma duvarlara odaklanıyor. ArchBrick-B 13.5 ve B 8.5 bölme duvar uygulamaları; ArchBlock ise farklı blok malzemeleri için geliştiriliyor. Ürün ailelerinin geliştirme aşamaları ve uygulama koşulları birbirinden farklı."], "publications": [{"title": "Numerical analysis of failure performance in novel hollow brick designs", "journal": "Engineering Failure Analysis · 2025", "authors": "Alper Çelik, Özgür Anıl, Ömer Mercimek", "doi": "10.1016/j.engfailanal.2025.109995", "summary": "Birim ölçeğinde farklı boşluk geometrilerini karşılaştıran sayısal araştırma. Kemer merkezli tasarımların yük taşıma ve enerji sönümleme davranışını inceliyor."}, {"title": "Seismic resilience of masonry buildings with a novel arch-type hollow brick (ArchBrick): Multi-scale numerical assessment from unit to building level", "journal": "Engineering Structures · 2026", "authors": "Alper Çelik", "doi": "10.1016/j.engstruct.2026.122190", "summary": "Birimden duvara ve iki katlı yapı modellerine uzanan sayısal değerlendirme. İç geometri, boşluk oranı ve harç sınıfının modellenen davranış üzerindeki etkilerini araştırıyor."}], "url": "https://archbrick.com.tr/"});
 if(window.BCAPace) PROJECTS.push(window.BCAPace.project);
+if(window.BCAUrbanHub) PROJECTS.push(window.BCAUrbanHub.project);
 const P = code => PROJECTS.findIndex(p=>p.code===code);
 /* where the main mass sits in each render (x%, y% from the top-left); every crop keeps this point in frame */
 const FOCUS = {
+  'img/urban-hub/plaza.webp':[50,66], 'img/urban-hub/corner.webp':[50,65], 'img/urban-hub/facade.webp':[50,62],
   'img/p/hall-sunset.jpg':[50,42], 'img/pf/opr-dusk.jpg':[60,62], 'img/pf/opr-front.jpg':[55,68], 'img/pf/opr-night.jpg':[50,45], 'img/pf/opr-roof.jpg':[50,45],
   'img/covers/tas-extended.jpg':[50,50], 'img/pf/tas-aerial.jpg':[68,50], 'img/pf/tas-arches.jpg':[50,45], 'img/pf/tas-bowl.jpg':[50,55],
   'img/pf/tas-city.jpg':[62,55], 'img/pf/tas-park.jpg':[48,45], 'img/pf/alj-aerial.jpg':[62,40], 'img/p/arena-model.jpg':[45,62], 'img/pf/alj-night.jpg':[50,62],
@@ -1131,7 +1135,7 @@ const WIDE_ONLY = ['img/covers/tas-extended.jpg'];
 SITE.base.focus = JSON.parse(JSON.stringify(FOCUS));
 Object.assign(FOCUS, CONTENT.focus || {});
 const fp = src => { const f = FOCUS[src]; return f ? f[0]+'% '+f[1]+'%' : '50% 50%'; };
-const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media};
+const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media,...window.BCAUrbanHub?.media};
 Object.entries(window.BCAPortfolio?.projects || {}).forEach(([code, entry])=>{
   const p = PROJECTS.find(p=>p.code===code);
   if(p) ['img','gallery','desc'].forEach(k=>{ if(entry[k]) p[k] = entry[k]; });
@@ -1255,6 +1259,7 @@ addEventListener('hashchange',()=>closeTeamProfile(true));
 
 /* ---------- project extras: categories, location for the list, model ↔ render pairs ---------- */
 const EXTRA = {
+  HUB:{cats:['Kamusal','Kültür'], year:'—'},
   OPR:{cats:['Kamusal','Kültür'], year:'2026', compare:['img/p/hall-model.jpg','img/p/hall-sunset.jpg']},
   TAS:{cats:['Stadyum'], year:'2026', compare:['img/entry/city-model.jpg','img/entry/aerial.jpg']},
   ALJ:{cats:['Stadyum'], year:'2026'},
@@ -1465,6 +1470,7 @@ renderBand();
 /* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
 const DG = 'img/dg/';
 const SHEETS = {
+  HUB:window.BCAUrbanHub?.sheet,
   PCE:window.BCAPace?.sheet,
   ABR:{info:[0],concept:[1],detail:[2,3],cdg:[],ddg:[]},
   TAS:{ info:[0], concept:[2], detail:[1],

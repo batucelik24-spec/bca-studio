@@ -35,6 +35,47 @@
   function rectRing(g,w,d,y) {line(g,[[-w/2,y,-d/2],[w/2,y,-d/2],[w/2,y,d/2],[-w/2,y,d/2]],edge,true);}
   const makers={};
 
+  makers.HUB=function(g){
+    // MİM 402 plans, elevations and plaza/corner renders: a gently curved civic
+    // bar, four occupied levels, screened bays, terrace voids and public stairs.
+    // Geometry is sampled by the existing point-cloud / top-down scan renderer.
+    const curve=x=>.22-.036*x*x, floor=.44, depth=.72;
+    for(let level=0;level<=4;level++){
+      const y=level*floor;
+      gridSurface(g,(u,v)=>{const x=(u-.5)*6;return [x,y,curve(x)+(v-.5)*(depth+.12)];},40,2);
+    }
+    for(let bay=0;bay<=12;bay++){
+      const x=-3+bay*.5;
+      for(const side of [-1,1])cylinder(g,x,.86,curve(x)+side*depth*.39,.024,1.72,bright,8);
+    }
+    for(let level=1;level<4;level++){
+      for(let bay=0;bay<30;bay++){
+        const x=-2.9+bay*.2, terrace=(bay+level*3)%10<3;
+        if(terrace){
+          // Set-back glazing and open terrace: preserve the void in the front screen.
+          if(bay%3===0)box(g,x,(level+.5)*floor,curve(x)+.10,.18,.38,.015,glass);
+          continue;
+        }
+        for(const side of [-1,1]){
+          const z=curve(x)+side*(depth/2+.015);
+          box(g,x,(level+.5)*floor,z,.188,.39,.015,glass);
+          for(let rib=0;rib<3;rib++)beam(g,[x-.06+rib*.06,level*floor+.025,z],[x-.06+rib*.06,(level+1)*floor-.025,z],.005);
+        }
+      }
+    }
+    // The council chamber sits within the bar; the round conference volume is separate.
+    cylinder(g,1.45,.67,curve(1.45),.28,.95,glass,36);
+    cylinder(g,-2.6,.34,-1.3,.57,.68,glass,48);
+    for(const y of [.02,.34,.68]){
+      line(g,Array.from({length:64},(_,i)=>[-2.6+.59*Math.cos(i*TAU/64),y,-1.3+.59*Math.sin(i*TAU/64)]),edge,true);
+    }
+    // Broad stepped public approach and an elevated route returning to the bar.
+    for(let step=0;step<14;step++)box(g,-.9+step*.035,(step+1)*floor/28,-1.55+step*.063,.62,.022,.068,bright);
+    gridSurface(g,(u,v)=>[-.44+u*1.8,floor*.5+u*floor*.5,-.76+(v-.5)*.21],24,2,bright);
+    line(g,[[-1.2,.02,-1.8],[-1.2,.02,-.5],[1.6,.02,-.5],[2.8,.02,-1.7]],edge);
+    line(g,[[-3.6,-.04,-2.0],[3.4,-.04,-2.0],[3.4,-.04,.85],[-3.6,-.04,.85]],fine,true);
+  };
+
   makers.PCE=function(g){
     // The interface is presented on a phone: sample its frame, screen and controls in XYZ.
     const w=1.65,h=3.4,r=.22,s=new T.Shape();

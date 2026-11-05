@@ -1,0 +1,39 @@
+/* Pointer keeps the shared project flow; only its long title and drawing proportions differ. */
+#v-project[data-project="HUB"] .px-title h1 {
+  font-size:clamp(30px,3.8vw,56px);
+  line-height:1.08;
+  max-width:calc(100% - 230px);
+  text-wrap:balance;
+}
+#v-project[data-project="HUB"] .px-cg {grid-template-columns:minmax(0,1fr);row-gap:40px}
+#v-project[data-project="HUB"] .px-concept-text {
+  position:static;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) 120px;
+  gap:28px;
+  align-items:start;
+}
+#v-project[data-project="HUB"] .px-concept-text p {font-size:20px;line-height:1.5;max-width:none}
+#v-project[data-project="HUB"] .px-concept-text p + p {font-size:15px;line-height:1.7;max-width:none}
+#v-project[data-project="HUB"] .px-source-mark {margin:0;width:120px}
+#v-project[data-project="HUB"] .px-source-mark img {width:100%;height:auto;max-height:none}
+#v-project[data-project="HUB"] .px-source-mark figcaption {font-size:10px;letter-spacing:.02em}
+#v-project[data-project="HUB"] .dg.frame-square {--drawing-height:520px}
+#v-project[data-project="HUB"] #px-concept-dg .dg.frame-plate {--drawing-ratio:3840/3364;--drawing-height:640px;max-width:760px;justify-self:center}
+#v-project[data-project="HUB"] .dg.frame-panorama .dg-media {aspect-ratio:auto;max-height:none}
+#v-project[data-project="HUB"] .dg.frame-panorama .dg-media img {position:static;display:block;width:100%;height:auto}
+#v-project[data-project="HUB"] .dg.w.frame-portrait {width:min(100%,360px)}
+#v-project[data-project="HUB"] .dg.frame-portrait .dg-media {aspect-ratio:1585/7000;max-height:820px}
+@media(max-width:1000px) {
+  #v-project[data-project="HUB"] .px-concept-text {grid-template-columns:minmax(0,1fr) 120px;gap:24px}
+  #v-project[data-project="HUB"] .px-concept-text p {grid-column:1}
+  #v-project[data-project="HUB"] .px-source-mark {grid-column:2;grid-row:1/3}
+}
+@media(max-width:760px) {
+  #v-project[data-project="HUB"] .px-title h1 {max-width:none;font-size:32px;line-height:1.12;text-wrap:pretty}
+  #v-project[data-project="HUB"] .px-concept-text {grid-template-columns:minmax(0,1fr);gap:20px}
+  #v-project[data-project="HUB"] .px-source-mark {grid-column:1;grid-row:auto;width:110px;margin-top:4px}
+  #v-project[data-project="HUB"] .px-cg {row-gap:32px}
+  #v-project[data-project="HUB"] .dg.frame-square .dg-media {max-height:none}
+  #v-project[data-project="HUB"] .dg.frame-portrait .dg-media {max-height:680px}
+}
