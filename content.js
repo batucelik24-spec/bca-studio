@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-05T14:34:43.913Z",
+ "updated": "2026-11-05T14:37:29.384Z",
  "projects": {
   "OVS": {
    "desc": [
@@ -422,6 +422,39 @@ window.BCA_CONTENT = {
       }
      },
      "el:/section3/div1/div0/figure2/figcaption1": {
+      "hidden": true
+     },
+     "el:/section2/div2/div1/div2": {
+      "hidden": true
+     },
+     "el:/section2/div2/dl0/div3": {
+      "hidden": true
+     },
+     "el:/section2/div2/dl0/div1/dd1": {
+      "textEn": "Academic project"
+     },
+     "el:/section4/div2/div3/div1/figure0/button0/img0": {
+      "style": {
+       "width": "235px",
+       "height": "457px",
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/section4/div2/div3/div1/figure0/button0": {
+      "style": {
+       "height": "476px",
+       "marginLeft": "218px",
+       "marginTop": "5px"
+      }
+     },
+     "el:/section4/div2/div3/div1/figure0/figcaption1": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/section4/div2/div3": {
       "hidden": true
      }
     },
