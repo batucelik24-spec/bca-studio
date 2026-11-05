@@ -96,6 +96,7 @@ textarea{min-height:96px;resize:vertical}
   .bar{flex-wrap:wrap}
 }
 </style>
+<link rel="stylesheet" href="visual-editor.css?v=20261105-1">
 </head>
 <body>
 <div class="bar">
@@ -131,6 +132,7 @@ textarea{min-height:96px;resize:vertical}
   </section>
 </div>
 
+<script src="editor-assets.js?v=20261105-1"></script>
 <script src="i18n-en.js?v=5"></script>
 <script>
 (function(){
@@ -189,7 +191,7 @@ function compose(content){
   const projects = BASE.projects.map((p,i)=>Object.assign(clone(p), {order:i}, content.projects && content.projects[p.code] || {}));
   (content.added || []).forEach(a=>projects.push(Object.assign({cats:[],facts:[],desc:[],gallery:[],img:'',thumb:'',kind:'',line:'',year:'',badge:'',hidden:false,studio:false}, clone(a), {added:true, order: a.order ?? projects.length})));
   projects.sort((a,b)=>a.order-b.order); projects.forEach((p,i)=>p.order=i);
-  return {projects, team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || []), focus: clone(content.focus || {}), en: {texts: clone((content.en||{}).texts || {}), strings: clone((content.en||{}).strings || {})}};
+  return {projects, visual:clone(content.visual || {version:1,pages:{}}), team: content.team ? clone(content.team) : clone(BASE.team), texts: Object.assign(clone(BASE.texts), content.texts || {}), welcome: content.welcome ? clone(content.welcome) : clone(BASE.welcome || []), focus: clone(content.focus || {}), en: {texts: clone((content.en||{}).texts || {}), strings: clone((content.en||{}).strings || {})}};
 }
 
 /* only what differs from the built-in content is written to content.js */
@@ -216,6 +218,7 @@ function diff(){
   Object.entries(en.texts || {}).forEach(([k,v])=>{ if(v && v.trim()) enT[k] = v; });
   Object.entries(en.strings || {}).forEach(([k,v])=>{ if(v && v.trim() && used.has(k)) enS[k] = v; });
   if(Object.keys(enT).length || Object.keys(enS).length) out.en = Object.assign({}, Object.keys(enT).length ? {texts:enT} : {}, Object.keys(enS).length ? {strings:enS} : {});
+  if(Object.keys(state.visual?.pages || {}).length) out.visual = clone(state.visual);
   return out;
 }
 /* ---------- English: the site has built-in translations; edited text needs its own ---------- */
@@ -231,30 +234,32 @@ function englishStrings(d){
   (d.welcome || []).forEach(w=>add(w.v));
   return out;
 }
-const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null, focus:o.focus||{}, en:o.en||{}});
+const norm = o => JSON.stringify({projects:o.projects||{}, added:o.added||[], team:o.team||null, texts:o.texts||{}, welcome:o.welcome||null, focus:o.focus||{}, en:o.en||{},visual:o.visual||{version:1,pages:{}}});
 /* the draft as the preview sees it: images not yet published are shown from memory */
-const withImages = d => JSON.parse(JSON.stringify(d).replace(/"(img\/uploads\/[^"]+)":/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl)+':' : m).replace(/"(img\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
+const withImages = d => JSON.parse(JSON.stringify(d).replace(/"((?:img|video)\/uploads\/[^"]+)"/g, (m,p)=>uploads[p] ? JSON.stringify(uploads[p].dataUrl) : m));
 
 function init(published){
   publishedJSON = norm(published);
   state = compose(published);
   const saved = store.get('bca-editor-state');
-  if(saved){ try{ const s = JSON.parse(saved); if(s && s.projects && s.basePublished === publishedJSON){ state = {projects:s.projects, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || []), focus:s.focus || {}, en:s.en || state.en}; } }catch(e){} }
+  if(saved){ try{ const s = JSON.parse(saved); let baseline=s.basePublished; try{baseline=norm(JSON.parse(baseline));}catch(e){} if(s && s.projects && baseline === publishedJSON){ state = {projects:s.projects, visual:s.visual || state.visual, team:s.team, texts:s.texts, welcome:s.welcome || clone(BASE.welcome || []), focus:s.focus || {}, en:s.en || state.en}; } }catch(e){} }
   ready = true;
   view = {type:'project', id:(state.projects.find(p=>!p.studio) || state.projects[0]).code};
   $('#newtab').hidden = false; $('#publish').hidden = false;
   render(); touch(false);
+  BCA_ASSETS.all().then(files=>{uploads=files;touch(false);dispatchEvent(new Event('bca-editor-ready'));}).catch(()=>dispatchEvent(new Event('bca-editor-ready')));
 }
 
-function changed(){ return norm(diff()) !== publishedJSON || Object.keys(uploads).length > 0; }
+function changed(){ return norm(diff()) !== publishedJSON; }
 let pushTimer = 0;
-function touch(save=true){
-  if(save) store.set('bca-editor-state', JSON.stringify(Object.assign({basePublished:publishedJSON}, state)));
+function touch(save=true, visualOnly=false){
+  const saved = !save || store.set('bca-editor-state', JSON.stringify(Object.assign({basePublished:publishedJSON}, state)));
   const dirty = changed();
   $('#publish').disabled = !dirty;
-  status(dirty ? 'Yayınlanmamış değişiklikler var' + (Object.keys(uploads).length ? ' · '+Object.keys(uploads).length+' yeni görsel' : '') : 'Site ile aynı', dirty ? '' : 'ok');
+  status(!saved ? 'Taslak kaydedilemedi. Yedek indirerek değişikliklerini sakla.' : dirty ? 'Taslak kaydedildi · Yayınlanmamış değişiklikler' : 'Site ile aynı', !saved ? 'err' : dirty ? '' : 'ok');
   renderPicker();
-  clearTimeout(pushTimer); pushTimer = setTimeout(()=>pushPreview(), 120);
+  clearTimeout(pushTimer); pushTimer = setTimeout(()=>visualOnly ? site()?.BCA_VISUAL?.setData(withImages(state.visual)) : pushPreview(), 80);
+  dispatchEvent(new CustomEvent('bca-editor-change',{detail:{visualOnly}}));
   const wj = JSON.stringify([state.welcome, state.welcome.map(w=>(state.focus||{})[w.src])]);
   if(lastWelcome !== null && wj !== lastWelcome){ clearTimeout(welcomeTimer); welcomeTimer = setTimeout(reloadWithDraft, 700); }
   lastWelcome = wj;
@@ -343,13 +348,21 @@ function activate(node){ $('#main').querySelectorAll('.field.active,.card.active
 function slug(s){ return String(s||'gorsel').toLowerCase().replace(/[çÇ]/g,'c').replace(/[ğĞ]/g,'g').replace(/[ıİ]/g,'i').replace(/[öÖ]/g,'o').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'gorsel'; }
 function pickImages(multiple){ return new Promise(res=>{ const i = el('input',{type:'file',accept:'image/*'}); if(multiple) i.multiple = true; i.onchange = ()=>res([...i.files]); i.click(); }); }
 async function addUpload(file, prefix){
-  const bmp = await createImageBitmap(file); const max = 2400, k = Math.min(1, max/Math.max(bmp.width, bmp.height));
+  if(file.size>45*1024*1024) throw new Error('Dosya 45 MB sınırını aşıyor. Daha küçük bir web sürümü kullan.');
+  if(/^video\/(mp4|webm)$/.test(file.type)){
+    const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});
+    const path='video/uploads/'+slug(prefix)+'-'+Date.now().toString(36)+'.'+(file.type==='video/webm'?'webm':'mp4');
+    uploads[path]={dataUrl,base64:dataUrl.split(',')[1]};
+    await BCA_ASSETS.put(path,uploads[path]);return path;
+  }
+  if(!/^image\/(png|jpeg|webp|avif|gif)$/.test(file.type))throw new Error('JPG, PNG, WebP, AVIF ya da MP4 / WebM kullan.');
+  const bmp = await createImageBitmap(file); const max = 3840, k = Math.min(1, max/Math.max(bmp.width, bmp.height));
   const c = document.createElement('canvas'); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
   c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-  const png = /png$/i.test(file.type) && file.size < 1.5e6, type = png ? 'image/png' : 'image/jpeg';
-  const dataUrl = c.toDataURL(type, .86), ext = png ? 'png' : 'jpg';
+  const dataUrl = c.toDataURL('image/webp', .94), ext = 'webp';bmp.close();
   const path = 'img/uploads/'+slug(prefix)+'-'+slug(file.name.replace(/\.[^.]+$/,''))+'-'+Date.now().toString(36)+'.'+ext;
   uploads[path] = {dataUrl, base64: dataUrl.split(',')[1]};
+  await BCA_ASSETS.put(path,uploads[path]);
   return path;
 }
 const src = p => uploads[p] ? uploads[p].dataUrl : p;
@@ -595,7 +608,7 @@ function renderSettings(main){
     field('GitHub anahtarı', el('div',{class:'list'}, i, el('div',{class:'ctl'},
       el('button',{class:'btn small',type:'button',onclick:async()=>{ store.set('bca-editor-token', i.value.trim()); const ok = await checkToken(); status(ok ? 'Anahtar çalışıyor' : 'Anahtar depoya yazamıyor', ok ? 'ok' : 'err'); renderPicker(); }},'Kaydet ve dene'),
       el('button',{class:'btn small',type:'button',onclick:()=>{ store.del('bca-editor-token'); i.value=''; renderPicker(); status('Anahtar silindi'); }},'Anahtarı sil')))),
-    field('Taslak', el('div',{class:'ctl'}, el('button',{class:'btn small danger',type:'button',onclick:()=>{ if(confirm('Yayınlanmamış tüm değişiklikler silinsin mi?')){ store.del('bca-editor-state'); uploads = {}; location.reload(); } }},'Taslağı sıfırla')), 'Yayınlanmamış değişiklikleri siler, sitenin yayındaki haline döner.'));
+    field('Taslak', el('div',{class:'ctl'}, el('button',{class:'btn small danger',type:'button',onclick:async()=>{ if(confirm('Yayınlanmamış tüm değişiklikler silinsin mi?')){ store.del('bca-editor-state'); store.del('bca-editor-draft'); await BCA_ASSETS.clear(); uploads = {}; location.reload(); } }},'Taslağı sıfırla')), 'Yayınlanmamış değişiklikleri siler, sitenin yayındaki haline döner.'));
 }
 
 /* ---------- GitHub ---------- */
@@ -608,38 +621,49 @@ async function checkToken(){ try{ const r = await gh(''); return !!(r.permission
 function contentFile(d){ return '/* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */\nwindow.BCA_CONTENT = '+JSON.stringify(d, null, 1)+';\n'; }
 const b64 = s => btoa(unescape(encodeURIComponent(s)));
 async function publish(){
-  if(!token()){ go('settings'); status('Önce bağlantı ayarını yap', 'err'); return; }
+  if(!token()){ go('settings'); window.BCA_EDITOR_UI?.legacy(); status('Önce bağlantı ayarını yap', 'err'); return; }
   const btn = $('#publish'); btn.disabled = true;
+  const d=diff(), snapshot=clone(state), serialized=JSON.stringify(d);
+  document.querySelector('.layout').inert=true;document.querySelector('.ve-tools')?.setAttribute('inert','');
   try{
     status('Yayınlanıyor…');
-    const ref = await gh('/git/ref/heads/'+REPO.branch), head = await gh('/git/commits/'+ref.object.sha), tree = [], paths = Object.keys(uploads);
+    const ref = await gh('/git/ref/heads/'+REPO.branch), head = await gh('/git/commits/'+ref.object.sha), tree = [], paths = Object.keys(uploads).filter(p=>serialized.includes(p));
+    const remote=await gh('/contents/content.js?ref='+ref.object.sha);
+    const source=new TextDecoder().decode(Uint8Array.from(atob(remote.content.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+    const match=source.match(/window\.BCA_CONTENT\s*=\s*([\s\S]*);\s*$/);
+    if(!match || norm(JSON.parse(match[1]))!==publishedJSON)throw new Error('Sitede başka bir güncelleme var. Taslağını yedekle ve güncel editörü aç; üzerine yazılmadı.');
     for(let i=0;i<paths.length;i++){
-      status('Görseller yükleniyor '+(i+1)+'/'+paths.length+'…');
+      status('Medya yükleniyor '+(i+1)+'/'+paths.length+'…');
       const blob = await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:uploads[paths[i]].base64,encoding:'base64'})});
       tree.push({path:paths[i],mode:'100644',type:'blob',sha:blob.sha});
     }
-    const d = diff();
     const cblob = await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:b64(contentFile(d)),encoding:'base64'})});
     tree.push({path:'content.js',mode:'100644',type:'blob',sha:cblob.sha});
     const t = await gh('/git/trees',{method:'POST',body:JSON.stringify({base_tree:head.tree.sha,tree})});
     const c = await gh('/git/commits',{method:'POST',body:JSON.stringify({message:'Editör: içerik güncellendi'+(paths.length?' ('+paths.length+' görsel)':''),tree:t.sha,parents:[ref.object.sha]})});
     await gh('/git/refs/heads/'+REPO.branch,{method:'PATCH',body:JSON.stringify({sha:c.sha})});
-    uploads = {}; publishedJSON = norm(d);
+    publishedJSON = norm(d);state=snapshot;
+    // Retain local previews until the deployment has propagated to the CDN.
     store.set('bca-editor-state', JSON.stringify(Object.assign({basePublished:publishedJSON}, state)));
     touch(false); render();
     status('Yayınlandı. Site yaklaşık 1 dakika içinde güncellenir.', 'ok');
   }catch(e){
     console.error(e); status('Yayınlanamadı: '+(/40[13]/.test(e.message)?'anahtar geçersiz ya da yazma izni yok':e.message), 'err'); btn.disabled = false;
-  }
+  }finally{document.querySelector('.layout').inert=false;document.querySelector('.ve-tools')?.removeAttribute('inert');}
 }
 $('#publish').addEventListener('click', publish);
 $('#newtab').addEventListener('click', ()=>{
   const d = diff();
   if(!store.set('bca-editor-draft', JSON.stringify(withImages(d))) && !store.set('bca-editor-draft', JSON.stringify(d))){ alert('Taslak bu tarayıcıya kaydedilemedi.'); return; }
-  open('index.html?draft', '_blank');
+  open('index.html?draft'+(previewLang==='en'?'&lang=en':'')+(site()?.location.hash||'#home'), '_blank');
 });
-addEventListener('beforeunload', e=>{ if(Object.keys(uploads).length){ e.preventDefault(); e.returnValue=''; } });
+window.BCA_EDITOR={get ready(){return ready;},get state(){return state;},get lang(){return previewLang;},get uploads(){return uploads;},diff,withImages,touch,site,addUpload,status,
+  setState(v){state=clone(v);render();touch();},go,src,
+  async importDraft(v){if(!v?.state?.projects || !v.state.visual?.pages)throw new Error('Geçerli bir BCA taslağı seç.');for(const [p,f] of Object.entries(v.media||{})){if(!/^(img|video)\/uploads\/[a-z0-9.-]+$/.test(p)||!/^data:(image|video)\//.test(f.dataUrl))throw new Error('Geçersiz medya.');await BCA_ASSETS.put(p,f);uploads[p]=f;}state=clone(v.state);render();touch();},
+  exportDraft(){return {format:'bca-visual-draft',version:1,state:clone(state),media:clone(uploads)};}
+};
 })();
 </script>
+<script src="visual-editor.js?v=20261105-1"></script>
 </body>
 </html>

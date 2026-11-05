@@ -1,5 +1,6 @@
 <!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>BCA Studio — Batuhan Çelik Architecture &amp; Studio</title>
+<link rel="stylesheet" href="visual-runtime.css?v=20261105-1">
 <meta name="description" content="BCA Studio: Batuhan Çelik Architecture ve Studio. Kamusal yapılar, stadyumlar, yarışma projeleri ile uygulama, yazılım ve yapay zekâ Ar-Ge çalışmaları.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -1697,6 +1698,7 @@ function renderProjectFilm(p){
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden)$('px-video').pause();});
 function renderProject(i){
+  window.BCA_VISUAL?.beforeRender();
   projIdx = i; const p = PROJECTS[i], S = SHEETS[p.code] || {info:[0], concept:[], detail:[], cdg:[], ddg:[]};
   $('v-project').dataset.project=p.code;
   renderProjectCredits(p);
@@ -1775,6 +1777,7 @@ function renderProject(i){
   $('px-ctx').textContent = st ? 'Stüdyo' : 'Mimarlık';
   $('px-back').setAttribute('href', st ? '#studio' : '#architecture'); $('px-back').textContent = st ? '‹ Stüdyo' : '‹ Tüm projeler';
   $('px-other').setAttribute('href', st ? '#architecture' : '#studio'); $('px-other').textContent = st ? 'Mimarlık ›' : 'Stüdyo ›'; $('pd-next-name').textContent = nx.name; $('pd-next-img').src = nx.img; $('pd-next-img').style.objectPosition = fp(nx.img);
+  window.BCA_VISUAL?.render();
 }
 
 /* lightbox: images or diagrams, step through with buttons, arrows or a swipe */
@@ -2530,4 +2533,6 @@ requestAnimationFrame(frame);
 
 <script src="studio-particles.js?v=20261102-tr"></script>
 <script>window.BCA_I18N && BCA_I18N.start();</script>
+<script src="editor-assets.js?v=20261105-1"></script>
+<script src="visual-runtime.js?v=20261105-1"></script>
 </body></html>
