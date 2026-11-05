@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-05T08:47:38.922Z",
+ "updated": "2026-11-05T09:02:02.710Z",
  "projects": {
   "OVS": {
    "desc": [
@@ -10,8 +10,8 @@ window.BCA_CONTENT = {
    ],
    "thumb": "img/uploads/ovs-kart-spektrum-kopya-mw3aom7b.jpg",
    "gallery": [
-    "img/uploads/ovs-spektrum-kopya-mw3ap63z.jpg",
-    "img/uploads/ovs-spektrum4-kopya2-mw3ap69v.jpg"
+    "img/uploads/ovs-spektrum4-kopya2-mw3ap69v.jpg",
+    "img/uploads/ovs-spektrum-kopya-mw3ap63z.jpg"
    ]
   },
   "PCE": {
