@@ -1,0 +1,52 @@
+/* The apparatus stays intact in its cover; details retain their original proportions. */
+.card[href="#s-AUL"] .thumb { background: #afb3c0; }
+.card[href="#s-AUL"] .thumb > img { object-fit: contain; }
+#v-project[data-project="AUL"] .lab-cover {
+  display: flex; flex-direction: column; height: auto; min-height: 0; max-height: none;
+  padding-top: 64px; background: #fff; color: #1d1d1f;
+}
+#v-project[data-project="AUL"] .lab-cover #px-hero-img {
+  position: relative; inset: auto; display: block; width: 100%;
+  height: clamp(360px, 64svh, 780px); max-width: none;
+  object-fit: contain; object-position: center !important; transform: none !important;
+  background: #afb3c0;
+}
+#v-project[data-project="AUL"] .lab-cover .px-title {
+  position: relative; inset: auto; padding: 36px max(24px, 6vw) 40px;
+  gap: 14px; background: #fff; color: #1d1d1f;
+}
+#v-project[data-project="AUL"] .lab-cover h1 {
+  font-size: clamp(34px, 4.5vw, 72px); line-height: 1.08; max-width: 25ch;
+}
+#v-project[data-project="AUL"] .lab-cover :is(.px-shade,.px-hud,.px-spot,.px-down,#px-hero-bg) { display: none; }
+#v-project[data-project="AUL"] .px-info { padding-block: 56px 72px; }
+#v-project[data-project="AUL"] .px-lead { max-width: 26ch; padding: 0; }
+#v-project[data-project="AUL"] .px-info-grid { margin-top: 48px; }
+#v-project[data-project="AUL"] .px-paper { background: #fff; padding-block: 64px; }
+#v-project[data-project="AUL"] #px-cg { align-items: center; }
+#v-project[data-project="AUL"] .px-concept-text { position: static; }
+#v-project[data-project="AUL"] #px-concept-dg .dg { --drawing-height: 560px; }
+#v-project[data-project="AUL"] .dg-media { aspect-ratio: 3840 / 3005; }
+#v-project[data-project="AUL"] .dg-media img { mix-blend-mode: normal; }
+#v-project[data-project="AUL"] #px-detail-head { margin-bottom: 36px; }
+#v-project[data-project="AUL"] #px-detail-text { max-width: 800px; }
+#v-project[data-project="AUL"] .dg-group + .dg-group { margin-top: 40px; }
+.px-film { background: #fff; color: #1d1d1f; padding: 56px max(24px,6vw) 64px; }
+.px-film .px-label { margin-bottom: 28px; border-color: rgba(0,0,0,.14); }
+.px-film figure { margin: 0 auto; max-width: 1200px; }
+.px-film video { display: block; width: 100%; height: auto; aspect-ratio: 16/9; background: #afb3c0; border-radius: 4px; }
+.px-film figcaption { margin-top: 16px; max-width: 65ch; font-size: 14px; line-height: 1.65; color: #6e6e73; }
+.px-film video:focus-visible { outline: 2px solid var(--blue,#0071e3); outline-offset: 5px; }
+@media(max-width:760px) {
+  #v-project[data-project="AUL"] .lab-cover { padding-top: 56px; }
+  #v-project[data-project="AUL"] .lab-cover #px-hero-img { height: auto; aspect-ratio: 3840/3005; }
+  #v-project[data-project="AUL"] .lab-cover .px-title { padding: 26px 24px 32px; }
+  #v-project[data-project="AUL"] .lab-cover h1 { font-size: clamp(32px,8.4vw,48px); }
+  #v-project[data-project="AUL"] .px-info { padding-block: 36px 48px; }
+  #v-project[data-project="AUL"] .px-info-grid { margin-top: 32px; gap: 32px; }
+  #v-project[data-project="AUL"] .px-paper { padding-block: 40px; }
+  #v-project[data-project="AUL"] .dg-grid { row-gap: 32px; }
+  #v-project[data-project="AUL"] #px-detail-dg .dg { grid-column: span 12; }
+  .px-film { padding: 40px 24px 48px; }
+  .px-film .px-label { margin-bottom: 20px; }
+}

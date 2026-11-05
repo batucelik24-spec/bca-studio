@@ -729,6 +729,7 @@ html{overflow-wrap:break-word}
 </style>
 <link rel="stylesheet" href="architecture-flow.css?v=20261102-credit">
 <link rel="stylesheet" href="urban-hub.css?v=20261105">
+<link rel="stylesheet" href="lab-rig.css?v=20261105">
 
 </head>
 <body>
@@ -885,6 +886,15 @@ html{overflow-wrap:break-word}
   </section>
 
 <section id="px-publications" class="project-publications" hidden></section>
+  <section class="px-film" id="px-film" hidden aria-labelledby="px-film-title">
+    <div class="px-label"><span class="n">04</span><span class="track" id="px-film-title">Sunum animasyonu</span></div>
+    <figure>
+      <video id="px-video" controls playsinline preload="none" aria-describedby="px-film-caption">
+        <a id="px-video-fallback">Tarayıcınız bu videoyu oynatamıyor. Videoyu açın.</a>
+      </video>
+      <figcaption id="px-film-caption"></figcaption>
+    </figure>
+  </section>
   <section class="px-images" id="px-images">
     <div class="px-label"><span class="n">04</span><span class="track">Görseller</span><span class="muted" id="px-img-count"></span></div>
     <div class="px-tiles" id="px-tiles"></div>
@@ -982,12 +992,13 @@ html{overflow-wrap:break-word}
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="holograms.js?v=20261105-hub"></script>
+<script src="holograms.js?v=20261105-lab"></script>
 <script src="hologram-transition.js?v=20261102"></script>
 <link rel="stylesheet" href="pace.css?v=20261102">
 <link rel="stylesheet" href="studio-particles.css?v=20261102-cycle">
 <script src="pace-data.js?v=20261102"></script>
 <script src="urban-hub-data.js?v=20261105"></script>
+<script src="lab-rig-data.js?v=20261105"></script>
 <script src="portfolio-data.js?v=20261102-hkk"></script>
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
@@ -1116,6 +1127,7 @@ const PROJECTS = [
 PROJECTS.push({"code": "ABR", "studio": true, "name": "ArchBrick", "img": "img/archbrick/archbrick-studio-group.png", "kind": "Malzeme tasarımı · Ar-Ge", "badge": "Geometri odaklı tasarım", "gallery": ["img/archbrick/archbrick-prototype.png", "img/archbrick/archbrick-mould.png", "img/archbrick/archbrick-production.jpg", "img/archbrick/archbrick-lab.png"], "facts": [["Buluş sahibi", "Dr. Alper Çelik"], ["Araştırma", "Ankara Üniversitesi"], ["Patent başvurusu", "2024/021852"], ["Başvuru hak sahibi", "Ankara Üniversitesi"], ["Marka başvurusu", "2025/101842"]], "line": "Bir tuğlanın içindeki geometriyi yeniden düşünmek.", "desc": ["ArchBrick, Dr. Alper Çelik tarafından geliştirilen, iç boşluk geometrisini kemer formuyla yeniden ele alan bir duvar elemanı teknolojisi. Dış boyutları korurken yükün malzeme içinde nasıl aktarıldığına odaklanıyor. Stüdyo’da deneysel yöntem ve malzeme tasarımının bir örneği olarak yer alıyor.", "Biyomimikriden ve kemerlerin yük aktarma mantığından beslenen yaklaşım, yalnızca boşluk oranını değil; boşlukların biçimini, konumunu ve bağlantılarını araştırıyor. Merkezdeki tek oval kemer halkası ve onu kesen bölmeler, tasarımın ayırt edici kesitini oluşturuyor.", "Geliştirme süreci; sayısal analiz, kalıp tasarımı, prototip üretim ve laboratuvar doğrulamasını bir araya getiriyor. ArchBrick’in resmî sitesine göre ArchBrick-M için Tokat ve Erzincan’daki iki fabrikada yaklaşık 8.000 birim üretilmiş; bölme duvar ürünleri ve ArchBlock için araştırmalar sürüyor.", "ArchBrick-M taşıyıcı yığma duvarlara odaklanıyor. ArchBrick-B 13.5 ve B 8.5 bölme duvar uygulamaları; ArchBlock ise farklı blok malzemeleri için geliştiriliyor. Ürün ailelerinin geliştirme aşamaları ve uygulama koşulları birbirinden farklı."], "publications": [{"title": "Numerical analysis of failure performance in novel hollow brick designs", "journal": "Engineering Failure Analysis · 2025", "authors": "Alper Çelik, Özgür Anıl, Ömer Mercimek", "doi": "10.1016/j.engfailanal.2025.109995", "summary": "Birim ölçeğinde farklı boşluk geometrilerini karşılaştıran sayısal araştırma. Kemer merkezli tasarımların yük taşıma ve enerji sönümleme davranışını inceliyor."}, {"title": "Seismic resilience of masonry buildings with a novel arch-type hollow brick (ArchBrick): Multi-scale numerical assessment from unit to building level", "journal": "Engineering Structures · 2026", "authors": "Alper Çelik", "doi": "10.1016/j.engstruct.2026.122190", "summary": "Birimden duvara ve iki katlı yapı modellerine uzanan sayısal değerlendirme. İç geometri, boşluk oranı ve harç sınıfının modellenen davranış üzerindeki etkilerini araştırıyor."}], "url": "https://archbrick.com.tr/"});
 if(window.BCAPace) PROJECTS.push(window.BCAPace.project);
 if(window.BCAUrbanHub) PROJECTS.push(window.BCAUrbanHub.project);
+if(window.BCALabRig) PROJECTS.push(window.BCALabRig.project);
 const P = code => PROJECTS.findIndex(p=>p.code===code);
 /* where the main mass sits in each render (x%, y% from the top-left); every crop keeps this point in frame */
 const FOCUS = {
@@ -1135,7 +1147,7 @@ const WIDE_ONLY = ['img/covers/tas-extended.jpg'];
 SITE.base.focus = JSON.parse(JSON.stringify(FOCUS));
 Object.assign(FOCUS, CONTENT.focus || {});
 const fp = src => { const f = FOCUS[src]; return f ? f[0]+'% '+f[1]+'%' : '50% 50%'; };
-const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media,...window.BCAUrbanHub?.media};
+const portfolioMedia = {...window.BCAPortfolio?.media,...window.BCAPace?.media,...window.BCAUrbanHub?.media,...window.BCALabRig?.media};
 Object.entries(window.BCAPortfolio?.projects || {}).forEach(([code, entry])=>{
   const p = PROJECTS.find(p=>p.code===code);
   if(p) ['img','gallery','desc'].forEach(k=>{ if(entry[k]) p[k] = entry[k]; });
@@ -1152,6 +1164,7 @@ const BKA_CREDITS = {
   ]
 };
 const PROJECT_CREDITS = {
+  AUL:{groups:[]},
   OPR:BKA_CREDITS, TAS:BKA_CREDITS, ALJ:BKA_CREDITS,
   WA:{groups:[
     ['Akademik Danışman',['Prof. Dr. M. Fatih Yılmaz']],
@@ -1173,6 +1186,7 @@ function contribution(p){
 }
 function renderProjectCredits(p){
   const credits=$('px-credits'),data=PROJECT_CREDITS[p.code]||{groups:[['Tasarım',['Batuhan Çelik']]]};
+  if(!data.studio&&!data.groups.length){credits.hidden=true;credits.replaceChildren();placeProjectCredits();return;}
   credits.hidden=false;credits.classList.remove('is-entering','is-leaving');
   credits.innerHTML=(data.studio?'<a class="credits-brand" href="'+data.url+'" target="_blank" rel="noopener" aria-label="Bahadır Kul Architects — resmî sitesi"><span class="credits-logo"><img src="img/credits/bka-official-logo.png" width="748" height="574" alt="Bahadır Kul Architects logosu"></span><span>'+data.studio+'</span></a><p class="credits-attribution">Bu proje Bahadır Kul Architects bünyesinde geliştirilmiştir. Batuhan Çelik’in projedeki katkısı:</p>'+contribution(p):'')+
     '<dl>'+data.groups.map(([role,names])=>'<div class="credits-group"><dt>'+escapeAttr(role)+'</dt>'+names.map(name=>'<dd>'+escapeAttr(name)+'</dd>').join('')+'</div>').join('')+'</dl>';
@@ -1453,7 +1467,7 @@ function renderStudioGrids(){
 $('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].concat(PROJECTS.map((p,i)=>p.added && p.studio ? {p:i} : null).filter(Boolean)).filter(k=>k.p>=0 && !PROJECTS[k.p].hidden).map(k=>cardHTML(k,'s')).join('');
 $('grid-x').innerHTML = [{p:P('DYF'), m:'Cephe · Veri'}, {p:P('WA'), m:'Yapay zekâ destekli cephe'}].map(k=>cardHTML(k,'s')).join('');
 reveal($('grid-x'));
-if(!PROJECTS[P('ABR')]?.hidden) $('grid-research').innerHTML=cardHTML({p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},'s');
+$('grid-research').innerHTML=[{p:P('ABR'),m:'Malzeme tasarımı · ArchBrick'},{p:P('AUL'),m:'Deney düzeneği tasarımı · Ar-Ge'}].filter(k=>k.p>=0&&!PROJECTS[k.p].hidden).map(k=>cardHTML(k,'s')).join('');
 if(P('PCE')>=0 && !PROJECTS[P('PCE')].hidden) $('grid-apps').innerHTML=cardHTML({p:P('PCE'),m:'Mobil uygulama · 2026'},'s');
 }
 renderStudioGrids();
@@ -1470,6 +1484,7 @@ renderBand();
 /* ---------- diagrams from the portfolio: concept sheets and project details ---------- */
 const DG = 'img/dg/';
 const SHEETS = {
+  AUL:window.BCALabRig?.sheet,
   HUB:window.BCAUrbanHub?.sheet,
   PCE:window.BCAPace?.sheet,
   ABR:{info:[0],concept:[1],detail:[2,3],cdg:[],ddg:[]},
@@ -1663,6 +1678,24 @@ function groupDetails(list){
   });
   return [...groups.values()];
 }
+function resetProjectFilm(){
+  const video=$('px-video');
+  video.pause();
+  if(video.hasAttribute('src')){video.removeAttribute('src');video.load();}
+  video.removeAttribute('poster');
+  $('px-video-fallback').removeAttribute('href');
+  $('px-film').hidden=true;
+}
+function renderProjectFilm(p){
+  resetProjectFilm();
+  if(!p.video) return;
+  const video=$('px-video');
+  video.src=p.video.src;video.poster=p.video.poster;video.setAttribute('aria-label',p.video.title);
+  $('px-video-fallback').href=p.video.src;
+  $('px-film-caption').textContent=p.video.caption;
+  $('px-film').hidden=false;
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)$('px-video').pause();});
 function renderProject(i){
   projIdx = i; const p = PROJECTS[i], S = SHEETS[p.code] || {info:[0], concept:[], detail:[], cdg:[], ddg:[]};
   $('v-project').dataset.project=p.code;
@@ -1673,13 +1706,14 @@ function renderProject(i){
   heroSec.classList.toggle('extended-cover', p.img.startsWith('img/covers/'));
   heroSec.classList.toggle('product-cover',p.code==='ABR'||p.code==='PCE');
   heroSec.classList.toggle('pace-cover',p.code==='PCE');
+  heroSec.classList.toggle('lab-cover',p.code==='AUL');
   hero.src = p.img; hero.alt = p.name; hero.style.objectPosition = fp(p.img);
   const heroMedia=portfolioMedia[p.img];
   if(heroMedia){hero.srcset=heroMedia.variants.map(v=>v[0]+' '+v[1]+'w').join(', ');hero.sizes='100vw';}
   else {hero.removeAttribute('srcset');hero.removeAttribute('sizes');}
   $('px-hero-bg').src = heroMedia ? heroMedia.variants[Math.min(1,heroMedia.variants.length-1)][0] : p.img;
   const fitHero = ()=>{ const ia = hero.naturalWidth / hero.naturalHeight, va = heroSec.clientWidth / Math.max(1,heroSec.clientHeight);
-    const tall = p.code !== 'PCE' && !!ia && va > 1.05 && ia < va*0.72 && !WIDE_ONLY.includes(p.img); heroSec.classList.toggle('tall', tall); $('px-bar').classList.toggle('ink', (tall || p.code === 'ABR' || p.code === 'PCE') && DOC.dataset.tone === 'light'); };
+    const tall = !['PCE','AUL'].includes(p.code) && !!ia && va > 1.05 && ia < va*0.72 && !WIDE_ONLY.includes(p.img); heroSec.classList.toggle('tall', tall); $('px-bar').classList.toggle('ink', (tall || ['ABR','PCE','AUL'].includes(p.code)) && DOC.dataset.tone === 'light'); };
   heroSec.classList.remove('tall'); hero.onload = fitHero; if(hero.complete && hero.naturalWidth) fitHero();
   heroSec._fit = fitHero;
 
@@ -1719,8 +1753,9 @@ function renderProject(i){
     g.items.map(d=>dgHTML(d, k++, '03')).join('')+'</div></div>').join('');
   $('px-detail-dg').hidden = !dd.length;
   $('px-detail').hidden = !dd.length && $('px-detail-head').hidden;
+  renderProjectFilm(p);
   /* section numbers follow what is shown */
-  let n = 1; ['px-lead-anchor','px-concept','px-detail','px-images'].forEach(id=>{ const el = $(id); if(!el.hidden) el.querySelector('.px-label .n').textContent = String(n++).padStart(2,'0'); });
+  let n = 1; ['px-lead-anchor','px-concept','px-detail','px-film','px-images'].forEach(id=>{ const el = $(id); if(!el.hidden) el.querySelector('.px-label .n').textContent = String(n++).padStart(2,'0'); });
   /* 04 images */
   /* Legacy comparison thumbnails are not part of the reviewed project gallery. */
   const imgs = [p.img].concat(p.gallery || []).filter((src,k,a)=>a.indexOf(src) === k && !/section/.test(src));
@@ -1734,7 +1769,7 @@ function renderProject(i){
   pubs.innerHTML=p.publications ? '<div class="px-label"><span class="track">Bilimsel yayınlar</span></div><p class="pub-intro">ArchBrick üzerine yayımlanan iki araştırma. Bulgular, çalışmalarda belirtilen malzeme, model ve yükleme koşulları için değerlendirilmelidir.</p><div class="publication-grid">'+p.publications.map(q=>'<a class="publication" href="https://doi.org/'+q.doi+'" target="_blank" rel="noopener"><span class="track">'+q.journal+'</span><h3>'+q.title+'</h3><p>'+q.authors+'</p><p>'+q.summary+'</p><span class="publication-link">Makaleyi incele ↗</span></a>').join('')+'</div><div class="archbrick-links"><a href="https://archbrick.com.tr/" target="_blank" rel="noopener">ArchBrick resmî sitesi ↗</a><a href="https://www.instagram.com/archbrickdesign/" target="_blank" rel="noopener">Instagram ↗</a><a href="https://kurumsaliletisim.ankara.edu.tr/2026/08/14/ankara-universitesinden-yigma-yapilarin-deprem-dayanimina-yenilikci-cozum/" target="_blank" rel="noopener">Üniversite · Buluş ve lisanslama ↗</a></div><p class="archbrick-note">Kapak, gerçek prototip fotoğrafları referans alınarak yapay zekâ ile hazırlanmış temsili stüdyo görselidir. Galerideki üretim ve deney fotoğrafları ArchBrick kaynaklarından sunulmuştur. Patent başvurusu hak sahipliği Ankara Üniversitesine, buluş sahipliği Dr. Alper Çelik’e aittir.</p>' : '';
 
   /* next */
-  const st = projCtx === 's', STUDIO_SET = ['ABR','PCE','BDP','DYF','WA'];
+  const st = projCtx === 's', STUDIO_SET = ['ABR','AUL','PCE','BDP','DYF','WA'];
   const list = st ? STUDIO_SET.map(c=>PROJECTS[P(c)]) : PROJECTS.filter(q=>!q.studio), nx = list[(list.indexOf(p) + 1) % list.length] || list[0];
   $('pd-next').setAttribute('href', '#'+projCtx+'-'+nx.code);
   $('px-ctx').textContent = st ? 'Stüdyo' : 'Mimarlık';
@@ -1809,6 +1844,7 @@ let homeActive = true, studioActive = false;
 const viewOf = h => (h === 'architecture' || h === 'studio') ? h : (/^[ps]-/.test(h) ? 'project' : 'home');
 let projCtx = 'p';
 function route(){
+  resetProjectFilm();
   const h = location.hash.slice(1),previous=DOC.dataset.view;
   let view = viewOf(h),i=view==='project'?P(h.slice(2)):-1;
   const inline=h.startsWith('p-')&&i>=0&&!PROJECTS[i].studio;

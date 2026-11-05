@@ -35,6 +35,91 @@
   function rectRing(g,w,d,y) {line(g,[[-w/2,y,-d/2],[w/2,y,-d/2],[w/2,y,d/2],[-w/2,y,d/2]],edge,true);}
   const makers={};
 
+  makers.AUL=function(g){
+    // Ankara University laboratory rig: the supplied overall, reverse and detail
+    // renders define the frame, two loading axes, wall specimen and measuring frame.
+    // A schematic XYZ reconstruction, sampled by the existing point-cloud renderer.
+    const steelColumn=(x,y,z,h,w=.35,d=.42)=>{
+      box(g,x,y,z,.055,h,d);
+      for(const side of [-1,1])box(g,x+side*w/2,y,z,.045,h,d);
+      for(let yy=y-h/2+.18;yy<y+h/2;yy+=.46)box(g,x,yy,z,w,.035,d);
+    };
+    const steelBeam=(x,y,z,w,h=.38,d=.42)=>{
+      box(g,x,y,z,w,h,.045);
+      for(const side of [-1,1])box(g,x,y+side*h/2,z,w,.045,d);
+      for(let xx=x-w/2+.18;xx<x+w/2;xx+=.52)box(g,xx,y,z,.035,h,d);
+    };
+    steelBeam(0,.18,0,4.8,.36,.5);
+    steelBeam(0,3.32,0,4.55,.42,.5);
+    for(const x of [-2.22,2.22]){
+      steelColumn(x,1.89,0,3.4);
+      box(g,x,-.02,0,.58,.06,1.52);
+      for(const z of [-.69,.69])box(g,x,.05,z,.58,.14,.045);
+      box(g,x,.39,0,.62,.055,.62);
+      box(g,x,3.33,0,.09,.66,.58);
+      for(const yy of [.42,3.07,3.58])for(const z of [-.23,.23]){
+        cylinder(g,x+.18,yy,z,.025,.07,bright,6);
+        cylinder(g,x-.18,yy,z,.025,.07,bright,6);
+      }
+      const inward=x<0?1:-1;
+      const gusset=panel(g,[[x,2.98],[x+inward*.43,2.98],[x,2.65]],.035);
+      gusset.position.z=.22;
+    }
+    // Concrete plinth, layered wall and load spreader, with a clear gap to the head.
+    box(g,.12,.49,0,1.62,.23,.57);
+    for(let layer=0;layer<25;layer++)box(g,.12,.64+layer*.057,0,1.48,.05,.26,glass);
+    for(const x of [-.53,.77]){
+      beam(g,[x,.59,.25],[x,.35,.25],.025);
+      cylinder(g,x,.61,.25,.042,.045,bright,6);
+    }
+    steelBeam(.12,2.19,0,1.65,.19,.35);
+    for(let i=0;i<14;i++){
+      const roller=cylinder(g,-.62+i*.115,2.075,0,.022,.32,bright,10);
+      roller.rotation.x=Math.PI/2;
+    }
+    // Vertical ram through the upper beam and horizontal actuator tied to the column.
+    cylinder(g,.12,3.51,0,.105,.52,bright,20);
+    cylinder(g,.12,2.92,0,.06,.5,bright,16);
+    cylinder(g,.12,2.57,0,.095,.17,surface,20);
+    beam(g,[.12,2.48,0],[.12,2.3,0],.04);
+    box(g,-2.22,2.01,0,.10,.49,.68);
+    beam(g,[-2.14,2.01,0],[-1.65,2.01,0],.12);
+    beam(g,[-1.65,2.01,0],[-.66,2.01,0],.042);
+    for(const x of [-1.99,-1.5])box(g,x,2.01,0,.04,.31,.31);
+    for(const y of [1.88,2.14])for(const z of [-.13,.13])beam(g,[-2,y,z],[-1.48,y,z],.014);
+    box(g,-.68,2.01,0,.08,.16,.26);
+    // Independent displacement frame, side gauges and crossed specimen gauges.
+    steelColumn(1.35,1.21,.10,1.55,.17,.24);
+    box(g,1.35,.46,.1,.39,.05,.45);
+    for(const y of [.72,1.82]){
+      beam(g,[.9,y,.21],[1.35,y,.21],.009);
+      box(g,1.09,y,.21,.19,.04,.04,bright);
+    }
+    for(const x of [-.53,.77]){
+      beam(g,[x,.63,.19],[x,1.01,.19],.009);
+      box(g,x,.86,.19,.04,.18,.045,bright);
+    }
+    line(g,[[-.49,.77,.15],[.72,1.92,.15]],fine);
+    line(g,[[.72,.77,.15],[-.49,1.92,.15]],fine);
+    // Camera and three lighting stands occupy the space in front of the specimen.
+    const tripod=(x,z,h)=>{
+      beam(g,[x,.06,z],[x,h,z],.014);
+      for(let leg=0;leg<3;leg++){
+        const a=leg*TAU/3;
+        beam(g,[x,h*.42,z],[x+.22*Math.cos(a),.02,z+.22*Math.sin(a)],.009);
+      }
+    };
+    tripod(0,.93,1.12);box(g,0,1.14,.93,.16,.105,.09,bright);
+    for(const [x,z,h] of [[-.76,.81,1.4],[.71,.84,1.25],[-.38,1.02,1.12]]){
+      tripod(x,z,h);
+      const disk=cylinder(g,x,h+.11,z,.115,.014,glass,24);disk.rotation.x=Math.PI/2;
+    }
+    box(g,-2.89,.48,.12,.46,.96,.42);
+    box(g,-2.89,.99,.17,.56,.045,.5);
+    box(g,-2.89,1.11,.12,.29,.21,.025,glass);
+    line(g,[[-1.8,1.85,.02],[-1.95,.3,.15],[-2.5,.03,.36],[-2.89,.2,.36]],fine);
+  };
+
   makers.HUB=function(g){
     // MİM 402 plans, elevations and plaza/corner renders: a gently curved civic
     // bar, four occupied levels, screened bays, terrace voids and public stairs.
