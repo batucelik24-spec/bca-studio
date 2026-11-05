@@ -1,7 +1,7 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-05T09:02:02.710Z",
+ "updated": "2026-11-05T14:29:00.204Z",
  "projects": {
   "OVS": {
    "desc": [
@@ -139,6 +139,270 @@ window.BCA_CONTENT = {
   "img/uploads/pce-kart-logo-mvzheu7j.jpg": [
    51,
    51
+  ],
+  "img/lab-rig/overview.webp": [
+   46,
+   49
   ]
+ },
+ "visual": {
+  "version": 1,
+  "pages": {
+   "architecture": {
+    "nodes": {
+     "el:/div1/div0/span0": {
+      "hidden": true
+     },
+     "el:/div1/div0/h11": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px",
+       "height": "78px"
+      }
+     },
+     "text:arch.lead": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "3px"
+      },
+      "hidden": true
+     },
+     "el:/div1/div0": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "10px",
+       "height": "171px"
+      }
+     },
+     "id:filters": {
+      "style": {
+       "marginLeft": "205px",
+       "marginTop": "0px",
+       "fontWeight": "300"
+      },
+      "mobile": {
+       "marginLeft": "0px",
+       "marginTop": "10px",
+       "width": "533px",
+       "height": "86px",
+       "fontSize": "10px"
+      }
+     },
+     "el:/div1/section4/div1/strong1": {
+      "hidden": true
+     },
+     "el:/div1/section4/div1/span2": {
+      "hidden": true
+     },
+     "el:/div1/section4/div1/span0": {
+      "hidden": true
+     },
+     "el:/div1/section4/span0": {
+      "hidden": true
+     },
+     "el:/div1/section4/div1": {
+      "hidden": true
+     },
+     "el:/div1/section4": {
+      "hidden": true
+     },
+     "text:arch.cta.title": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/div1/section5": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/div1/section5/p1/a0": {
+      "style": {
+       "marginLeft": "25px",
+       "marginTop": "20px",
+       "fontWeight": "700"
+      }
+     },
+     "id:arch-count": {
+      "hidden": true
+     },
+     "el:/div1/div1/div0/button0": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      }
+     },
+     "el:/div1/div1/div0/button1": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button2": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button3": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button4": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button5": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "24px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button6": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "25px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1/div0/button7": {
+      "mobile": {
+       "fontSize": "10px",
+       "height": "32px",
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      },
+      "style": {
+       "fontWeight": "300"
+      }
+     },
+     "el:/div1/div1": {
+      "mobile": {
+       "width": "436px",
+       "height": "69px"
+      },
+      "style": {
+       "marginLeft": "27px",
+       "marginTop": "26px",
+       "align": "center",
+       "height": "45px"
+      }
+     },
+     "block-13df635a-9e5": {
+      "type": "columns",
+      "parent": "el:/div1/div1",
+      "style": {
+       "columns": 2,
+       "gap": "28px",
+       "marginLeft": "0px",
+       "marginTop": "24px"
+      },
+      "mobile": {
+       "columns": 1
+      }
+     },
+     "id:arch-flow": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     }
+    },
+    "orders": {
+     "el:/div1/div0": [
+      "el:/div1/div0/h11",
+      "text:arch.lead",
+      "el:/div1/div0/span0"
+     ]
+    }
+   },
+   "studio": {
+    "nodes": {
+     "el:/div2/div0": {
+      "style": {
+       "height": "486px",
+       "width": "1166px",
+       "paddingBottom": "0px",
+       "marginBottom": "0px"
+      }
+     },
+     "el:/div2/div0/div0": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "text:studio.cat.apps": {
+      "style": {
+       "height": "57px"
+      }
+     },
+     "text:studio.cat.projects": {
+      "style": {
+       "marginLeft": "5px",
+       "marginTop": "61px"
+      }
+     },
+     "text:studio.cat.research": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "61px"
+      }
+     },
+     "text:studio.mail": {
+      "style": {
+       "marginLeft": "456px",
+       "marginTop": "101px"
+      }
+     },
+     "el:/div2/section4/div0": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     },
+     "el:/div2/section1": {
+      "style": {
+       "marginLeft": "0px",
+       "marginTop": "0px"
+      }
+     }
+    },
+    "orders": {}
+   },
+   "home": {
+    "nodes": {
+     "id:team": {
+      "style": {
+       "height": "844px"
+      }
+     }
+    },
+    "orders": {}
+   }
+  }
  }
 };
