@@ -1,8 +1,19 @@
 /* BCA Studio — editor.html writes this file. Built-in content applies wherever a field is absent. */
 window.BCA_CONTENT = {
  "version": 1,
- "updated": "2026-11-02T16:37:55.939Z",
+ "updated": "2026-11-05T08:47:38.922Z",
  "projects": {
+  "OVS": {
+   "desc": [
+    "Overflowing Spectrums, renk, ışık ve sesin bir arada ele alındığı bir iç mekân kompozisyonu. Mavi zemin ve yüzeyler üzerinde kırmızı geometrik kütleler, sergilenen nesne için farklı ölçeklerde odaklar oluşturuyor.\n\n\n",
+    "Kademeli platformlar ve yönlendirilmiş ışık, nesne ile arka plan arasındaki derinliği görünür kılıyor. Mekânın atmosferi, malzeme ve renk karşıtlıkları üzerinden araştırılıyor."
+   ],
+   "thumb": "img/uploads/ovs-kart-spektrum-kopya-mw3aom7b.jpg",
+   "gallery": [
+    "img/uploads/ovs-spektrum-kopya-mw3ap63z.jpg",
+    "img/uploads/ovs-spektrum4-kopya2-mw3ap69v.jpg"
+   ]
+  },
   "PCE": {
    "facts": [
     [
