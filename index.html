@@ -2089,7 +2089,24 @@ veil.addEventListener('click', lift);
 stage.addEventListener('focusin', lift);
 
 /* ---------- blend between the two sides follows the pointer ---------- */
-let mode = 'architecture', target = 0, prog = 0, lastU = 0.5, formIdx = 0, imgIdx = 0;
+/* A fresh shuffle on each visit and each round; keep the editor's image order intact. */
+const imageOrder = [];
+function nextWelcomeImage(previous = -1){
+  if(!imageOrder.length){
+    imageOrder.push(...IMAGES.map((_, i)=>i));
+    for(let i = imageOrder.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [imageOrder[i], imageOrder[j]] = [imageOrder[j], imageOrder[i]];
+    }
+    /* Avoid repeating the last image when a new round begins. */
+    if(imageOrder.length > 1 && imageOrder[0] === previous){
+      const j = 1 + Math.floor(Math.random() * (imageOrder.length - 1));
+      [imageOrder[0], imageOrder[j]] = [imageOrder[j], imageOrder[0]];
+    }
+  }
+  return imageOrder.shift();
+}
+let mode = 'architecture', target = 0, prog = 0, lastU = 0.5, formIdx = 0, imgIdx = nextWelcomeImage();
 let homeTravel=0,stageRect=null;
 function measureHome(){ const wrap=stage.parentElement; homeTravel=Math.max(1,wrap.offsetHeight-stage.offsetHeight); }
 function syncMobileHome(top){
@@ -2386,7 +2403,7 @@ function showImage(i){
   imgMat.uniforms.uA.value = loaded[i].tex; imgMat.uniforms.uCovA.value = coverOf(i); imgMat.uniforms.uFocA.value = focusOf(i);
   imgMat.uniforms.uMix.value = 0; paintParticles(i);
 }
-loadImage(0).then(()=>{ showImage(0); IMAGES.forEach((_,i)=>{ if(i) loadImage(i); }); });
+loadImage(imgIdx).then(()=>{ showImage(imgIdx); IMAGES.forEach((_,i)=>{ if(i !== imgIdx) loadImage(i); }); });
 
 /* sizing */
 let W=1,H=1;
@@ -2422,6 +2439,7 @@ canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercance
 const IMAGE_HOLD = 2.8, IMAGE_FADE = 1.0;
 const HOLD = BCAStudioForms.HOLD, MORPH = BCAStudioForms.MORPH, CYCLE = HOLD + MORPH;
 let imgTimer = 0, mixing = -1, morphClock = 0, rot = 0;
+let nextImgIdx = nextWelcomeImage(imgIdx);
 const clock = new THREE.Clock(), tmp = new THREE.Vector3();
 function frame(){
   if(document.hidden || !homeActive || !stageVisible){ put(particleLayer,'display','none'); clock.getDelta(); requestAnimationFrame(frame); return; }
@@ -2434,11 +2452,11 @@ function frame(){
   syncPage();
 
   /* Keep image rotation running across the image-to-particle interaction. */
-  if(!reduce && IMAGES.length > 1){
-    if(mixing < 0){ imgTimer += dt; const nx = (imgIdx+1)%IMAGES.length;
+  if(!reduce && IMAGES.length > 1 && loaded[imgIdx]){
+    if(mixing < 0){ imgTimer += dt; const nx = nextImgIdx;
       if(imgTimer > IMAGE_HOLD && loaded[nx]){ imgMat.uniforms.uB.value = loaded[nx].tex; imgMat.uniforms.uCovB.value = coverOf(nx); imgMat.uniforms.uFocB.value = focusOf(nx); mixing = 0; } }
     else { mixing += dt/IMAGE_FADE; imgMat.uniforms.uMix.value = Math.min(1, mixing);
-      if(mixing >= 1){ imgIdx = (imgIdx+1)%IMAGES.length; showImage(imgIdx); mixing = -1; imgTimer = 0; if(mode==='architecture') hudText(); } }
+      if(mixing >= 1){ imgIdx = nextImgIdx; showImage(imgIdx); nextImgIdx = nextWelcomeImage(imgIdx); mixing = -1; imgTimer = 0; if(mode==='architecture') hudText(); } }
   }
 
   /* form morph cycle */
