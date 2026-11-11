@@ -8,7 +8,7 @@ dialog.contact-panel{box-sizing:border-box;width:min(800px,calc(100vw - 40px));m
 .contact-panel::backdrop{background:rgba(20,22,26,.32);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
 .contact-close{position:absolute;top:16px;right:16px;display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--fg);font:28px/1 var(--f);cursor:pointer;transition:background .2s,transform .2s}
 .contact-close:hover{background:var(--line);transform:rotate(90deg)}
-.contact-eyebrow{margin:0 52px 24px 0;color:var(--muted)}
+.contact-eyebrow{margin:0 52px 24px 0;color:var(--muted);line-height:1.8;letter-spacing:.16em;text-wrap:balance}
 .contact-panel h2{margin:0;font-size:clamp(32px,4.8vw,52px);font-weight:300;line-height:1.15;letter-spacing:-.045em}
 #contact-intro{max-width:440px;margin:18px 0 38px;color:var(--muted);font-size:17px;line-height:1.65}
 .contact-details{display:grid;grid-template-columns:1fr 1.15fr;gap:36px;border-top:1px solid var(--line);padding-top:28px}
