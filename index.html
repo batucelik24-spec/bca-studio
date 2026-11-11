@@ -25,7 +25,9 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization", "logo": "https://bcastud.io/icon-512.png","name":"BCA Studio","alternateName":["Batuhan Çelik Architecture","bcastud.io"],"url":"https://bcastud.io/","email":"info@bcastud.io","founder":{"@type":"Person","name":"Batuhan Çelik","jobTitle":"Mimar"},"sameAs":["https://www.instagram.com/bca.studio/"]}</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap">
+<script>(function(){var d=document.documentElement;if(!document.fonts||!document.fonts.load)return;d.classList.add("hello-wait");var done=function(){d.classList.remove("hello-wait")};Promise.race([Promise.all([document.fonts.load("300 1em Jost","Merhaba"),document.fonts.load("400 1em Jost","Merhaba")]),new Promise(function(r){setTimeout(r,2500)})]).then(done,done)})();</script>
 <style>
 /* Layout: three views. Home = a white "Welcome" stage that opens into the image↔particle interaction on hover, then About and Team. Architecture and Studio are their own pages. Type: Jost, echoing the logo. */
 :root{
@@ -70,6 +72,7 @@ a{color:inherit;text-decoration:none}
 .welcome:not(.gone){transition:opacity .9s ease,visibility 0s}
 .welcome h1{margin:0;font-weight:300;font-size:clamp(64px,11vw,168px);letter-spacing:-.035em;line-height:1}
 .hello{display:inline-grid;justify-items:center;align-items:center;overflow:hidden;padding:.12em .1em;font-family:var(--f),'Hiragino Sans','Noto Sans JP','PingFang SC','Noto Sans SC','Noto Sans Arabic','Geeza Pro','Apple SD Gothic Neo','Noto Sans KR',sans-serif}
+.hello{transition:opacity .45s ease}.hello-wait .hello{opacity:0}
 .hello .hw{grid-area:1/1;white-space:nowrap;opacity:0;transform:translateY(55%);transition:transform .8s cubic-bezier(.22,1,.36,1),opacity .55s ease}
 .hello .hw.is-on{opacity:1;transform:none}.hello .hw.is-out{opacity:0;transform:translateY(-55%)}
 .hello .hw[lang=ja],.hello .hw[lang=zh],.hello .hw[lang=ko],.hello .hw[lang=ar]{font-weight:300;letter-spacing:0;font-size:.82em}
