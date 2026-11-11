@@ -731,6 +731,7 @@ html{overflow-wrap:break-word}
 .evidence-method{margin-top:32px;padding:22px 0;border-block:1px solid var(--line)}.evidence-method summary{cursor:pointer;min-height:28px}.evidence-method p{color:var(--muted);max-width:85ch;line-height:1.7;font-size:15px}
 @media(max-width:760px){.arch-evidence{padding-block:40px}.evidence-result,.evidence-figures{grid-template-columns:1fr;gap:24px}.evidence-result{padding:24px}.evidence-figures .evidence-media{height:260px}.evidence-metrics{gap:14px}.evidence-metrics dt{font-size:12px}.evidence-metrics dd{font-size:32px}}
 </style>
+<link rel="stylesheet" href="contact.css?v=20261111-1">
 <link rel="stylesheet" href="architecture-flow.css?v=20261102-credit">
 <link rel="stylesheet" href="urban-hub.css?v=20261105">
 <link rel="stylesheet" href="lab-rig.css?v=20261105">
@@ -758,6 +759,7 @@ html{overflow-wrap:break-word}
     <section class="stage" id="stage" aria-label="Giriş">
       <canvas id="scene" role="img" aria-label="Proje görselleri; imleç sağa gittikçe görsel akışkanlaşıp sürekli değişen bir parçacık formuna dönüşür"></canvas>
       <a href="#home" class="stage-logo" id="stage-logo" aria-label="BCA Studio"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg></a>
+      <button type="button" class="contact-trigger on-stage" data-contact-open data-ve-ui aria-haspopup="dialog" aria-controls="contact-panel" translate="no">Contact</button>
 
       <div class="stage-shade" id="stage-shade" aria-hidden="true"></div>
       <a class="side l" id="side-a" href="#architecture"><strong>Mimarlık</strong><span>Projeleri gör ›</span></a>
@@ -800,7 +802,7 @@ html{overflow-wrap:break-word}
 <main id="v-architecture" class="view" hidden>
   <header class="topbar"><div class="wrap">
     <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Mimarlık</span></a>
-    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Stüdyo ›</a></nav>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#architecture" aria-current="page">Projeler</a><a href="#studio">Stüdyo ›</a><button type="button" class="contact-trigger" data-contact-open aria-haspopup="dialog" aria-controls="contact-panel" translate="no">Contact</button></nav>
   </div></header>
   <div class="wrap">
     <div class="page-head"><span class="track muted">Batuhan Çelik</span><h1>Mimarlık</h1><p data-edit="arch.lead">Kamusal yapılar, stadyumlar, yarışmalar ve konseptler.</p></div>
@@ -822,7 +824,7 @@ html{overflow-wrap:break-word}
 <article id="v-project" class="view px" aria-labelledby="pd-title" hidden>
   <header class="topbar px-bar" id="px-bar"><div class="wrap">
     <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span id="px-ctx">Mimarlık</span></a>
-    <nav aria-label="Sayfalar"><a href="#architecture" id="px-back">‹ Tüm projeler</a><a href="#studio" id="px-other">Stüdyo ›</a></nav>
+    <nav aria-label="Sayfalar"><a href="#architecture" id="px-back">‹ Tüm projeler</a><a href="#studio" id="px-other">Stüdyo ›</a><button type="button" class="contact-trigger" data-contact-open aria-haspopup="dialog" aria-controls="contact-panel" translate="no">Contact</button></nav>
   </div></header>
 
   <section class="px-hero">
@@ -923,7 +925,7 @@ html{overflow-wrap:break-word}
   <canvas id="s-form" aria-hidden="true"></canvas>
   <header class="topbar"><div class="wrap">
     <a class="brand" href="#home"><svg class="logo" viewBox="0 0 773 972"><use href="#bca-logo"/></svg><span>Stüdyo</span></a>
-    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#studio" aria-current="page">Stüdyo</a><a href="#architecture">Mimarlık ›</a></nav>
+    <nav aria-label="Sayfalar"><a href="#home" class="hide-s">Ana sayfa</a><a href="#studio" aria-current="page">Stüdyo</a><a href="#architecture">Mimarlık ›</a><button type="button" class="contact-trigger" data-contact-open aria-haspopup="dialog" aria-controls="contact-panel" translate="no">Contact</button></nav>
   </div></header>
   <div class="wrap">
     <div class="s-hero">
@@ -968,6 +970,24 @@ html{overflow-wrap:break-word}
 </main>
 
 <footer><div class="wrap"><span>© 2026 BCA Studio · Batuhan Çelik Architecture</span><span><a href="mailto:info@bcastud.io">info@bcastud.io</a> · Instagram @bca.studio</span></div></footer>
+
+<dialog id="contact-panel" class="contact-panel" aria-labelledby="contact-title" aria-describedby="contact-intro" data-ve-ui>
+  <button type="button" class="contact-close" aria-label="İletişim panelini kapat" autofocus><span aria-hidden="true">×</span></button>
+  <p class="track contact-eyebrow" translate="no">BCA Studio</p>
+  <h2 id="contact-title">Birlikte üretelim.</h2>
+  <p id="contact-intro">Yeni bir fikir, proje veya iş birliği için bize ulaşın.</p>
+  <div class="contact-details">
+    <section class="contact-email" aria-labelledby="contact-email-title">
+      <h3 id="contact-email-title" class="track">E-posta</h3>
+      <a class="contact-mail" href="mailto:info@bcastud.io" translate="no">info@bcastud.io <span aria-hidden="true">↗</span></a>
+    </section>
+    <section class="contact-location" aria-labelledby="contact-address-title">
+      <h3 id="contact-address-title" class="track">Şirket adresi</h3>
+      <address lang="tr" translate="no">Merkez Mah. Abide-i Hürriyet Cad.<br>Sibel Apt. No: 161, İç Kapı No: 3<br>Şişli / İstanbul</address>
+      <a class="contact-map" href="https://www.google.com/maps/search/?api=1&amp;query=Merkez%20Mah.%20Abide-i%20H%C3%BCrriyet%20Cad.%20Sibel%20Apt.%20No%3A%20161%2C%20%C5%9Ei%C5%9Fli%2C%20%C4%B0stanbul" target="_blank" rel="noopener noreferrer">Haritada aç ↗</a>
+    </section>
+  </div>
+</dialog>
 
 <dialog id="team-profile" class="team-profile" aria-labelledby="team-profile-name" aria-describedby="team-profile-roles team-profile-bio">
   <button type="button" class="team-profile-close" id="team-profile-close" aria-label="Profili kapat" autofocus>×</button>
@@ -2567,6 +2587,7 @@ requestAnimationFrame(frame);
 </script>
 
 <script src="studio-particles.js?v=20261102-tr"></script>
+<script src="contact.js?v=20261111-1"></script>
 <script>window.BCA_I18N && BCA_I18N.start();</script>
 <script src="editor-assets.js?v=20261105-1"></script>
 <script src="visual-runtime.js?v=20261105-1"></script>
