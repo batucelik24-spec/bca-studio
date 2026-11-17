@@ -951,7 +951,7 @@ html{overflow-wrap:break-word}
     <section class="s-sec">
       <div class="s-head"><h2>Notlar</h2><p data-edit="studio.notes.lead">Araştırma yazıları ve süreç günlükleri.</p></div>
       <div class="notes">
-        <div class="note"><span>26.02.2025</span><strong>Ballon de Paris hoparlör koleksiyonu Seoul Living Design Fair’de</strong><span>Ürün</span></div>
+        <div class="note" data-project-note="BDP" hidden><span>26.02.2025</span><strong>Ballon de Paris hoparlör koleksiyonu Seoul Living Design Fair’de</strong><span>Ürün</span></div>
         <div class="note"><span>2024</span><strong>AI [UN]Plugged Design Workshop: tasarımda yapay zekâ, yaklaşık 60 öğrenciyle</strong><span>Atölye</span></div>
         <div class="note"><span>2024</span><strong>EERI Seismic Design OMU Chapter kuruldu</strong><span>Topluluk</span></div>
       </div>
@@ -1027,7 +1027,7 @@ html{overflow-wrap:break-word}
 <script src="stc-motion-data.js?v=20261102-complete"></script>
 <script src="alpha-motion.js?v=20261102-embedded"></script>
 <script src="studio-forms.js?v=20261102-sync"></script>
-<script src="content.js?v=2"></script>
+<script src="content.js?v=20261117-bdp"></script>
 <script>/* editor preview: ?draft shows the unpublished draft from this browser only */
 window.BCA_PUBLISHED = window.BCA_CONTENT;
 try{ if(/[?&]draft\b/.test(location.search)){ const d = localStorage.getItem('bca-editor-draft'); if(d) window.BCA_CONTENT = JSON.parse(d); } }catch(e){}</script>
@@ -1488,6 +1488,7 @@ addEventListener('resize',()=>{
 
 /* ---------- studio page grids ---------- */
 function renderStudioGrids(){
+document.querySelectorAll('[data-project-note]').forEach(note=>{ const p=PROJECTS[P(note.dataset.projectNote)]; note.hidden=!p || !!p.hidden; });
 $('grid-s').innerHTML = [{p:P('BDP'), m:'Ürün tasarımı · 2025'}].concat(PROJECTS.map((p,i)=>p.added && p.studio ? {p:i} : null).filter(Boolean)).filter(k=>k.p>=0 && !PROJECTS[k.p].hidden).map(k=>cardHTML(k,'s')).join('');
 $('grid-x').innerHTML = [{p:P('DYF'), m:'Cephe · Veri'}, {p:P('WA'), m:'Yapay zekâ destekli cephe'}].map(k=>cardHTML(k,'s')).join('');
 reveal($('grid-x'));
@@ -1795,7 +1796,7 @@ function renderProject(i){
 
   /* next */
   const st = projCtx === 's', STUDIO_SET = ['ABR','AUL','PCE','BDP','DYF','WA'];
-  const list = st ? STUDIO_SET.map(c=>PROJECTS[P(c)]) : PROJECTS.filter(q=>!q.studio), nx = list[(list.indexOf(p) + 1) % list.length] || list[0];
+  const list = (st ? STUDIO_SET.map(c=>PROJECTS[P(c)]) : PROJECTS.filter(q=>!q.studio)).filter(q=>q && !q.hidden), nx = list[(list.indexOf(p) + 1) % list.length] || p;
   $('pd-next').setAttribute('href', '#'+projCtx+'-'+nx.code);
   $('px-ctx').textContent = st ? 'Stüdyo' : 'Mimarlık';
   $('px-back').setAttribute('href', st ? '#studio' : '#architecture'); $('px-back').textContent = st ? '‹ Stüdyo' : '‹ Tüm projeler';
@@ -1873,6 +1874,7 @@ function route(){
   resetProjectFilm();
   const h = location.hash.slice(1),previous=DOC.dataset.view;
   let view = viewOf(h),i=view==='project'?P(h.slice(2)):-1;
+  if(i>=0 && PROJECTS[i].hidden) i=-1;
   const inline=h.startsWith('p-')&&i>=0&&!PROJECTS[i].studio;
   if(view==='project'){projCtx=h[0];if(i<0)view=projCtx==='s'?'studio':'architecture';}
   if(inline)view='architecture';
@@ -1911,7 +1913,7 @@ SITE.refresh = function(content){
   Object.keys(FOCUS).forEach(k=>delete FOCUS[k]); Object.assign(FOCUS, SITE.base.focus, content.focus || {});
   renderStudioGrids(); renderBand();
   const view = DOC.dataset.view;
-  if(view === 'project' || archOpenCode) renderProject(projIdx);
+  if(view === 'project' || archOpenCode){ if(PROJECTS[projIdx]?.hidden) route(); else renderProject(projIdx); }
   else if(view === 'architecture') renderArch();
   if(window.BCA_I18N){ BCA_I18N.setContent(content); BCA_I18N.retranslate(); }
 };

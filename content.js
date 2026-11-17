@@ -3,6 +3,9 @@ window.BCA_CONTENT = {
  "version": 1,
  "updated": "2026-11-05T18:44:37.086Z",
  "projects": {
+  "BDP": {
+   "hidden": true
+  },
   "OVS": {
    "desc": [
     "Overflowing Spectrums, renk, ışık ve sesin bir arada ele alındığı bir iç mekân kompozisyonu. Mavi zemin ve yüzeyler üzerinde kırmızı geometrik kütleler, sergilenen nesne için farklı ölçeklerde odaklar oluşturuyor.\n\n\n",
