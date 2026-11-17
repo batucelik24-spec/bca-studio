@@ -4979,7 +4979,6 @@ window.BCAPortfolio = {
       "gallery": [
         "img/portfolio-complete/soc-original.webp",
         "img/portfolio/soc-0844.webp",
-        "img/portfolio/soc-0891.webp",
         "img/portfolio/soc-0893.webp",
         "img/portfolio/soc-0894.webp",
         "img/portfolio-final/soc-lobby.webp"
